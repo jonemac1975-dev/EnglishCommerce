@@ -12,7 +12,10 @@ export async function init() {
   const data = await readData(`users/students/${student.id}/profile`);
   if (!data) return;
 
-  // LEFT
+  /* ===== LOAD DANH MỤC LỚP ===== */
+  const lopMap = await readData("config/danh_muc/lop") || {};
+
+  /* ===== LEFT ===== */
   document.getElementById("pvAvatar").src =
     data.avatar || "https://via.placeholder.com/150";
 
@@ -20,16 +23,24 @@ export async function init() {
   document.getElementById("pvGioiTinh").innerText = data.gioi_tinh || "";
   document.getElementById("pvNgaySinh").innerText = data.ngay_sinh || "";
 
-  // RIGHT
+  /* ===== RIGHT ===== */
   document.getElementById("pvId").innerText = student.id;
   document.getElementById("pvDienThoai").innerText = data.dien_thoai || "";
   document.getElementById("pvGmail").innerText = data.gmail || "";
   document.getElementById("pvFacebook").innerText = data.facebook || "";
   document.getElementById("pvZalo").innerText = data.zalo || "";
   document.getElementById("pvTruong").innerText = data.truong_hoc || "";
-  document.getElementById("pvLop").innerText = data.lop || "";
 
-  // MÔN HỌC
+  /* ===== MAP LỚP ID → NAME ===== */
+  let lopText = data.lop || "";
+
+  if (lopText && lopMap[lopText]) {
+    lopText = lopMap[lopText].name || lopText;
+  }
+
+  document.getElementById("pvLop").innerText = lopText;
+
+  /* ===== MÔN HỌC ===== */
   if (Array.isArray(data.mon_hoc)) {
 
     if (data.mon_hoc.includes("TiengAnh"))
