@@ -4,6 +4,9 @@
 
   <div class="dm-form">
     <input id="dmName" type="text" placeholder="Nhập tên kỳ thi">
+    
+    <!-- 🔥 Thêm thời gian -->
+    <input id="dmThoiGian" type="number" min="1" placeholder="Thời gian (phút)">
 
     <div class="dm-actions">
       <button onclick="addItem()">Thêm</button>
@@ -17,6 +20,7 @@
       <tr>
         <th>STT</th>
         <th>Tên</th>
+        <th>Thời gian (phút)</th> <!-- 🔥 thêm cột -->
       </tr>
     </thead>
     <tbody id="dmList"></tbody>

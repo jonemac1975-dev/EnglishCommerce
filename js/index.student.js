@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const avatarBox = document.getElementById("studentAvatar");
   const nameBox   = document.getElementById("studentName");
   const teacherSelect = document.getElementById("teacherSelect");
+  const lopSelect = document.getElementById("lopSelect");
 
   const btnRegister = document.querySelector(".sidebar.student button:nth-of-type(1)");
   const btnLogin    = document.querySelector(".sidebar.student button:nth-of-type(2)");
@@ -100,6 +101,41 @@ if (btnKiemTra) {
       await loadTeacherContent(savedTeacher);
     }
   }
+
+/* ==============================
+     LOAD Lớp
+  ============================== */
+async function loadLop() {
+  if (!lopSelect) return;
+
+  const data = await readData("config/danh_muc/lop");
+  if (!data) return;
+
+  lopSelect.innerHTML = `<option value="">Chọn lớp</option>`;
+
+  Object.entries(data).forEach(([id, item]) => {
+    const option = document.createElement("option");
+    option.value = id;
+    option.textContent = item.name || id;
+    lopSelect.appendChild(option);
+  });
+
+  // nếu đã chọn trước đó
+  const savedLop = localStorage.getItem("selectedLop");
+  if (savedLop) {
+    lopSelect.value = savedLop;
+  }
+}
+
+/* ==============================
+     CHỌN LỚP
+  ============================== */
+if (lopSelect) {
+  lopSelect.addEventListener("change", function () {
+    localStorage.setItem("selectedLop", this.value);
+  });
+}
+ await loadLop();
 
   /* ==============================
      LOAD NỘI DUNG GIÁO VIÊN

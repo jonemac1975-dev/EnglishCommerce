@@ -10,6 +10,10 @@ let teacherId;
 let teacherName;
 let baiKiemTraDangChon = null;
 let dapAnDungMap = {};
+let timerInterval = null;
+let timeRemaining = 0; // tính bằng giây
+let daCanhBao5Phut = false;
+let lopNameMap = {};
 
 /* ===============================
    INIT (BẮT BUỘC)
@@ -22,7 +26,7 @@ export async function init() {
   teacherName = localStorage.getItem("selectedTeacherName") || "Giáo viên";
 
   if (!student || !teacherId) {
-    alert("Thiếu thông tin học viên hoặc giáo viên");
+    alert("Chưa đăng nhập hoặc chưa chọn giáo viên");
     return;
   }
 
@@ -36,9 +40,24 @@ export async function init() {
     new Date().toLocaleDateString("vi-VN");
 
   await loadDanhMuc();
+  await loadLopDisplay();
   await loadDanhSachBaiKiemTra();
 
-  document
+document
+  .getElementById("selKyThi")
+  .addEventListener("change", async () => {
+
+    clearInterval(timerInterval);
+
+    document.getElementById("ktNoiDung").innerHTML = "";
+    document.getElementById("ktTimer").innerText = "";
+    document.getElementById("ktDung").innerText = "";
+    document.getElementById("ktDiem").innerText = "";
+
+    await loadDanhSachBaiKiemTra();
+  });
+
+document
     .getElementById("selBaiKT")
     .addEventListener("change", onChonBaiKiemTra);
 
@@ -47,13 +66,14 @@ export async function init() {
     .addEventListener("click", nopBai);
 }
 
+
+
 /* ===============================
    LOAD DANH MỤC
 ================================ */
 async function loadDanhMuc() {
   await loadSelect("kythi", "selKyThi");
-  await loadSelect("lop", "selLop");
-}
+  }
 
 async function loadSelect(dm, selectId) {
   const sel = document.getElementById(selectId);
@@ -61,44 +81,75 @@ async function loadSelect(dm, selectId) {
 
   sel.innerHTML = `<option value="">-- Chọn --</option>`;
 
+  // ✅ ĐÚNG: đọc theo danh mục truyền vào
   const data = await readData(`config/danh_muc/${dm}`);
   if (!data) return;
 
   Object.entries(data).forEach(([id, item]) => {
     const opt = document.createElement("option");
     opt.value = id;
-    opt.textContent = item.name || id;
+
+    // Nếu là kỳ thi thì hiển thị thêm thời gian
+    if (dm === "kythi" && item.thoigian) {
+      opt.textContent = `${item.name} (${item.thoigian} phút)`;
+    } else {
+      opt.textContent = item.name || id;
+    }
+
     sel.appendChild(opt);
   });
 }
 
 /* ===============================
+   LOAD LỚP
+================================ */
+async function loadLopDisplay() {
+
+  const lopId = localStorage.getItem("selectedLop");
+
+  if (!lopId) {
+    alert("⚠️ Bạn chưa chọn lớp ở sidebar");
+    return;
+  }
+
+  const data = await readData("config/danh_muc/lop");
+  if (!data) return;
+
+  Object.entries(data).forEach(([id, item]) => {
+    lopNameMap[id] = item.name || id;
+  });
+
+  const el = document.getElementById("ktLop");
+  if (el) {
+    el.innerText = lopNameMap[lopId] || lopId;
+  }
+}
+/* ===============================
    LOAD BÀI KIỂM TRA
 ================================ */
 async function loadDanhSachBaiKiemTra() {
+
   const select = document.getElementById("selBaiKT");
   if (!select) return;
 
   select.innerHTML = `<option value="">-- chọn bài kiểm tra --</option>`;
 
+  const lopId = localStorage.getItem("selectedLop");
+  const kyThiId = document.getElementById("selKyThi").value;
+
+  if (!lopId || !kyThiId) return;
+
   const data = await readData(`teacher/${teacherId}/kiemtra`);
   if (!data) return;
 
-  const daLam =
-    await readData(`users/students/${student.id}/kiemtra`) || {};
-
   Object.entries(data).forEach(([id, kt]) => {
+
+    if (kt.lop !== lopId) return;
+    if (kt.kythi !== kyThiId) return;
+
     const opt = document.createElement("option");
     opt.value = id;
-
-    const isDaLam = daLam[id];
-
     opt.textContent = kt.tieude || "Bài kiểm tra";
-
-    // 🔥 KHÔNG DISABLE
-    if (isDaLam) {
-      opt.textContent += " ✔";
-    }
 
     select.appendChild(opt);
   });
@@ -121,22 +172,50 @@ async function onChonBaiKiemTra(e) {
 
   baiKiemTraDangChon = baiKiemTra;
 
-  // 🔥 KIỂM TRA ĐÃ LÀM CHƯA
-  const daLam = await readData(
-    `users/students/${student.id}/kiemtra/${baiId}`
+// Set thời gian theo kỳ thi
+
+// Lấy kỳ thi đang chọn
+const kyThiId = document.getElementById("selKyThi").value;
+
+let thoiGianPhut = 15; // mặc định
+
+if (kyThiId) {
+  const kyThiData = await readData(`config/danh_muc/kythi/${kyThiId}`);
+  if (kyThiData?.thoigian) {
+    thoiGianPhut = kyThiData.thoigian;
+  }
+}
+
+// 🔥 KIỂM TRA ĐÃ LÀM CHƯA
+const daLam = await readData(
+  `users/students/${student.id}/kiemtra/${baiId}`
+);
+
+// 🔥 LUÔN CLEAR TIMER CŨ TRƯỚC
+clearInterval(timerInterval);
+
+if (daLam) {
+
+  // ===== ĐÃ LÀM =====
+  const timerEl = document.getElementById("ktTimer");
+  if (timerEl) timerEl.innerText = "Bài đã nộp";
+
+  renderTracNghiem(
+    baiKiemTra.noidung,
+    true,
+    daLam.traLoi
   );
 
-  // Luôn render trước
+  document.getElementById("btnSubmit").disabled = true;
+
+  hienKetQua(daLam, dapAnDungMap);
+
+} else {
+
   renderTracNghiem(baiKiemTra.noidung);
-
-  if (daLam) {
-    document.getElementById("btnSubmit").disabled = true;
-
-    // 👉 HIỂN THỊ KẾT QUẢ
-    hienKetQua(daLam, dapAnDungMap);
-  } else {
-    document.getElementById("btnSubmit").disabled = false;
-  }
+  document.getElementById("btnSubmit").disabled = false;
+  startTimer(thoiGianPhut);
+}
 }
 
 
@@ -240,10 +319,62 @@ cauDiv.appendChild(label);
   });
 }
 
+
+/* ===============================
+   ĐẾM NGƯỢC
+================================ */
+function startTimer(phut) {
+  clearInterval(timerInterval);
+
+  timeRemaining = phut * 60;
+  daCanhBao5Phut = false;
+
+  updateTimerDisplay();
+
+  timerInterval = setInterval(() => {
+    timeRemaining--;
+
+    updateTimerDisplay();
+
+    // 🔔 Cảnh báo còn 5 phút
+    if (timeRemaining === 300 && !daCanhBao5Phut) {
+      daCanhBao5Phut = true;
+      alert("⚠️ Còn 5 phút! Vui lòng kiểm tra lại bài.");
+    }
+
+    // ⏰ Hết giờ
+    if (timeRemaining <= 0) {
+      clearInterval(timerInterval);
+      alert("⏰ Hết giờ! Hệ thống tự động nộp bài.");
+      nopBai();
+    }
+
+  }, 1000);
+}
+
+/* ===============================
+   HIỂN THỊ THỜI GIAN
+================================ */
+function updateTimerDisplay() {
+  const el = document.getElementById("ktTimer");
+  if (!el) return;
+
+  const phut = Math.floor(timeRemaining / 60);
+  const giay = timeRemaining % 60;
+
+  el.innerText =
+    `⏳ Thời gian còn lại: ${phut.toString().padStart(2,"0")}:${giay.toString().padStart(2,"0")}`;
+
+  if (timeRemaining <= 300) {
+    el.style.color = "red";
+  }
+}
+
 /* ===============================
    NỘP BÀI
 ================================ */
 async function nopBai() {
+clearInterval(timerInterval);
   if (!baiKiemTraDangChon) {
     alert("Chưa chọn bài kiểm tra");
     return;
@@ -279,7 +410,7 @@ document.getElementById("ktDiem").innerText = diem;
     {
       bai: document.getElementById("selBaiKT").value,
       giao_vien: teacherId,
-      lop: document.getElementById("selLop").value,
+      lop: localStorage.getItem("selectedLop"),
       kythi: document.getElementById("selKyThi").value,
       dung,
       tong,

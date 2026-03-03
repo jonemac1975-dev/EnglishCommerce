@@ -468,7 +468,7 @@ button {
 
 .test-layout {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 4fr 1fr;
   gap: 24px;
 }
 
@@ -481,7 +481,7 @@ button {
 
 .test-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(2, 0.5fr);
   gap: 8px;
 }
 
@@ -980,4 +980,69 @@ color: #fff;
   justify-content: center;
   gap: 14px;
   margin-top: 24px;
+}
+
+.test-meta {
+  max-width: 500px;
+  margin-top: 10px;
+}
+
+.meta-line {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.meta-label {
+  font-weight: 600;
+}
+
+.meta-label::after {
+  content: " :";
+}
+
+.meta-value {
+  font-weight: bold;
+}
+
+.test-timer {
+  color: red;
+}
+
+.kt-info,
+.kt-select {
+  max-width: 520px;
+  margin-bottom: 15px;
+}
+
+.kt-row {
+  display: grid;
+  grid-template-columns: 170px 1fr;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.kt-label {
+  font-weight: 600;
+}
+
+.kt-label::after {
+  content: " :";
+}
+
+.kt-value {
+  font-weight: 500;
+}
+
+.kt-lop-display {
+  padding: 4px 8px;
+  background: #f3f3f3;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.kt-select select {
+  padding: 5px 8px;
+  border-radius: 6px;
 }

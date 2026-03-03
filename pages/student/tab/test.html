@@ -4,27 +4,38 @@
 
   <!-- ===== HEADER ===== -->
   <div class="test-head">
-    <h2>THI TRẮC NGHIỆM</h2>
+    <h2>BÀI THI TEST TRẮC NGHIỆM NÂNG CAO</h2>
 
     <div class="test-meta">
-      <div>
-        ID: <b id="testId"></b> |
-        <span id="testName"></span>
-      </div>
 
-       Thời gian còn lại :<div class="test-timer" id="testTimer">30:00</div>
-
-      <div>Câu Đúng: <span id="testDung">0</span></div>
-      <div>Số điểm : <span id="testDiem">0</span></div>
-    </div>
+  <div class="meta-line">
+    <span class="meta-label">ID</span>
+    <span><b id="testId"></b> | <span id="testName"></span></span>
   </div>
+
+  <div class="meta-line">
+    <span class="meta-label">Thời gian còn lại</span>
+    <span class="meta-value test-timer" id="testTimer">30:00</span>
+  </div>
+
+  <div class="meta-line">
+    <span class="meta-label">Câu đúng</span>
+    <span class="meta-value" id="testDung">0</span>
+  </div>
+
+  <div class="meta-line">
+    <span class="meta-label">Số điểm</span>
+    <span class="meta-value" id="testDiem">0</span>
+  </div>
+
+</div>
 
   <div class="test-layout">
 
     <!-- ===== LEFT: CÂU HỎI ===== -->
     <div class="test-left">
       <div id="testNoiDung" class="test-noidung">
-        <i>Chọn mã đề bên phải</i>
+        <i>Chọn mã đề bên phải 👉 </i>
       </div>
 
       <div class="test-action">

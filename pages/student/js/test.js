@@ -20,48 +20,70 @@ console.log("TeacherId:", teacherId); // 👈 thêm dòng này
 
   document.getElementById("testId").innerText = student.id;
   document.getElementById("testName").innerText = student.ho_ten;
-
-  await loadDanhSachDe();
-  startTimer();
+await loadDanhSachDe();
+//   startTimer();
 
   document.getElementById("btnSubmitTest")
     .addEventListener("click", nopBai);
 }
 
-/* ===================== LOAD GRID ĐỀ ===================== */
+
 async function loadDanhSachDe() {
 
   const grid = document.getElementById("testGrid");
+  if (!grid) return;
+
   grid.innerHTML = "";
 
-  const data = await readData(`teacher/${teacherId}/test`);
-  if (!data) return;
+  const selectedTeacher =
+    localStorage.getItem("selectedTeacher");
 
-  // 🔥 LẤY DANH SÁCH ĐÃ LÀM
+  const selectedLop =
+    localStorage.getItem("selectedLop");
+
+  if (!selectedTeacher || !selectedLop) {
+    console.warn("Chưa chọn giáo viên hoặc lớp");
+    return;
+  }
+
+  const data =
+    await readData(`teacher/${selectedTeacher}/test`);
+
+  if (!data) {
+    grid.innerHTML = "<p>Chưa có đề nào</p>";
+    return;
+  }
+
   const daLam =
-    await readData(`users/students/${student.id}/test`) || {};
+    await readData(`users/students/${student.id}/test`)
+    || {};
+
+  let count = 0;
 
   Object.entries(data).forEach(([id, item]) => {
+
+    // 🔥 FILTER THEO LỚP ĐANG CHỌN
+    if (item.lop !== selectedLop) return;
+
+    count++;
 
     const btn = document.createElement("button");
     btn.innerText = item.made || "??";
     btn.className = "test-btn";
 
-    // Nếu chưa có nội dung → disable
-    if (!item.noidung) {
-      btn.disabled = true;
-    }
-
-    // Nếu đã làm → đánh dấu
-    if (daLam[id]) {
-      btn.classList.add("da-lam");
-    }
+    if (!item.noidung) btn.disabled = true;
+    if (daLam[id]) btn.classList.add("da-lam");
 
     btn.onclick = () =>
       loadDe(id, item.noidung, daLam[id] || null);
 
     grid.appendChild(btn);
   });
+
+  if (count === 0) {
+    grid.innerHTML =
+      "<p>Không có đề kiểm tra cho lớp này</p>";
+  }
 }
 
 /* ===================== LOAD ĐỀ ===================== */
@@ -69,15 +91,26 @@ function loadDe(id, html, duLieuDaLam = null) {
 
   deDangChon = id;
 
-  // 1. render trước
+  // 🔥 Luôn dừng timer cũ trước
+  clearInterval(timerInterval);
+
+  // reset thời gian về 30 phút
+  thoiGian = 30 * 60;
+
   renderTracNghiem(
     html,
     !!duLieuDaLam,
     duLieuDaLam?.traLoi || {}
   );
 
-  // 2. nếu đã làm → hiển thị kết quả
   if (duLieuDaLam) {
+
+    // ===== ĐÃ LÀM =====
+    const time = new Date(duLieuDaLam.ngay)
+  .toLocaleTimeString("vi-VN");
+
+document.getElementById("testTimer").innerText =
+  "Nộp lúc " + time;
 
     setTimeout(() => {
       hienKetQuaTest(duLieuDaLam);
@@ -86,7 +119,11 @@ function loadDe(id, html, duLieuDaLam = null) {
     document.getElementById("btnSubmitTest").disabled = true;
 
   } else {
+
+    // ===== CHƯA LÀM =====
     document.getElementById("btnSubmitTest").disabled = false;
+
+    startTimer();   // 🔥 CHỈ CHẠY Ở ĐÂY
   }
 }
 
@@ -160,7 +197,7 @@ function renderTracNghiem(html, isDaLam = false, traLoiCu = {}) {
 
 /* ===================== NỘP BÀI ===================== */
 async function nopBai() {
-
+clearInterval(timerInterval);
   if (!deDangChon) {
     alert("Chưa chọn đề");
     return;

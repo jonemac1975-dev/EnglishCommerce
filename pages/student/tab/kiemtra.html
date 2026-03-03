@@ -8,30 +8,47 @@
     <h2>KIỂM TRA</h2>
 
     <div class="kt-meta">
-      <div>Ngày: <span id="ktNgay">--/--/----</span></div>
-      <div>Số câu đúng: <span id="ktDung">0</span></div>
-      <div>Số điểm: <span id="ktDiem">0</span></div>
+      <div><b>Ngày: </b><span id="ktNgay">--/--/----</span></div>
+      <div><b>Số câu đúng: </b><span id="ktDung">0</span></div>
+      <div><b>Số điểm: </b><span id="ktDiem">0</span></div>
       <div class="kt-timer" id="ktTimer">00:00</div>
     </div>
   </div>
 
   <!-- ===== THÔNG TIN ===== -->
-  <div class="kt-info">
-    <div>Tên học viên: <b id="ktHocVien"></b></div>
-    <div>Giáo viên   : <b id="ktGiaoVien"></b></div>
+<div class="kt-info">
+
+  <div class="kt-row">
+    <span class="kt-label">Tên học viên</span>
+    <span class="kt-value"><b id="ktHocVien"></b></span>
   </div>
 
-  <!-- ===== CHỌN DANH MỤC ===== -->
-  <div class="kt-select">
-    <label>Kỳ kiểm tra</label>
+  <div class="kt-row">
+    <span class="kt-label">Giáo viên</span>
+    <span class="kt-value"><b id="ktGiaoVien"></b></span>
+  </div>
+
+  <div class="kt-row">
+    <span class="kt-label">Lớp</span>
+    <span class="kt-value kt-lop-display" id="ktLop"></span>
+  </div>
+
+</div>
+
+<!-- ===== CHỌN DANH MỤC ===== -->
+<div class="kt-select">
+
+  <div class="kt-row">
+    <span class="kt-label">Kỳ kiểm tra</span>
     <select id="selKyThi"></select>
+  </div>
 
-    <label>Lớp</label>
-    <select id="selLop"></select>
-
-    <label>Bài kiểm tra</label>
+  <div class="kt-row">
+    <span class="kt-label">Bài kiểm tra</span>
     <select id="selBaiKT"></select>
   </div>
+
+</div>
 
   <!-- ===== NỘI DUNG ===== -->
   <div id="ktNoiDung" class="kt-noidung">
@@ -40,8 +57,8 @@
 
   <!-- ===== ACTION ===== -->
   <div class="kt-action">
-    <button id="btnSubmit">Nộp bài</button>
-    <button onclick="location.href='/index.html'">Home</button>
+    <button id="btnSubmit"><b>Nộp bài</b></button>
+    <button onclick="location.href='/index.html'"><b>Home</b></button>
   </div>
 
 </section>
