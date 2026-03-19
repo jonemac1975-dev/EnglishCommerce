@@ -4,15 +4,30 @@ from "../../scripts/services/firebaseService.js";
 import { compressImage }
 from "../../scripts/utils/imageCompress.js";
 
+
+
 /* ===== SESSION ===== */
+const adminViewId = localStorage.getItem("admin_view_student");
+
 const studentLogin =
   JSON.parse(localStorage.getItem("studentLogin"));
 
-if (!studentLogin || !studentLogin.id) {
+let studentId = null;
+
+// 👉 Ưu tiên admin xem
+if (adminViewId) {
+  studentId = adminViewId;
+} 
+// 👉 không thì dùng login
+else if (studentLogin && studentLogin.id) {
+  studentId = studentLogin.id;
+} 
+else {
   location.href = "../../index.html";
 }
 
-const studentId = studentLogin.id;
+
+
 /* ===== DOM ===== */
 const username = document.getElementById("username");
 const avatarFile = document.getElementById("avatarFile");
@@ -28,7 +43,7 @@ const facebook = document.getElementById("facebook");
 const zalo = document.getElementById("zalo");
 const truong_hoc = document.getElementById("truong_hoc");
 const lop = document.getElementById("lop");
-const hinh_thuc_dong_phi = document.getElementById("hinh_thuc_dong_phi");
+
 
 username.value = studentId;
 
@@ -65,7 +80,7 @@ function fillSelect(select, data) {
     await readData(`users/students/${studentId}/profile`);
 
   if (!profile) return;
-
+localStorage.removeItem("admin_view_student");
   ho_ten.value = profile.ho_ten || "";
   gioi_tinh.value = profile.gioi_tinh || "";
   ngay_sinh.value = profile.ngay_sinh || "";
@@ -75,8 +90,6 @@ function fillSelect(select, data) {
   zalo.value = profile.zalo || "";
   truong_hoc.value = profile.truong_hoc || "";
   lop.value = profile.lop || "";
-  hinh_thuc_dong_phi.value =
-    profile.hinh_thuc_dong_phi || "";
 
   if (profile.mon_hoc) {
     profile.mon_hoc.forEach(m => {
@@ -132,7 +145,6 @@ function collectData() {
     truong_hoc: truong_hoc.value.trim(),
     mon_hoc: mon,
     lop: lop.value,
-    hinh_thuc_dong_phi: hinh_thuc_dong_phi.value,
     updated_at: Date.now()
   };
 }

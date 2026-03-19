@@ -810,3 +810,66 @@ body {
 #toast.error   { background: #ef4444; }
 #toast.warn    { background: #f59e0b; }
 #toast.info    { background: #4e73ff; }
+
+
+/* ===== GROUP ===== */
+.menu-group {
+  font-weight: 700;
+  padding: 4px;
+  cursor: pointer;
+  background: Black;
+  border-radius: 6px;
+  margin-top: 10px;
+  transition: 0.25s;
+}
+
+.menu-group:hover {
+  background: #1e293b;
+}
+
+/* icon mũi tên */
+.menu-group::after {
+  content: "▸";
+  float: right;
+  transition: transform 0.25s;
+}
+
+.menu-group.active::after {
+  transform: rotate(90deg);
+}
+
+/* ===== CHILDREN ===== */
+.menu-children {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+}
+
+/* khi mở */
+.menu-children.open {
+  max-height: 500px; /* đủ lớn */
+}
+
+/* ===== ITEM ===== */
+.menu-item {
+  padding: 8px 12px;
+  margin-left: 8px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: 0.2s;
+}
+
+.menu-item:hover {
+  background: Black;
+  transform: translateX(4px);
+}
+
+/* ===== MENU TEXT COLOR ===== */
+
+/* Tiêu đề group */
+.menu-group {
+  color: #ffb300;   /* vàng đậm */
+}
+
+
+

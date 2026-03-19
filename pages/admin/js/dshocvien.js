@@ -88,13 +88,14 @@ function renderTable() {
       <td class="col-name">${p.ho_ten || ""}</td>
       <td>${p.dien_thoai || ""}</td>
       <td>${tenLop}</td>
-      <td>${p.hinh_thuc_dong_phi || ""}</td>
-      <td class="truncate">${(p.mon_hoc || []).join(", ")}</td>
       <td class="truncate">${a.username || ""}</td>
       <td class="pass-mask">••••••</td>
       <td>
         <button onclick="resetPass('${id}')">reset</button>
       </td>
+       <td>
+          <button onclick="viewProfile('${id}')">Xem</button>
+        </td>
       <td class="truncate">${p.gmail || ""}</td>
       <td class="truncate">${p.facebook || ""}</td>
       <td class="truncate">${p.zalo || ""}</td>
@@ -125,6 +126,16 @@ window.resetPass = async function (id) {
     `Mật khẩu mới: ${newPass}\n(Học viên đăng nhập xong sẽ đổi lại)`
   );
 };
+
+
+/* =========================
+   XEM HỒ SƠ
+========================= */
+window.viewProfile = function (id) {
+  localStorage.setItem("admin_view_student", id);
+  window.open("../../pages/student/hosohocvien.html", "_blank");
+};
+
 
 /* ================= UTIL ================= */
 function randomPass() {

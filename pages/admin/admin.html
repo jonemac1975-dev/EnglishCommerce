@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Quản lý trung tâm</title>
+  <title>Trang Admin Quản Lý</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="css/admin.css">
 </head>
@@ -11,7 +11,7 @@
 
   <!-- HEADER -->
   <header class="ad-header">
-    <div class="ad-title">QUẢN LÝ TRUNG TÂM</div>
+    <div class="ad-title">TRANG ADMIN QUẢN LÝ</div>
     <div class="ad-actions">
       <button onclick="adminchange()">Đổi pass</button>
       <button onclick="goHome()">Home</button>
@@ -23,53 +23,65 @@
 
     <!-- MENU -->
     <aside class="ad-menu">
-      <div class="menu-group">DANH MỤC</div>
-      <div class="menu-item" data-tab="monhoc">Môn học</div>
-      <div class="menu-item" data-tab="hocham">Học hàm</div>
-      <div class="menu-item" data-tab="chuyenmon">Chuyên môn</div>
-      <div class="menu-item" data-tab="kythi">Kỳ thi</div>
-      <div class="menu-item" data-tab="lop">Lớp</div>
-      <div class="menu-item" data-tab="theloaisach">Thể loại sách - tài liệu</div>
 
-      <div class="menu-group">KHÓA HỌC</div>
-      <div class="menu-item" data-tab="khoahoc">Cập nhật khóa học</div>
+  <div class="menu-group">
+    DANH MỤC
+  </div>
+  <div class="menu-children">
+    <div class="menu-item" data-tab="monhoc">Môn học</div>
+    <div class="menu-item" data-tab="hocham">Học hàm</div>
+    <div class="menu-item" data-tab="chuyenmon">Chuyên môn</div>
+    <div class="menu-item" data-tab="kythi">Kỳ thi</div>
+    <div class="menu-item" data-tab="lop">Lớp</div>
+    <div class="menu-item" data-tab="theloaisach">Thể loại sách</div>
+  </div>
 
-      <div class="menu-group">GIÁO VIÊN</div>
-      <div class="menu-item" data-tab="dsgiaovien">Danh sách giáo viên</div>
-      <div class="menu-item" data-tab="luonggv">Cập nhật lương GV</div>
+  <div class="menu-group">
+    GIÁO VIÊN
+  </div>
+  <div class="menu-children">
+    <div class="menu-item" data-tab="dsgiaovien">Danh sách giáo viên</div>
+  </div>
 
-      <div class="menu-group">HỌC VIÊN</div>
-      <div class="menu-item" data-tab="dshocvien">Danh sách học viên</div>
-      <div class="menu-item" data-tab="hocphi">Cập nhật học phí</div>
-      <div class="menu-group">THƯ VIỆN</div>
-      <div class="menu-item" data-tab="sach">Cập nhật sách</div>
+  <div class="menu-group">
+    HỌC VIÊN
+  </div>
+  <div class="menu-children">
+    <div class="menu-item" data-tab="dshocvien">Danh sách sinh viên</div>
+  </div>
+<div class="menu-group">
+    THƯ VIỆN
+</div>
+  <div class="menu-children">
+    <div class="menu-item" data-tab="sach">Cập nhật sách</div>
       <div class="menu-item" data-tab="tailieu">Tài liệu tham khảo</div>
+  </div>
 
-      <div class="menu-group">THỜI SỰ - HOẠT ĐỘNG</div>
-      <div class="menu-item" data-tab="thoisu">Cập nhật thời sự</div>
+<div class="menu-group">
+   THỜI SỰ - HOẠT ĐỘNG
+</div>
+  <div class="menu-children">
+    <div class="menu-item" data-tab="thoisu">Cập nhật thời sự</div>
       <div class="menu-item" data-tab="hoatdong">Cập nhật hoạt động</div>
+  </div>
 
-      <div class="menu-group">LỊCH DẠY</div>
-      <div class="menu-item" data-tab="lichday">Cập nhật lịch dạy</div>
+<div class="menu-group">
+   LỊCH DẠY
+</div>
+  <div class="menu-children">
+    <div class="menu-item" data-tab="lichday">Cập nhật lịch dạy</div>
+  </div>
 
-      <div class="menu-group">TIÊU BIỂU</div>
-      <div class="menu-item" data-tab="gvtieubieu">GV tiêu biểu</div>
-      <div class="menu-item" data-tab="hvtieubieu">HV tiêu biểu</div>
-      <div class="menu-item" data-tab="chungchihv">Cấp chứng chỉ HV</div>
+<div class="menu-group">
+   CHỨNG CHỈ
+</div>
+  <div class="menu-children">
+    <div class="menu-item" data-tab="chungchihv">Cấp chứng chỉ HV</div>
+  </div>
 
-
-      <div class="menu-group">BÀI GIẢNG MẪU</div>
-      <div class="menu-item" data-tab="baimau">Cập nhật bài mẫu</div>
-
-      <div class="menu-group">TÀI CHÍNH</div>
-      <div class="menu-item" data-tab="giahocphi">Bảng giá học phí</div>
-       <div class="menu-item" data-tab="gialuonggv">Bảng giá lương</div>
-      <div class="menu-item" data-tab="thuhocphi">Thu học phí</div>
-      <div class="menu-item" data-tab="chiluong">Chi lương</div>
-      <div class="menu-item" data-tab="baocaothuchi">Báo cáo thu chi</div>
-
-    </aside>
-
+</aside>
+      
+    
     <!-- CONTENT -->
     <main class="ad-content" id="adContent"></main>
 

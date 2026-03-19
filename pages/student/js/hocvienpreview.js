@@ -40,16 +40,4 @@ export async function init() {
 
   document.getElementById("pvLop").innerText = lopText;
 
-  /* ===== MÔN HỌC ===== */
-  if (Array.isArray(data.mon_hoc)) {
-
-    if (data.mon_hoc.includes("TiengAnh"))
-      document.getElementById("monTiengAnh").classList.add("mon-active");
-
-    if (data.mon_hoc.includes("NguVan"))
-      document.getElementById("monNguVan").classList.add("mon-active");
-
-    if (data.mon_hoc.includes("ToanLyHoa"))
-      document.getElementById("monToanLyHoa").classList.add("mon-active");
-  }
-}
+ }

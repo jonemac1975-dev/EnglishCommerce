@@ -57,3 +57,32 @@ window.showToast = function(message, type = "info", time = 2500) {
     toast.classList.remove("show");
   }, time);
 };
+
+document.querySelectorAll(".menu-group").forEach(group => {
+
+  group.addEventListener("click", () => {
+
+    const children = group.nextElementSibling;
+
+    if (!children) return;
+
+    const isOpen = children.classList.contains("open");
+
+    // 👉 đóng tất cả trước (nếu muốn accordion 1 cái mở)
+    document.querySelectorAll(".menu-children").forEach(c => {
+      c.classList.remove("open");
+    });
+
+    document.querySelectorAll(".menu-group").forEach(g => {
+      g.classList.remove("active");
+    });
+
+    // 👉 nếu đang đóng thì mở
+    if (!isOpen) {
+      children.classList.add("open");
+      group.classList.add("active");
+    }
+
+  });
+
+});

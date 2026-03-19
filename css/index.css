@@ -147,7 +147,7 @@ body {
 
 .sidebar h3 {
   text-align: center;
-  margin-bottom: 10px;
+   margin-bottom: 5px;
   color: #1a237e;
 }
 
@@ -155,7 +155,7 @@ body {
 .avatar {
   width: 90px;
   height: 90px;
-  margin: 8px auto;
+  margin: 6px auto;
   border-radius: 50%;
   background: #ddd;
   display: flex;
@@ -167,7 +167,7 @@ body {
 .name {
   text-align: center;
   font-weight: 600;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 /* ===== BUTTON ===== */
