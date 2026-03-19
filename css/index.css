@@ -228,18 +228,50 @@ body {
 
 /* ===== MEDIA (GV) ===== */
 .media {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   margin-top: 12px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
-  text-align: center;
-  font-size: 13px;
 }
 
-.media div {
-  background: #e3e8f0;
-  padding: 6px;
-  border-radius: 6px;
+.media-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 12px 14px;
+  border-radius: 10px;
+
+  background: linear-gradient(135deg, #f5f7fb, #e3e8f0);
+  border: 1px solid #e0e6ef;
+
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.media-item:hover {
+  transform: translateX(6px);
+  background: linear-gradient(135deg, #e3f2fd, #d0e3ff);
+  border-color: #90caf9;
+}
+
+.media-item.active {
+  background: linear-gradient(135deg, #3f6fc1, #5c8df6);
+  color: #fff;
+  border-color: #3f6fc1;
+}
+
+.media-icon {
+  font-size: 18px;
+}
+
+.media-title {
+  font-size: 14px;
+  font-weight: 600;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ================= CONTENT CENTER ================= */

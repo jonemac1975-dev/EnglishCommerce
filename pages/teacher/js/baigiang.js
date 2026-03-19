@@ -10,9 +10,9 @@ if (!teacherId) {
 /* =========================
    DOM
 ========================= */
-let bgMonHoc, bgLop, bgTenBai, bgMp3, bgMp4, bgYoutube,
+let bgMonHoc, bgLop, bgTenBai, bgMp3,bgMp32, bgMp4, bgYoutube,
     bgNoiDung, bgNgay,
-    previewMp3, previewMp4, previewYoutube,
+    previewMp3,previewMp32, previewMp4, previewYoutube,
     editingId = null;
 
 function getDOM() {
@@ -20,12 +20,14 @@ function getDOM() {
   bgLop = document.getElementById("bgLop");
   bgTenBai = document.getElementById("bgTenBai");
   bgMp3 = document.getElementById("bgMp3");
+  bgMp32 = document.getElementById("bgMp32");
   bgMp4 = document.getElementById("bgMp4");
   bgYoutube = document.getElementById("bgYoutube");
   bgNoiDung = document.getElementById("bgNoiDung");
   bgNgay = document.getElementById("bgNgay");
 
   previewMp3 = document.getElementById("previewMp3");
+  previewMp32 = document.getElementById("previewMp32");
   previewMp4 = document.getElementById("previewMp4");
   previewYoutube = document.getElementById("previewYoutube");
 }
@@ -117,6 +119,7 @@ function collectData() {
     content_html: bgNoiDung.innerHTML,
     media: {
       mp3: bgMp3.value || "",
+      mp32: bgMp32.value || "",
       mp4: bgMp4.value || "",
       youtube: bgYoutube.value || ""
     },
@@ -219,12 +222,14 @@ window.editBaiGiang = async function (id) {
   bgNgay.value = data.ngay || "";
 
   bgMp3.value = data.media?.mp3 || "";
+  bgMp32.value = data.media?.mp32 || "";
   bgMp4.value = data.media?.mp4 || "";
   bgYoutube.value = data.media?.youtube || "";
 
   bgNoiDung.innerHTML = data.content_html || "";
 
   bgMp3.dispatchEvent(new Event("input"));
+  bgMp32.dispatchEvent(new Event("input"));
   bgMp4.dispatchEvent(new Event("input"));
   bgYoutube.dispatchEvent(new Event("input"));
 };
@@ -254,11 +259,13 @@ function clearForm() {
   bgTenBai.value = "";
   bgNgay.value = "";
   bgMp3.value = "";
+  bgMp32.value = "";
   bgMp4.value = "";
   bgYoutube.value = "";
   bgNoiDung.innerHTML = "";
 
   previewMp3.innerHTML = "";
+  previewMp32.innerHTML = "";
   previewMp4.innerHTML = "";
   previewYoutube.innerHTML = "";
 }
@@ -275,7 +282,6 @@ export async function init() {
   await loadList();
 
   bgMp3.addEventListener("input", () => {
-
   const previewUrl = convertDriveToPreview(bgMp3.value);
 
   previewMp3.innerHTML = previewUrl
@@ -289,6 +295,18 @@ export async function init() {
 });
 
 
+bgMp32.addEventListener("input", () => {
+  const previewUrl = convertDriveToPreview(bgMp32.value);
+
+  previewMp32.innerHTML = previewUrl
+    ? `<iframe 
+         src="${previewUrl}" 
+         width="100%" 
+         height="80" 
+         allow="autoplay">
+       </iframe>`
+    : "";
+});
 
   bgMp4.addEventListener("input", () => {
 

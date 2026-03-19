@@ -109,35 +109,41 @@ main.innerHTML = `
 `;
 
   // ===== LOAD MEDIA =====
-  if (item.media && mediaBox) {
+if (item.media && mediaBox) {
 
-    mediaBox.style.display = "grid";
+  mediaBox.style.display = "flex";
+  mediaBox.style.flexDirection = "column";
 
-    const mp3 = document.getElementById("gvMp3");
-    const mp4 = document.getElementById("gvMp4");
-    const yt  = document.getElementById("gvYoutube");
+  const mp3  = document.getElementById("gvMp3");
+  const mp32 = document.getElementById("gvMp32");
+  const mp4  = document.getElementById("gvMp4");
+  const yt   = document.getElementById("gvYoutube");
 
-    if (mp3) {
-      mp3.textContent = "MP3 - " + (item.title || "");
-      mp3.dataset.url = item.media.mp3 || "";
-    }
+  // helper render item
+  function renderMedia(el, icon, label, url) {
+    if (!el) return;
 
-    if (mp4) {
-      mp4.textContent = "MP4 - " + (item.title || "");
-      mp4.dataset.url = item.media.mp4 || "";
-    }
+    el.dataset.url = url || "";
 
-    if (yt) {
-      yt.textContent = "YouTube - " + (item.title || "");
-      yt.dataset.url = item.media.youtube || "";
-    }
-
-  } else {
-
-    if (mediaBox) mediaBox.style.display = "none";
-    if (playerBox) playerBox.innerHTML = "";
-
+    el.innerHTML = `
+      <div class="media-item">
+        <span class="media-icon">${icon}</span>
+        <span class="media-title">${label} - ${item.title || ""}</span>
+      </div>
+    `;
   }
+
+  renderMedia(mp3,  "🎧", "MP3", item.media.mp3);
+  renderMedia(mp32, "🎧", "MP32", item.media.mp32);
+  renderMedia(mp4,  "🎬", "MP4", item.media.mp4);
+  renderMedia(yt,   "▶️", "YouTube", item.media.youtube);
+
+} else {
+
+  if (mediaBox) mediaBox.style.display = "none";
+  if (playerBox) playerBox.innerHTML = "";
+
+}
 }
 /* ================= LOAD KIỂM TRA ================= */
 
@@ -156,13 +162,20 @@ initTeacherSidebar();
 
 document.addEventListener("click", function(e){
 
-  const id = e.target.id;
-  if (!["gvMp3","gvMp4","gvYoutube"].includes(id)) return;
+  const parent = e.target.closest("#gvMp3, #gvMp32, #gvMp4, #gvYoutube");
+  if (!parent) return;
 
-  const rawUrl = e.target.dataset.url;
+  const id = parent.id;
+  const rawUrl = parent.dataset.url;
   if (!rawUrl) return;
 
   const box = document.getElementById("teacherPlayer");
+
+  // ===== ACTIVE UI =====
+  document.querySelectorAll(".media-item")
+    .forEach(el => el.classList.remove("active"));
+
+  parent.querySelector(".media-item")?.classList.add("active");
 
   /* ================= YOUTUBE ================= */
   if (id === "gvYoutube") {
@@ -170,7 +183,7 @@ document.addEventListener("click", function(e){
     const videoId = rawUrl.split("v=")[1]?.split("&")[0];
 
     box.innerHTML = `
-      <iframe width="100%" height="250"
+      <iframe width="100%" height="150"
         src="https://www.youtube.com/embed/${videoId}"
         frameborder="0"
         allowfullscreen>
@@ -185,28 +198,18 @@ document.addEventListener("click", function(e){
     const previewUrl = convertDriveToPreview(rawUrl);
 
     box.innerHTML = `
-      <iframe 
-        src="${previewUrl}"
-        width="100%"
-        height="250"
-        allow="autoplay">
-      </iframe>
+      <iframe src="${previewUrl}" width="100%" height="150" allow="autoplay"></iframe>
     `;
 
   }
 
-  /* ================= MP3 ================= */
-  else if (id === "gvMp3") {
+  /* ================= MP3 + MP32 ================= */
+  else if (id === "gvMp3" || id === "gvMp32") {
 
     const previewUrl = convertDriveToPreview(rawUrl);
 
     box.innerHTML = `
-      <iframe 
-        src="${previewUrl}"
-        width="100%"
-        height="80"
-        allow="autoplay">
-      </iframe>
+      <iframe src="${previewUrl}" width="100%" height="80" allow="autoplay"></iframe>
     `;
 
   }
