@@ -8,13 +8,13 @@ import { readData } from "../scripts/services/firebaseService.js";
 
 /* ===== DOM READY ===== */
 document.addEventListener("DOMContentLoaded", async () => {
-  const grid = document.getElementById("mainGrid");
-  if (!grid) {
-    
-    return;
-  }
 
-  await loadMain(grid);
+  initMainBackground();
+
+  const grid = document.getElementById("mainGrid");
+  if (grid) {
+    await loadMain(grid);
+  }
 });
 
 /* ===== LOAD MAIN ===== */
@@ -272,4 +272,31 @@ function enableDrag(el) {
     document.onmouseup = null;
     document.onmousemove = null;
   }
+}
+
+
+
+/* ===== MAIN BACKGROUND SLIDE ===== */
+function initMainBackground(){
+
+  const mainBg = document.getElementById("mainBg");
+  if (!mainBg) return;
+
+  const images = [
+    "./store/main1.png",
+    "./store/main2.png",
+    "./store/main3.png",
+    "./store/main4.png",
+    "./store/main5.png"
+  ];
+
+  let index = 0;
+
+  function changeBg(){
+    mainBg.style.backgroundImage = `url(${images[index]})`;
+    index = (index + 1) % images.length;
+  }
+
+  changeBg(); // chạy lần đầu
+  setInterval(changeBg, 10000); // 10 giây
 }

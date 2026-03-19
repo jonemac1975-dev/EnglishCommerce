@@ -39,6 +39,7 @@ function loadMenu(elementId, data, type) {
     li.textContent = item.title || item.tieude || "Không tên";
 
     li.onclick = () => {
+console.log("CLICK OK", item); // 👈 thêm dòng này
 
       if (type === "baigiang") {
         loadLesson(item);
@@ -63,51 +64,81 @@ function loadLesson(item) {
 
   const main = document.getElementById("main");
   const mediaBox = document.getElementById("teacherMedia");
-  main.classList.add("working-mode");
+  const playerBox = document.getElementById("teacherPlayer");
 
+  console.log("LOAD LESSON:", item);
 
-  // Ẩn grid
+  // Ẩn grid nếu có
   const grid = document.getElementById("mainGrid");
   if (grid) grid.style.display = "none";
 
-  // Load HTML nội dung
-  main.innerHTML = `
+  // ===== LOAD HTML =====
+  let content = "";
+
+if (item.content_html) {
+
+  // Nếu là link (http)
+  if (item.content_html.startsWith("http")) {
+
+    content = `
+      <iframe 
+  src="${item.content_html}" 
+  width="100%" 
+  height="600"
+  style="border:none;"
+  allowfullscreen
+  webkitallowfullscreen
+  mozallowfullscreen
+  allow="fullscreen">
+</iframe>
+    `;
+
+  } else {
+    // Nếu là HTML thật
+    content = item.content_html;
+  }
+
+} else {
+  content = "<p>Không có nội dung</p>";
+}
+
+main.innerHTML = `
   <div class="lesson-content">
-    ${item.content_html || ""}
+    ${content}
   </div>
 `;
 
+  // ===== LOAD MEDIA =====
+  if (item.media && mediaBox) {
 
-  // Hiện media
- // const mediaBox = document.getElementById("teacherMedia");
+    mediaBox.style.display = "grid";
 
-if (item.media) {
+    const mp3 = document.getElementById("gvMp3");
+    const mp4 = document.getElementById("gvMp4");
+    const yt  = document.getElementById("gvYoutube");
 
-  mediaBox.style.display = "grid";
+    if (mp3) {
+      mp3.textContent = "MP3 - " + (item.title || "");
+      mp3.dataset.url = item.media.mp3 || "";
+    }
 
-  const mp3 = document.getElementById("gvMp3");
-  const mp4 = document.getElementById("gvMp4");
-  const yt  = document.getElementById("gvYoutube");
+    if (mp4) {
+      mp4.textContent = "MP4 - " + (item.title || "");
+      mp4.dataset.url = item.media.mp4 || "";
+    }
 
-  mp3.textContent = "MP3 - " + item.title;
-  mp4.textContent = "MP4 - " + item.title;
-  yt.textContent  = "YouTube - " + item.title;
+    if (yt) {
+      yt.textContent = "YouTube - " + (item.title || "");
+      yt.dataset.url = item.media.youtube || "";
+    }
 
-  mp3.dataset.url = item.media.mp3 || "";
-  mp4.dataset.url = item.media.mp4 || "";
-  yt.dataset.url  = item.media.youtube || "";
+  } else {
 
-} else {
+    if (mediaBox) mediaBox.style.display = "none";
+    if (playerBox) playerBox.innerHTML = "";
 
-  // 🔥 Nếu không phải bài giảng → ẩn media
-  mediaBox.style.display = "none";
-
-  document.getElementById("teacherPlayer").innerHTML = "";
+  }
 }
-
-
-}
-
 /* ================= LOAD KIỂM TRA ================= */
 
 function loadExam(item) {

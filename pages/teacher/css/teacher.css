@@ -796,9 +796,9 @@ body > .change-pass-card {
   position: fixed;
   top: 80px;
   right: 520px;
-  min-width: 240px;
-  max-width: 320px;
-  padding: 14px 18px;
+  min-width: 140px;
+  max-width: 220px;
+  padding: 10px 14px;
   border-radius: 14px;
   font-size: 15px;
   font-weight: 500;

@@ -1120,3 +1120,39 @@ body.ready{
 .course-card .course-link {
   margin-top: auto;
 }
+
+#main{
+  margin-top: 0;
+  min-height: calc(120vh - 100px);
+  padding: 0;              /* ❌ bỏ padding dư */
+  position: relative;
+  z-index: 1;
+}
+
+.lesson-content{
+  display: flex;
+  justify-content: center;
+
+  min-height: calc(130vh - 120px);  /* 🔥 chỉ đảm bảo tối thiểu */
+
+}
+
+.lesson-content iframe{
+  width: 100%;
+  height: 100vh;   /* 🔥 cho nó cao thoải mái */
+  border: none;
+}
+
+
+#mainBg{
+  position: absolute;   /* 🔥 QUAN TRỌNG */
+  top: 10px;        /* = chiều cao header */
+  bottom: 0;
+
+  left: 0%;
+  right: 0%;
+
+  background-size: cover;
+  background-position: center;
+  z-index: -1;       /* 🔥 đẩy xuống dưới */
+}

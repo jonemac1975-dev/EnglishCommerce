@@ -781,8 +781,8 @@ body {
 /* ===== GLOBAL TOAST ===== */
 #toast {
   position: fixed;
-  top: 55px;
-  right: 20px;
+  top: 80px;
+  right: 520px;
   min-width: 140px;
   max-width: 220px;
   padding: 10px 14px;
