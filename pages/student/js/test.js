@@ -137,8 +137,8 @@ function renderTracNghiem(html, isDaLam = false, traLoiCu = {}) {
   const tempDiv = document.createElement("div");
   tempDiv.innerHTML = html;
 
-  const paragraphs = tempDiv.querySelectorAll("p");
-
+//  const paragraphs = tempDiv.querySelectorAll("p");
+const paragraphs = tempDiv.querySelectorAll("div, p, br");
   let cauSo = 0;
   let cauDiv = null;
   let daGapCauHoi = false;
