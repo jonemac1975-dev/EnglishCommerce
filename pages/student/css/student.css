@@ -966,13 +966,13 @@ color: #fff;
 
 .msg {
   display: none;
-  margin-bottom: 18px;
-  padding: 12px;
-  border-radius: 10px;
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
   font-size: 14px;
-  text-align: center;
+  color: #d93025;
+ 
 }
-
 /* ===== ACTION BUTTON CENTER ===== */
 
 .auth-card .actions {

@@ -25,6 +25,7 @@ window.register = async function () {
 
   } catch (e) {
     msg.innerText = e;
+msg.style.display = "block";
   }
 };
 
@@ -63,5 +64,6 @@ window.login = async function () {
 
   } catch (e) {
     msg.innerText = e;
+   msg.style.display = "block";
   }
 };

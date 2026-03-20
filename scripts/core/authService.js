@@ -40,19 +40,41 @@ export async function loginUser(role, username, password) {
   const basePath = `users/${role}`;
   const users = await readData(basePath);
 
-  if (!users) throw "Không có dữ liệu";
+  if (!users || Object.keys(users).length === 0) {
+  throw "Chưa đăng ký";
+}
 
-  const pass_hash = await hashPass(password);
+  let foundUser = null;
+  let foundId = null;
 
+  // 🔍 Tìm username trước
   for (const id in users) {
     const u = users[id];
-    if (u.auth?.username === username && u.auth.pass_hash === pass_hash) {
-      return { id, role };
+    if (u.auth?.username === username) {
+      foundUser = u;
+      foundId = id;
+      break;
     }
   }
 
-  throw "Sai tên đăng nhập hoặc mật khẩu";
+ // 🔥 LOG 2: xem có tìm thấy không
+  console.log("FOUND USER:", foundUser);
+
+  // ❌ Không có username
+  if (!foundUser) {
+    throw "Chưa đăng ký";
+  }
+
+  // 🔐 Check mật khẩu
+  const pass_hash = await hashPass(password);
+
+  if (foundUser.auth.pass_hash !== pass_hash) {
+    throw "Sai mật khẩu";
+  }
+
+  return { id: foundId, role };
 }
+
 
 /* ===== ĐỔI PASS ===== */
 export async function changePassword(role, id, newPass) {
