@@ -133,6 +133,57 @@ animation: blinkText 3s infinite;  /* 👈 nhấp nháy */
   background: #fff;
   cursor: pointer;
 }
+
+#langSwitch {
+  position: fixed;
+  top: 15px;
+  right: 20px;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+}
+
+/* switch */
+.switch {
+  position: relative;
+  width: 46px;
+  height: 22px;
+}
+
+.switch input {
+  display: none;
+}
+
+.slider {
+  position: absolute;
+  inset: 0;
+  background: #ccc;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.slider::before {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  left: 2px;
+  top: 2px;
+  background: #fff;
+  border-radius: 50%;
+  transition: 0.25s;
+}
+
+input:checked + .slider {
+  background: #4caf50;
+}
+
+input:checked + .slider::before {
+  transform: translateX(24px);
+}
 /* ================= MAIN LAYOUT ================= */
 .layout {
   display: grid;
@@ -1197,4 +1248,22 @@ body.ready{
   background-size: cover;
   background-position: center;
   z-index: -1;       /* 🔥 đẩy xuống dưới */
+}
+
+.goog-te-banner-frame {
+  display: none !important;
+}
+
+body {
+  top: 0 !important;
+}
+
+.goog-tooltip,
+.goog-tooltip:hover {
+  display: none !important;
+}
+
+.goog-text-highlight {
+  background: none !important;
+  box-shadow: none !important;
 }

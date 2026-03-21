@@ -172,5 +172,32 @@ window.addEventListener("DOMContentLoaded", () => {
 window.addEventListener("load", () => {
   document.body.classList.add("ready");
 });
+
 });
 
+/* =========================
+   LANG SWITCH (SIÊU GỌN)
+========================= */
+
+function switchLang(lang) {
+  if (lang === "en") {
+    const url = window.location.href;
+
+    location.href =
+      "https://translate.googleusercontent.com/translate?sl=vi&tl=en&u=" +
+      encodeURIComponent(url);
+  } else {
+    location.href = window.location.origin + window.location.pathname;
+  }
+}
+
+function initLangSwitch() {
+  const toggle = document.getElementById("langToggle");
+  if (!toggle) return;
+
+  toggle.addEventListener("change", () => {
+    switchLang(toggle.checked ? "en" : "vi");
+  });
+}
+
+window.addEventListener("DOMContentLoaded", initLangSwitch);

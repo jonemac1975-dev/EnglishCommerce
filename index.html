@@ -27,6 +27,16 @@
   </div>
 
   <!-- RIGHT -->
+<div id="langSwitch">
+  🇻🇳
+  <label class="switch">
+    <input type="checkbox" id="langToggle">
+    <span class="slider"></span>
+  </label>
+  🇺🇸
+</div>
+
+
   <div class="header-right">
     <input type="text" placeholder="Tìm kiếm">
     <button>Tìm</button>
@@ -59,7 +69,7 @@
       <div class="menu-title" onclick="toggleMenu('gv-baitap')">Bài tập</div>
       <ul id="gv-baitap" class="submenu"></ul>
 
-      <div class="menu-title" onclick="toggleMenu('gv-kiemtra')">Kiểm tra</div>
+      <div class="menu-title" onclick="toggleMenu('gv-kiemtra')">Bài Kiểm tra</div>
       <ul id="gv-kiemtra" class="submenu"></ul>
       <div class="menu-title" onclick="toggleMenu('gv-vanban')">Văn bản - Hội Thảo</div>
       <ul id="gv-vanban" class="submenu"></ul>
@@ -175,6 +185,24 @@
 
 
 <script type="module" src="./js/index.js"></script>
+
+<!-- GOOGLE TRANSLATE (ẨN) -->
+<div id="google_translate_element" style="display:none;"></div>
+
+<script>
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement(
+    {
+      pageLanguage: 'vi',
+      includedLanguages: 'en,vi',
+      autoDisplay: false
+    },
+    'google_translate_element'
+  );
+}
+</script>
+
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 <!-- ===== VIDEO MODAL ===== -->
 <div id="videoModal" class="video-modal">
