@@ -179,16 +179,12 @@ window.addEventListener("load", () => {
    LANG SWITCH (SIÊU GỌN)
 ========================= */
 
-function switchLang(lang) {
-  if (lang === "en") {
-    const url = window.location.href;
+function setLang(lang) {
+  const select = document.querySelector(".goog-te-combo");
+  if (!select) return;
 
-    location.href =
-      "https://translate.googleusercontent.com/translate?sl=vi&tl=en&u=" +
-      encodeURIComponent(url);
-  } else {
-    location.href = window.location.origin + window.location.pathname;
-  }
+  select.value = lang;
+  select.dispatchEvent(new Event("change"));
 }
 
 function initLangSwitch() {
@@ -196,8 +192,10 @@ function initLangSwitch() {
   if (!toggle) return;
 
   toggle.addEventListener("change", () => {
-    switchLang(toggle.checked ? "en" : "vi");
+    setLang(toggle.checked ? "en" : "vi");
   });
 }
 
-window.addEventListener("DOMContentLoaded", initLangSwitch);
+window.addEventListener("load", () => {
+  setTimeout(initLangSwitch, 1000); // đợi Google load xong
+});
