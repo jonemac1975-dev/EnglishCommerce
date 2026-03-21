@@ -24,6 +24,7 @@ async function initTeacherSidebar() {
   loadMenu("gv-baigiang", teacherData.baigiang, "baigiang");
   loadMenu("gv-baitap", teacherData.baitap, "baitap");
   loadMenu("gv-kiemtra", teacherData.kiemtra, "kiemtra");
+  loadMenu("gv-vanban", teacherData.vanban, "vanban");
 }
 
 function loadMenu(elementId, data, type) {
@@ -52,13 +53,16 @@ console.log("CLICK OK", item); // 👈 thêm dòng này
       if (type === "kiemtra") {
         loadExam(item);
       }
+      if (type === "vanban") {
+        loadLesson(item);
+      }
     };
 
     ul.appendChild(li);
   });
 }
 
-/* ================= LOAD BÀI GIẢNG / BÀI TẬP ================= */
+/* ================= LOAD BÀI GIẢNG / BÀI TẬP /VĂN BẢN================= */
 
 function loadLesson(item) {
 
