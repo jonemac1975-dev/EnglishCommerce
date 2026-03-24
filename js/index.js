@@ -1,9 +1,12 @@
+
 import "./index.head.js";
 import "./index.main.js";
 import "./index.footer.js";
 import "./avatar-gv.js";
 import "./index.student.js";
 import "./index.teacher.js";
+import "./sessionService.js";
+import { initSearch } from "./searchController.js";
 
 /* =========================
    APP STATE
@@ -172,7 +175,7 @@ window.addEventListener("DOMContentLoaded", () => {
 window.addEventListener("load", () => {
   document.body.classList.add("ready");
 });
-
+initSearch();
 });
 
 /* =========================
@@ -199,3 +202,79 @@ function initLangSwitch() {
 window.addEventListener("load", () => {
   setTimeout(initLangSwitch, 1000); // đợi Google load xong
 });
+
+
+
+/* =========================
+   VIDEO MODAL CONTROL
+========================= */
+
+// ▶ mở video (gọi từ search hoặc nơi khác)
+window.openVideo = function (videoId) {
+  const modal = document.getElementById("videoModal");
+  const iframe = document.getElementById("videoFrame");
+
+  if (!modal || !iframe) return;
+
+  iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+  modal.classList.add("active");
+};
+
+// ❌ tắt video
+window.closeVideo = function () {
+  const modal = document.getElementById("videoModal");
+  const iframe = document.getElementById("videoFrame");
+
+  if (!modal || !iframe) return;
+
+  iframe.src = ""; // stop video
+  modal.classList.remove("active");
+  modal.classList.remove("mini-mode");
+
+  document.querySelector(".video-box")?.classList.remove("mini");
+};
+
+// 🔽 thu nhỏ
+window.minimizeVideo = function () {
+  const modal = document.getElementById("videoModal");
+  const box = document.querySelector(".video-box");
+
+  if (!modal || !box) return;
+
+  modal.classList.add("mini-mode");
+  box.classList.add("mini");
+};
+
+// 🔼 phóng to lại
+window.maximizeVideo = function () {
+  const modal = document.getElementById("videoModal");
+  const box = document.querySelector(".video-box");
+
+  if (!modal || !box) return;
+
+  modal.classList.remove("mini-mode");
+  box.classList.remove("mini");
+};
+
+
+/* =========================
+   SEARCH TAB SWITCH
+========================= */
+window.switchTab = function(tab) {
+
+  document.querySelectorAll(".tab-content").forEach(el => {
+    el.style.display = "none";
+  });
+
+  document.querySelectorAll(".search-tabs button").forEach(btn => {
+    btn.classList.remove("active");
+  });
+
+  const active = document.getElementById("tab-" + tab);
+  if (active) active.style.display = "block";
+
+  const btn = document.querySelector(
+    `.search-tabs button[onclick="switchTab('${tab}')"]`
+  );
+  if (btn) btn.classList.add("active");
+};

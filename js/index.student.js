@@ -38,21 +38,60 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   /* ==============================
-     ĐÃ LOGIN
-  ============================== */
-  if (btnRegister) btnRegister.style.display = "none";
-  if (btnLogin) btnLogin.style.display = "none";
+   ĐÃ LOGIN
+============================== */
+if (btnRegister) btnRegister.style.display = "none";
+if (btnLogin) btnLogin.style.display = "none";
 
+try {
+  // 👉 load profile mới nhất từ Firebase
+  const profile = await readData(`users/students/${studentData.id}/profile`);
+
+  const avatar = profile?.avatar || "./store/default-avatar.png";
+  const hoTen  = profile?.ho_ten || "Học viên";
+
+  // 👉 render avatar
   if (avatarBox) {
     avatarBox.innerHTML = `
-      <img src="${studentData.avatar || './store/default-avatar.png'}"
-           style="width:100px;height:100px;border-radius:50%;object-fit:cover;">
+      <img src="${avatar}"
+           style="
+             width:80px;
+             height:80px;
+             border-radius:50%;
+             object-fit:cover;
+             border:2px solid #e3e8f0;
+           ">
+    `;
+  }
+
+  // 👉 render tên
+  if (nameBox) {
+    nameBox.textContent = hoTen;
+  }
+
+  // 👉 update lại localStorage cho đồng bộ (optional nhưng nên có)
+  const updatedLogin = {
+    ...studentData,
+    avatar: avatar,
+    ho_ten: hoTen
+  };
+  localStorage.setItem("studentLogin", JSON.stringify(updatedLogin));
+
+} catch (err) {
+  console.error("Lỗi load profile:", err);
+
+  // fallback nếu lỗi Firebase
+  if (avatarBox) {
+    avatarBox.innerHTML = `
+      <img src="./store/default-avatar.png"
+           style="width:80px;height:80px;border-radius:50%;">
     `;
   }
 
   if (nameBox) {
-    nameBox.textContent = studentData.ho_ten || "Học viên";
+    nameBox.textContent = "Học viên";
   }
+}
 
 /* ==============================
    NÚT KIỂM TRA (HỌC VIÊN)
@@ -102,6 +141,87 @@ if (btnKiemTra) {
     }
   }
 
+
+// ===== Trực tiêp / Online =====
+// ===== ELEMENTS =====
+const studentLinksDiv = document.getElementById("studentLinks");
+const studentModeRadios = document.getElementsByName("student_mode");
+
+// ===== HELPER =====
+function getStudentMode() {
+  return Array.from(studentModeRadios).find(r => r.checked)?.value;
+}
+
+// ===== HIỂN THỊ LINK =====
+async function updateStudentLinks() {
+  studentLinksDiv.innerHTML = "";
+
+  // chỉ hiện khi Online + đã chọn GV + lớp
+  if (getStudentMode() !== "online" || !teacherSelect.value || !lopSelect.value) {
+    studentLinksDiv.style.display = "none";
+    return;
+  }
+
+  studentLinksDiv.style.display = "block";
+
+  // lấy danh sách link từ Firebase
+  const list = await readData(`teacher/${teacherSelect.value}/linkday`);
+  if (!list) return;
+
+  const lopLinks = Object.values(list).filter(l => l.lop === lopSelect.value);
+
+  if (lopLinks.length === 0) {
+    const emptyMsg = document.createElement("div");
+    emptyMsg.textContent = "Chưa có Link";
+    emptyMsg.style.fontStyle = "italic";
+    emptyMsg.style.color = "#888";
+    studentLinksDiv.appendChild(emptyMsg);
+    return;
+  }
+
+  lopLinks.forEach(l => {
+  const btn = document.createElement("button");
+
+  btn.textContent = "🎓 Vào lớp";
+
+  btn.style.setProperty("background", "#ffa94d", "important");
+  btn.style.setProperty("color", "#fff", "important");
+  btn.style.padding = "6px 12px";
+  btn.style.borderRadius = "6px";
+  btn.style.border = "none";
+  btn.style.cursor = "pointer";
+  btn.style.margin = "4px 6px 4px 0";
+
+  btn.addEventListener("mouseover", () => {
+    btn.style.setProperty("background", "#ff922b", "important");
+  });
+
+  btn.addEventListener("mouseout", () => {
+    btn.style.setProperty("background", "#ffa94d", "important");
+  });
+
+  btn.addEventListener("click", async () => {
+
+  const classId = lopSelect.value;
+
+  await window.joinSession(classId);
+
+  // 🔥 delay nhỏ (CỰC QUAN TRỌNG)
+  await new Promise(r => setTimeout(r, 300));
+
+  window.open(l.made, "_blank");
+});
+
+  studentLinksDiv.appendChild(btn);
+});
+}
+
+// ===== EVENTS =====
+teacherSelect?.addEventListener("change", updateStudentLinks);
+lopSelect?.addEventListener("change", updateStudentLinks);
+studentModeRadios.forEach(r => r.addEventListener("change", updateStudentLinks));
+
+
 /* ==============================
      LOAD Lớp
   ============================== */
@@ -138,53 +258,109 @@ if (lopSelect) {
  await loadLop();
 
   /* ==============================
-     LOAD NỘI DUNG GIÁO VIÊN
-  ============================== */
-  async function loadTeacherContent(teacherId) {
-    localStorage.setItem("selectedTeacher", teacherId);
-    localStorage.setItem(
-      "selectedTeacherName",
-      teacherNameMap[teacherId] || teacherId
-    );
+     LOAD NỘI DUNG GIÁO VIÊN THEO LỚP
+============================== */
+async function loadTeacherContent(teacherId) {
+  if (!teacherId) return;
 
-    const map = {
-      baigiang: hvBaigiang,
-      baitap: hvBaitap
-    };
+  const selectedLop = lopSelect?.value || "";
+  localStorage.setItem("selectedTeacher", teacherId);
+  localStorage.setItem("selectedTeacherName", teacherNameMap[teacherId] || teacherId);
 
-    for (const type in map) {
-      const container = map[type];
-      if (!container) continue;
+  const map = {
+    baigiang: hvBaigiang,
+    baitap: hvBaitap
+  };
 
-      const data = await readData(`teacher/${teacherId}/${type}`);
-      if (!data) {
-        container.innerHTML = "<li>Chưa có dữ liệu</li>";
-        continue;
-      }
+  for (const type in map) {
+    const container = map[type];
+    if (!container) continue;
 
-      container.innerHTML = Object.entries(data)
-        .sort((a, b) => (b[1].created_at || 0) - (a[1].created_at || 0))
-        .map(([id, item]) => `
-          <li>
-            <a href="#" data-id="${id}" data-type="${type}">
-              ${item.title || item.tieude || "Không tên"}
-            </a>
-          </li>
-        `)
-        .join("");
-
-      bindPreviewClick(container, teacherId);
+    const data = await readData(`teacher/${teacherId}/${type}`);
+    if (!data) {
+      container.innerHTML = "<li>Chưa có dữ liệu</li>";
+      continue;
     }
+
+    // ===== Lọc theo lớp =====
+    const filtered = Object.entries(data)
+      .filter(([id, item]) => (item.classId || item.lop) === selectedLop)
+      .sort((a, b) => (b[1].created_at || 0) - (a[1].created_at || 0));
+
+    if (!filtered.length) {
+      container.innerHTML = "<li>Không có dữ liệu cho lớp này</li>";
+      continue;
+    }
+
+    container.innerHTML = filtered
+      .map(([id, item]) => `
+        <li>
+          <a href="#" data-id="${id}" data-type="${type}">
+            ${item.title || item.tieude || "Không tên"}
+          </a>
+        </li>
+      `)
+      .join("");
+
+    bindPreviewClick(container, teacherId);
   }
+
+  // ===== XỬ LÝ LINK ONLINE =====
+  const studentMode = document.querySelector('input[name="student_mode"]:checked')?.value;
+  const studentLinks = document.getElementById("studentLinks");
+  if (!studentLinks) return;
+
+  if (studentMode === "online" && selectedLop) {
+    const linksData = await readData(`teacher/${teacherId}/linkday`);
+    const links = linksData
+      ? Object.values(linksData).filter(l => l.lop === selectedLop)
+      : [];
+
+    if (links.length) {
+      studentLinks.innerHTML = links
+        .map(l => `
+  <button class="btn-class" onclick="
+    if(window.joinSession){
+      window.joinSession('${lopSelect.value}');
+    }
+    window.open('${l.made}', '_blank');
+  ">
+    Vào lớp
+  </button>
+`)
+        .join(" ");
+    } else {
+      studentLinks.innerHTML = "<p>Chưa có link</p>";
+    }
+  } else {
+    studentLinks.innerHTML = "";
+  }
+}
+
+// ===== GẮN SỰ KIỆN CHO GIÁO VIÊN + LỚP =====
+teacherSelect.addEventListener("change", async () => {
+  await loadTeacherContent(teacherSelect.value);
+});
+
+lopSelect.addEventListener("change", async () => {
+  await loadTeacherContent(teacherSelect.value);
+});
+
+document.querySelectorAll('input[name="student_mode"]').forEach(radio => {
+  radio.addEventListener("change", async () => {
+    await loadTeacherContent(teacherSelect.value);
+  });
+});
+
 
   /* ==============================
      CHỌN GIÁO VIÊN
   ============================== */
-  if (teacherSelect) {
-    teacherSelect.addEventListener("change", async function () {
-      if (!this.value) return;
-      await loadTeacherContent(this.value);
-    });
+if (teacherSelect) {
+ teacherSelect.addEventListener("change", async function () {
+ if (!this.value) return;
+     await loadTeacherContent(this.value);
+   });
   }
 
   await loadTeachers();
@@ -249,3 +425,32 @@ async function loadStudentTab(htmlPath, jsPath) {
     }
   }
 }
+
+
+
+
+document.addEventListener("click", async function (e) {
+
+  const el = e.target.closest(".class-item");
+  if (!el) return;
+
+  const id = el.dataset.id;
+  const className = GLOBAL_CLASS_MAP[id]?.name || "";
+
+  console.log("🔥 CLICK CLASS:", id, className);
+
+  // 🔥 CHỐNG GỌI LẠI NHIỀU LẦN
+  if (window._startingSession) return;
+  window._startingSession = true;
+
+  if (typeof window.startSession === "function") {
+    await window.startSession(id, className);
+    console.log("✅ SESSION ĐÃ TẠO");
+  } else {
+    console.log("❌ KHÔNG TÌM THẤY startSession");
+  }
+
+  // reset flag sau 1s
+  setTimeout(() => window._startingSession = false, 1000);
+
+});

@@ -38,9 +38,16 @@
 
 
   <div class="header-right">
-    <input type="text" placeholder="Tìm kiếm">
-    <button>Tìm</button>
+  <div class="header-right search-box">
+  <input id="searchInput" placeholder="< 500 word..." />
+  <div id="searchResults" class="search-dropdown"></div>
+</div>
+    <button id="searchBtn"> Dịch</button>
+
+    <!-- dropdown kết quả -->
+    <div id="searchResults" class="search-dropdown"></div>
   </div>
+</div>
 
 </header>
 
@@ -60,7 +67,24 @@
     <!-- Tên GV -->
     <div class="name" id="teacherName"></div>
 
-    <!-- MENU -->
+   
+
+<!-- ===== TRỰC TIẾP / ONLINE ===== -->
+<div class="teacher-mode">
+  <label><input type="radio" name="teacher_mode" value="truc_tiep" checked> Trực tiếp</label>
+  <label><input type="radio" name="teacher_mode" value="online"> Online</label>
+</div>
+
+<!-- Dropdown chọn lớp (hiển thị khi tick Online) -->
+<select id="teacherLop" style="display:none;">
+  <option value="">Chọn lớp</option>
+</select>
+
+<!-- Danh sách link Online -->
+<div id="teacherLinks"></div>
+
+
+ <!-- MENU -->
     <div class="menu">
 
       <div class="menu-title" onclick="toggleMenu('gv-baigiang')">Bài giảng</div>
@@ -98,17 +122,17 @@
 <div id="mainContent"></div>
 </section>
 
-  <!-- ===== CỘT HỌC VIÊN ===== -->
+  <!-- ===== CỘT SINH VIÊN ===== -->
   <aside class="sidebar student">
 
     <h3>Sinh viên</h3>
 
-    <div class="avatar" id="studentAvatar"></div>
+    <div class="avatar-student" id="studentAvatar"></div>
     <div class="name" id="studentName"></div>
-
+<div class="student-actions">
     <button onclick="goHVRegister()">Đăng ký</button>
     <button onclick="goHVLogin()">Đăng nhập</button>
-
+</div>
     <select id="teacherSelect">
       <option value="">Chọn giáo viên</option>
     </select>
@@ -116,6 +140,17 @@
       <option value="">Chọn lớp</option>
     </select>
     <div class="menu">
+
+
+<!-- ===== TRỰC TIẾP / ONLINE ===== -->
+<div class="student-mode">
+  <label><input type="radio" name="student_mode" value="truc_tiep" checked> Trực tiếp</label>
+  <label><input type="radio" name="student_mode" value="online"> Online</label>
+</div>
+
+<!-- Danh sách link Online -->
+<div id="studentLinks"></div>
+
 
   <div class="menu-title" onclick="toggleMenu('hv-baigiang')">Bài giảng</div>
   <ul id="hv-baigiang" class="submenu"></ul>
@@ -129,7 +164,7 @@
   
 <!-- NÚT TEST -->
   <button class="menu-btn" onclick="openStudentTest()">
-    🧪 Test nâng cao
+    🧪 Bài Test
   </button>
 
 </div>
@@ -149,7 +184,7 @@
   </div>
 
   <div class="footer-box">
-    <h4>Hoạt động</h4>
+    <h4>World News</h4>
     <ul id="ftHoatDong"></ul>
   </div>
 
@@ -206,14 +241,14 @@ function googleTranslateElementInit() {
 </body>
 <!-- ===== VIDEO MODAL ===== -->
 <div id="videoModal" class="video-modal">
-  <div class="video-box" id="videoBox">
+  <div class="video-box">
 
     <div class="video-controls">
-      <button id="minimizeVideo">—</button>
-      <button id="closeVideo">✕</button>
+      <button onclick="minimizeVideo()">–</button>
+      <button onclick="maximizeVideo()">⬜</button>
+      <button onclick="closeVideo()">✕</button>
     </div>
-
-    <iframe id="videoFrame"
+<iframe id="videoFrame"
             width="100%"
             height="500"
             frameborder="0"
@@ -222,4 +257,6 @@ function googleTranslateElementInit() {
 
   </div>
 </div>
+
+
 </html>

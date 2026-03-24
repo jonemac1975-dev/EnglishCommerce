@@ -1,5 +1,9 @@
 import { readData } from "../scripts/services/firebaseService.js";
 
+
+let GLOBAL_CLASS_MAP = {};
+
+
 function convertDriveToPreview(url) {
   if (!url) return "";
 
@@ -13,55 +17,166 @@ function convertDriveToPreview(url) {
 
 
 async function initTeacherSidebar() {
-
   const teacherId = localStorage.getItem("teacher_id");
   if (!teacherId) return;
 
-  // ===== LOAD DATA ĐÚNG NODE =====
+  // ===== LOAD TEACHER DATA =====
   const teacherData = await readData("teacher/" + teacherId);
   if (!teacherData) return;
 
-  loadMenu("gv-baigiang", teacherData.baigiang, "baigiang");
-  loadMenu("gv-baitap", teacherData.baitap, "baitap");
-  loadMenu("gv-kiemtra", teacherData.kiemtra, "kiemtra");
-  loadMenu("gv-vanban", teacherData.vanban, "vanban");
+  // ===== LOAD CLASS MAP =====
+  const config = await readData("config");
+  GLOBAL_CLASS_MAP = config?.danh_muc?.lop || {};
+  console.log("CLASS MAP:", GLOBAL_CLASS_MAP);
+
+  // ===== MENU BÀI GIẢNG =====
+  const menuBaigiang = document.getElementById("gv-baigiang");
+  menuBaigiang.innerHTML = `<li class="menu-title">Bài giảng</li>`;
+  menuBaigiang.querySelector(".menu-title").onclick = () => {
+    loadClassList(teacherData.baigiang || {}, "baigiang");
+  };
+
+  // ===== MENU BÀI TẬP =====
+  const menuBaitap = document.getElementById("gv-baitap");
+  menuBaitap.innerHTML = `<li class="menu-title">Bài tập</li>`;
+  menuBaitap.querySelector(".menu-title").onclick = () => {
+    loadClassList(teacherData.baitap || {}, "baitap");
+  };
+
+  // ===== MENU KIỂM TRA =====
+  const menuKiemtra = document.getElementById("gv-kiemtra");
+  menuKiemtra.innerHTML = `<li class="menu-title">Bài kiểm tra</li>`;
+  menuKiemtra.querySelector(".menu-title").onclick = () => {
+    loadClassList(teacherData.kiemtra || {}, "kiemtra");
+  };
 }
 
-function loadMenu(elementId, data, type) {
+
+// ================= TEACHER ONLINE/TRỰC TIẾP =================
+const teacherModeRadios = document.getElementsByName("teacher_mode");
+const teacherLop = document.getElementById("teacherLop");
+const teacherLinks = document.getElementById("teacherLinks");
+
+teacherModeRadios.forEach(radio => {
+  radio.addEventListener("change", async () => {
+    const mode = document.querySelector('input[name="teacher_mode"]:checked').value;
+    if (mode === "online") {
+      teacherLop.style.display = "inline-block";
+      await loadTeacherLopDropdown();
+    } else {
+      teacherLop.style.display = "none";
+      teacherLinks.innerHTML = "";
+    }
+  });
+});
+
+// ================= LOAD DROPDOWN LỚP =================
+async function loadTeacherLopDropdown() {
+  const config = await readData("config/danh_muc/lop");
+  if (!config) return;
+
+  teacherLop.innerHTML = `<option value="">Chọn lớp</option>`;
+  Object.entries(config).forEach(([id, item]) => {
+    const opt = document.createElement("option");
+    opt.value = id;
+    opt.textContent = item.name || id;
+    teacherLop.appendChild(opt);
+  });
+}
+
+// ================= CHỌN LỚP =================
+teacherLop.addEventListener("change", async () => {
+  const lopId = teacherLop.value;
+  if (!lopId) return;
+
+  const teacherId = localStorage.getItem("teacher_id");
+  const list = await readData(`teacher/${teacherId}/linkday`);
+  if (!list) return;
+
+  teacherLinks.innerHTML = "";
+
+  // lọc các link của lớp này
+  const lopLinks = Object.values(list).filter(l => l.lop === lopId);
+
+  if (lopLinks.length === 0) {
+    const emptyMsg = document.createElement("div");
+    emptyMsg.textContent = "Chưa có Link";
+    emptyMsg.style.fontStyle = "italic";
+    emptyMsg.style.color = "#888";
+    teacherLinks.appendChild(emptyMsg);
+    return;
+  }
+
+  // tạo nút [Vào dạy] cho từng link
+  lopLinks.forEach(l => {
+  const linkBtn = document.createElement("button");
+
+  linkBtn.textContent = "Vào dạy";
+  linkBtn.classList.add("btn-vao-day");
+
+  // 👉 STYLE TRỰC TIẾP
+  linkBtn.style.background = "#ffa94d";
+  linkBtn.style.color = "#fff";
+  linkBtn.style.padding = "4px 4px";
+  linkBtn.style.borderRadius = "4px";
+  linkBtn.style.border = "none";
+  linkBtn.style.cursor = "pointer";
+  linkBtn.style.margin = "4px 4px 4px 0";
+  linkBtn.style.display = "inline-block";
+
+  // hover (JS version 😎)
+  linkBtn.addEventListener("mouseover", () => {
+    linkBtn.style.background = "#ff922b";
+  });
+
+  linkBtn.addEventListener("mouseout", () => {
+    linkBtn.style.background = "#ffa94d";
+  });
+
+  linkBtn.addEventListener("click", async () => {
+
+  const classId = l.lop;
+  const className = GLOBAL_CLASS_MAP[classId]?.name || "Lớp";
+
+  console.log("🚀 Vào dạy:", classId, className);
+
+  // 🔥 1. START SESSION
+  if (window.startSession) {
+    await window.startSession(classId, className);
+  } else {
+    console.error("❌ Không tìm thấy startSession");
+  }
+
+  // 🔥 2. MỞ LINK
+  window.open(l.made, "_blank");
+});
+
+  teacherLinks.appendChild(linkBtn);
+});
+});
+
+
+
+function loadMenu(elementId, data, type, classMap = {}) {
 
   const ul = document.getElementById(elementId);
   if (!ul || !data) return;
 
   ul.innerHTML = "";
 
-  Object.entries(data).forEach(([id, item]) => {
+  const li = document.createElement("li");
 
-    const li = document.createElement("li");
-    li.textContent = item.title || item.tieude || "Không tên";
+  // 👉 đổi tên theo loại
+  if (type === "baigiang") li.textContent = "📚 Bài giảng";
+  if (type === "baitap") li.textContent = "📝 Bài tập";
+  if (type === "kiemtra") li.textContent = "🧪 Kiểm tra";
 
-    li.onclick = () => {
-console.log("CLICK OK", item); // 👈 thêm dòng này
+  li.onclick = () => {
+  loadClassList(data, GLOBAL_CLASS_MAP, type);
+};
 
-      if (type === "baigiang") {
-        loadLesson(item);
-      }
-
-      if (type === "baitap") {
-        loadLesson(item);
-      }
-
-      if (type === "kiemtra") {
-        loadExam(item);
-      }
-      if (type === "vanban") {
-        loadLesson(item);
-      }
-    };
-
-    ul.appendChild(li);
-  });
+  ul.appendChild(li);
 }
-
 /* ================= LOAD BÀI GIẢNG / BÀI TẬP /VĂN BẢN================= */
 
 function loadLesson(item) {
@@ -219,3 +334,105 @@ document.addEventListener("click", function(e){
   }
 
 });
+
+
+
+
+function loadClassList(data, type) {
+  const main = document.getElementById("main");
+  const group = {};
+
+  Object.values(data).forEach(item => {
+    // ===== Lấy ID lớp theo type =====
+    let classId = "";
+    if (type === "baigiang" || type === "baitap") {
+      classId = (item.classId || "").trim();
+    } else if (type === "kiemtra") {
+      classId = (item.lop || "").trim();
+    }
+
+    if (!classId) return; // bỏ nếu không có ID
+
+    if (!group[classId]) group[classId] = [];
+    group[classId].push(item);
+  });
+
+  // ===== Render danh sách lớp =====
+  let html = "<h3>Danh sách lớp</h3><ul>";
+  Object.entries(group).forEach(([id, list]) => {
+    const className = GLOBAL_CLASS_MAP[id]?.name || "❌ Không tìm thấy";
+    html += `<li class="class-item" data-id="${id}">📚 ${className} (${list.length})</li>`;
+  });
+  html += "</ul>";
+  main.innerHTML = html;
+
+  // ===== Click lớp =====
+  document.querySelectorAll(".class-item").forEach(el => {
+    el.onclick = async () => {
+
+  const id = el.dataset.id;
+  const className = GLOBAL_CLASS_MAP[id]?.name || "";
+
+  // 🔥 START SESSION
+  if (window.startSession) {
+    await window.startSession(id, className);
+  }
+
+  const items = group[id] || [];
+  if (!items.length) {
+    alert("❌ Không có bài nào trong lớp này");
+    return;
+  }
+
+  loadItemList(items, className, type);
+};
+  });
+}
+
+
+function loadItemList(list, className, type) {
+  const main = document.getElementById("main");
+
+  let html = `
+    <button id="backBtn">⬅ Quay lại</button>
+    <h3>${className}</h3>
+    <ul>
+  `;
+
+  list.forEach((item, index) => {
+    html += `
+      <li class="item" data-index="${index}">
+        ▶ ${item.title || item.tieude || "Không tên"}
+      </li>
+    `;
+  });
+
+  html += "</ul>";
+  main.innerHTML = html;
+
+  // ===== BACK BUTTON =====
+  document.getElementById("backBtn").onclick = () => {
+    // quay lại danh sách lớp
+    loadClassList(list.reduce((acc, i) => { 
+      // build lại object gốc để loadClassList nhận
+      acc[i.classId || i.lop || ""] = i; 
+      return acc;
+    }, {}), type);
+  };
+
+  // ===== CLICK ITEM =====
+  document.querySelectorAll(".item").forEach(el => {
+    el.onclick = () => {
+      const index = Number(el.dataset.index);
+      const item = list[index];
+
+      if (!item) {
+        alert("❌ Không tìm thấy bài");
+        return;
+      }
+
+      if (type === "baigiang" || type === "baitap") loadLesson(item);
+      if (type === "kiemtra") loadExam(item);
+    };
+  });
+}
