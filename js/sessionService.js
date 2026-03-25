@@ -1,21 +1,41 @@
 import { readData, writeData, updateData } from "../scripts/services/firebaseService.js";
 
+let _lastSessionData = "";
+let isStartingSession = false;
+let offlineStarted = false;
+
+
 /* =========================
    START SESSION (GV)
 ========================= */
-window.startSession = async function (classId, className) {
+window.startSession = async function (classId, className, mode = "online") {
+
+  if (isStartingSession && mode === "online") {
+//  console.warn("⛔ Đang tạo session");
+  return;
+}
+
+  isStartingSession = true;
 
   try {
+
+    if (!classId || classId.trim() === "") {
+      alert("❌ Chưa chọn lớp");
+      return;
+    }
+
     const teacherId = localStorage.getItem("teacher_id");
     if (!teacherId) return;
 
-    // 🔥 1. XÓA SESSION CŨ CỦA GIÁO VIÊN (QUAN TRỌNG)
+    // 🔥 1. XÓA SESSION CŨ
     const allSessions = await readData("sessions");
 
     if (allSessions) {
       for (const [sid, s] of Object.entries(allSessions)) {
-        if (s.teacherId === teacherId) {
-          await writeData(`sessions/${sid}`, null); // xoá
+        if (s.teacherId === teacherId && !s.finalized) {
+          await updateData(`sessions/${sid}`, {
+  finalized: true
+});
         }
       }
     }
@@ -26,47 +46,76 @@ window.startSession = async function (classId, className) {
     const students = {};
 
     Object.entries(studentsData || {}).forEach(([id, s]) => {
-      const studentClass = s?.profile?.lop;
-
-      if (studentClass !== classId) return;
+      if (s?.profile?.lop !== classId) return;
 
       students[id] = {
-        joined: false, // ✅ luôn reset
-        name: s?.profile?.ho_ten || "Không tên"
+        name: s?.profile?.ho_ten || "Không tên",
+        joined: false,
+        lastSeen: 0 // 👈 phục vụ detect chuồn
       };
     });
 
-    // 🔥 3. TẠO SESSION MỚI
+    // 🔥 3. TẠO SESSION
     const sessionId = "session_" + Date.now();
 
     const session = {
       classId,
       className,
       teacherId,
+      mode, // 👈 online / offline
       startTime: Date.now(),
       students
     };
 
     await writeData(`sessions/${sessionId}`, session);
-
     localStorage.setItem("currentSessionId", sessionId);
 
-    console.log("✅ START SESSION:", sessionId, session);
+//    console.log("✅ START SESSION:", session);
 
-    // 🔥 4. FOOTER LISTENER
-    if (typeof waitForFooterAndStart === "function") {
-      waitForFooterAndStart(sessionId);
-    }
+    alert("✅ Đã bắt đầu điểm danh");
+
+    // 🔥 4. START LISTEN
+// 🔥 4. START LISTEN
+
+if (mode === "online") {
+  waitForFooterAndStart(sessionId);
+} else {
+  // 👉 OFFLINE: render footer 1 lần
+  const studentsArr = Object.values(students);
+
+  const total = studentsArr.length;
+  const joined = 0;
+
+  renderFooter({
+    className,
+    startTime: Date.now(),
+    total,
+    joined,
+    absent: total,
+    absentList: studentsArr.map(s => s.name)
+  });
+}
 
     // 🔥 5. AUTO CHỐT
-    setTimeout(() => {
-      if (typeof finalizeSession === "function") {
-        finalizeSession(sessionId);
-      }
-    }, 5 * 60 * 1000);
+    setTimeout(() => finalizeSession(sessionId), 5 * 60 * 1000);
+
+    // 🔥 6. Nếu OFFLINE → hiện bảng tick + QR
+    if (mode === "offline") {
+
+  if (offlineStarted) return;
+
+  offlineStarted = true;
+
+  setTimeout(() => {
+    renderOfflinePanel(sessionId, students);
+    generateQRCode(sessionId);
+  }, 300);
+
+//  console.log("🔥 CALL QR", sessionId);
+}
 
   } catch (err) {
-    console.error("❌ startSession lỗi:", err);
+//  console.error("❌ startSession lỗi:", err);
   }
 };
 
@@ -76,27 +125,35 @@ window.startSession = async function (classId, className) {
 window.joinSession = async function (classId) {
 
   const student = JSON.parse(localStorage.getItem("studentLogin"));
-  if (!student?.id) return;
+  if (!student?.id) return false;
 
   const sessions = await readData("sessions");
-  if (!sessions) return;
+  if (!sessions) return false;
 
   const found = Object.entries(sessions).find(([id, s]) =>
     s.classId === classId && !s.finalized
   );
 
-  if (!found) return;
+  if (!found) return false;
 
   const [sessionId] = found;
 
-  await updateData(
-    `sessions/${sessionId}/students/${student.id}`,
-    {
-      joined: true,
-      joinTime: Date.now()
-    }
-  );
+  await updateData(`sessions/${sessionId}/students/${student.id}`, {
+    joined: true,
+    joinTime: Date.now(),
+    lastSeen: Date.now()
+  });
+
+  // 🔥 heartbeat
+  setInterval(() => {
+    updateData(`sessions/${sessionId}/students/${student.id}`, {
+      lastSeen: Date.now()
+    });
+  }, 15000);
+
+  return true; // 👈 QUAN TRỌNG
 };
+
 
 /* =========================
    LISTEN REALTIME
@@ -109,6 +166,15 @@ window.listenSession = function (sessionId) {
 
     const session = await readData(refPath);
     if (!session) return;
+
+    const snapshot = JSON.stringify(session.students);
+
+    // 🔥 nếu không đổi → bỏ qua
+    if (snapshot === _lastSessionData) return;
+
+    _lastSessionData = snapshot;
+
+//    console.log("🔄 DATA CHANGED → render");
 
     const students = session.students || {};
 
@@ -131,7 +197,7 @@ window.listenSession = function (sessionId) {
       absentList
     });
 
-  }, 3000); // 3s refresh
+  }, 2000); // giảm xuống 2s cho mượt
 
   window._sessionInterval = interval;
 };
@@ -149,7 +215,7 @@ async function finalizeSession(sessionId) {
     finalizedAt: Date.now()
   });
 
-  console.log("✅ Đã chốt điểm danh");
+//  console.log("✅ Đã chốt điểm danh");
 }
 
 /* =========================
@@ -165,7 +231,7 @@ if (!box) {
   const footer = document.querySelector(".footer") || document.body;
 
   if (!footer) {
-    console.log("❌ chưa tìm thấy footer");
+//    console.log("❌ chưa tìm thấy footer");
     return;
   }
 
@@ -175,7 +241,7 @@ if (!box) {
 
   footer.appendChild(box);
 
-  console.log("✅ đã tạo footer box");
+//  console.log("✅ đã tạo footer box");
 }
 
   box.innerHTML = `
@@ -208,7 +274,7 @@ function waitForFooterAndStart(sessionId) {
     if (footer) {
       clearInterval(check);
 
-      console.log("✅ Footer sẵn sàng, bắt đầu session");
+  //    console.log("✅ Footer sẵn sàng, bắt đầu session");
 
       listenSession(sessionId);
     }
@@ -216,20 +282,109 @@ function waitForFooterAndStart(sessionId) {
   }, 300);
 }
 
-window.addEventListener("load", () => {
 
-  const sessionId = localStorage.getItem("currentSessionId");
+/* =========================
+   OFFLINE PANEL (tick tay)
+========================= */
 
-  if (sessionId) {
-    console.log("🔄 Khôi phục session");
-    waitForFooterAndStart(sessionId);
+function renderOfflinePanel(sessionId, students) {
+
+  let box = document.getElementById("offlinePanel");
+
+  if (box) return; // 🔥 CHẶN RENDER LẠI
+
+  box = document.createElement("div");
+  box.id = "offlinePanel";
+  box.style.marginTop = "10px";
+
+  document.body.appendChild(box); // 👈 KHÔNG dùng main nữa
+
+
+  let html = "<h3>📋 Điểm danh Offline</h3><ul>";
+
+  Object.entries(students).forEach(([id, s]) => {
+    html += `
+      <li>
+        <label>
+          <input type="checkbox" data-id="${id}">
+          ${s.name}
+        </label>
+      </li>
+    `;
+  });
+
+  html += "</ul>";
+
+  box.innerHTML = html;
+
+  document.querySelectorAll("#offlinePanel input[type=checkbox]").forEach(cb => {
+    cb.onchange = async () => {
+  const id = cb.dataset.id;
+
+  await updateData(`sessions/${sessionId}/students/${id}`, {
+    joined: cb.checked,
+    lastSeen: Date.now()
+  });
+
+  // 🔥 update footer ngay
+  const session = await readData(`sessions/${sessionId}`);
+  if (!session) return;
+
+  const students = Object.values(session.students || {});
+  const total = students.length;
+  const joined = students.filter(s => s.joined).length;
+
+  renderFooter({
+    className: session.className,
+    startTime: session.startTime,
+    total,
+    joined,
+    absent: total - joined,
+    absentList: students.filter(s => !s.joined).map(s => s.name)
+  });
+};
+  });
+}
+
+
+
+/* =========================
+  QR CODE (CHO OFFLINE)
+========================= */
+function generateQRCode(sessionId) {
+
+  let box = document.getElementById("qrBox");
+
+  if (!box) {
+    box = document.createElement("div");
+    box.id = "qrBox";
+    box.style.marginTop = "10px";
+
+    document.body.appendChild(box);
   }
 
+  const url = `${location.origin}/student.html?session=${sessionId}`;
+
+  box.innerHTML = `
+    <p>📱 Quét QR để vào lớp:</p>
+    <div id="qrCanvas"></div>
+  `;
+
+  new QRCode(document.getElementById("qrCanvas"), {
+    text: url,
+    width: 120,
+    height: 120
+  });
+}
+
+
+window.addEventListener("load", () => {
+  offlineStarted = false;
 });
 
 
 window.addEventListener("load", () => {
-  console.log("🧹 Reset session UI");
+//  console.log("🧹 Reset session UI");
 
   // ❌ KHÔNG auto load session nữa
   localStorage.removeItem("currentSessionId");
@@ -242,3 +397,31 @@ window.addEventListener("load", () => {
   if (box) box.remove();
 });
 
+
+window.addEventListener("load", async () => {
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const sessionId = urlParams.get("session");
+
+  if (!sessionId) return;
+
+  const student = JSON.parse(localStorage.getItem("studentLogin"));
+  if (!student?.id) return;
+
+  // 🔥 join trực tiếp bằng sessionId
+  await updateData(`sessions/${sessionId}/students/${student.id}`, {
+    joined: true,
+    joinTime: Date.now(),
+    lastSeen: Date.now()
+  });
+
+  alert("✅ Đã vào lớp (QR)");
+
+  // 🔥 heartbeat
+  setInterval(() => {
+    updateData(`sessions/${sessionId}/students/${student.id}`, {
+      lastSeen: Date.now()
+    });
+  }, 15000);
+
+});

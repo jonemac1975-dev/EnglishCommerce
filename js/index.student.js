@@ -78,7 +78,7 @@ try {
   localStorage.setItem("studentLogin", JSON.stringify(updatedLogin));
 
 } catch (err) {
-  console.error("Lỗi load profile:", err);
+//  console.error("Lỗi load profile:", err);
 
   // fallback nếu lỗi Firebase
   if (avatarBox) {
@@ -149,7 +149,12 @@ const studentModeRadios = document.getElementsByName("student_mode");
 
 // ===== HELPER =====
 function getStudentMode() {
-  return Array.from(studentModeRadios).find(r => r.checked)?.value;
+  const val = Array.from(studentModeRadios).find(r => r.checked)?.value;
+
+  // 🔥 map về chuẩn hệ thống
+  if (val === "truc_tiep") return "offline";
+
+  return val; // online
 }
 
 // ===== HIỂN THỊ LINK =====
@@ -157,11 +162,15 @@ async function updateStudentLinks() {
   studentLinksDiv.innerHTML = "";
 
   // chỉ hiện khi Online + đã chọn GV + lớp
-  if (getStudentMode() !== "online" || !teacherSelect.value || !lopSelect.value) {
-    studentLinksDiv.style.display = "none";
-    return;
-  }
-
+  if (getStudentMode() !== "online") {
+  studentLinksDiv.style.display = "block";
+  studentLinksDiv.innerHTML = `
+    <div style="color:#555; font-style:italic;">
+      📱 Vui lòng quét QR hoặc nhập mã lớp từ giáo viên
+    </div>
+  `;
+  return;
+}
   studentLinksDiv.style.display = "block";
 
   // lấy danh sách link từ Firebase
@@ -202,14 +211,27 @@ async function updateStudentLinks() {
 
   btn.addEventListener("click", async () => {
 
+  const mode = getStudentMode();
   const classId = lopSelect.value;
 
-  await window.joinSession(classId);
+  if (!classId) {
+    alert("❌ Chưa chọn lớp");
+    return;
+  }
 
-  // 🔥 delay nhỏ (CỰC QUAN TRỌNG)
-  await new Promise(r => setTimeout(r, 300));
+  // 🔥 1. join session
+  const ok = await window.joinSession(classId);
 
-  window.open(l.made, "_blank");
+  if (!ok) {
+    alert("❌ Chưa có lớp đang học");
+    return;
+  }
+
+  // 🔥 2. nếu ONLINE → mở link
+  if (mode === "online") {
+    window.open(l.made, "_blank");
+  }
+
 });
 
   studentLinksDiv.appendChild(btn);
@@ -435,9 +457,10 @@ document.addEventListener("click", async function (e) {
   if (!el) return;
 
   const id = el.dataset.id;
-  const className = GLOBAL_CLASS_MAP[id]?.name || "";
+  const classMap = await readData("config/danh_muc/lop");
+const className = classMap?.[id]?.name || "Lớp";
 
-  console.log("🔥 CLICK CLASS:", id, className);
+//  console.log("🔥 CLICK CLASS:", id, className);
 
   // 🔥 CHỐNG GỌI LẠI NHIỀU LẦN
   if (window._startingSession) return;
@@ -445,9 +468,9 @@ document.addEventListener("click", async function (e) {
 
   if (typeof window.startSession === "function") {
     await window.startSession(id, className);
-    console.log("✅ SESSION ĐÃ TẠO");
+//    console.log("✅ SESSION ĐÃ TẠO");
   } else {
-    console.log("❌ KHÔNG TÌM THẤY startSession");
+//    console.log("❌ KHÔNG TÌM THẤY startSession");
   }
 
   // reset flag sau 1s

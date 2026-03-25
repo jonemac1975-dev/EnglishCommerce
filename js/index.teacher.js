@@ -2,6 +2,7 @@ import { readData } from "../scripts/services/firebaseService.js";
 
 
 let GLOBAL_CLASS_MAP = {};
+let offlineStarted = false;
 
 
 function convertDriveToPreview(url) {
@@ -27,7 +28,7 @@ async function initTeacherSidebar() {
   // ===== LOAD CLASS MAP =====
   const config = await readData("config");
   GLOBAL_CLASS_MAP = config?.danh_muc?.lop || {};
-  console.log("CLASS MAP:", GLOBAL_CLASS_MAP);
+//  console.log("CLASS MAP:", GLOBAL_CLASS_MAP);
 
   // ===== MENU BÀI GIẢNG =====
   const menuBaigiang = document.getElementById("gv-baigiang");
@@ -49,7 +50,17 @@ async function initTeacherSidebar() {
   menuKiemtra.querySelector(".menu-title").onclick = () => {
     loadClassList(teacherData.kiemtra || {}, "kiemtra");
   };
+
+
+// ===== MENU VĂN BẢN =====
+  const menuVanban = document.getElementById("gv-vanban");
+  menuVanban.innerHTML = `<li class="menu-title">Văn bản - Hội thảo</li>`;
+  menuVanban.querySelector(".menu-title").onclick = () => {
+  loadVanbanList(teacherData.vanban || {});
+};
 }
+
+
 
 
 // ================= TEACHER ONLINE/TRỰC TIẾP =================
@@ -135,20 +146,44 @@ teacherLop.addEventListener("change", async () => {
 
   linkBtn.addEventListener("click", async () => {
 
-  const classId = l.lop;
-  const className = GLOBAL_CLASS_MAP[classId]?.name || "Lớp";
+  const mode = document.querySelector('input[name="teacher_mode"]:checked')?.value;
+  const selectedClass = teacherLop.value;
 
-  console.log("🚀 Vào dạy:", classId, className);
-
-  // 🔥 1. START SESSION
-  if (window.startSession) {
-    await window.startSession(classId, className);
-  } else {
-    console.error("❌ Không tìm thấy startSession");
+  // ❌ chưa chọn mode
+  if (!mode) {
+    alert("❌ Chọn Online hoặc Offline");
+    return;
   }
 
-  // 🔥 2. MỞ LINK
-  window.open(l.made, "_blank");
+  // ❌ chưa chọn lớp
+  if (!selectedClass) {
+    alert("❌ Chưa chọn lớp");
+    return;
+  }
+
+  // ❌ link không đúng lớp
+  if (l.lop !== selectedClass) {
+    alert("❌ Link không đúng lớp đã chọn");
+    return;
+  }
+
+  const className = GLOBAL_CLASS_MAP[selectedClass]?.name || "Lớp";
+
+//  console.log("🚀 Vào dạy:", selectedClass, className, mode);
+
+  // 🔥 START SESSION (có mode)
+  if (window.startSession) {
+    await window.startSession(selectedClass, className, mode);
+  } else {
+//    console.error("❌ Không tìm thấy startSession");
+    return;
+  }
+
+  // 🔥 chỉ mở link nếu ONLINE
+  if (mode === "online") {
+    window.open(l.made, "_blank");
+  }
+
 });
 
   teacherLinks.appendChild(linkBtn);
@@ -170,14 +205,14 @@ function loadMenu(elementId, data, type, classMap = {}) {
   if (type === "baigiang") li.textContent = "📚 Bài giảng";
   if (type === "baitap") li.textContent = "📝 Bài tập";
   if (type === "kiemtra") li.textContent = "🧪 Kiểm tra";
-
+  if (type === "vanban") li.textContent = "📚 Văn bản - Hội thảo";
   li.onclick = () => {
   loadClassList(data, GLOBAL_CLASS_MAP, type);
 };
 
   ul.appendChild(li);
 }
-/* ================= LOAD BÀI GIẢNG / BÀI TẬP /VĂN BẢN================= */
+/* ================= LOAD BÀI GIẢNG / BÀI TẬP================= */
 
 function loadLesson(item) {
 
@@ -185,7 +220,7 @@ function loadLesson(item) {
   const mediaBox = document.getElementById("teacherMedia");
   const playerBox = document.getElementById("teacherPlayer");
 
-  console.log("LOAD LESSON:", item);
+//  console.log("LOAD LESSON:", item);
 
   // Ẩn grid nếu có
   const grid = document.getElementById("mainGrid");
@@ -264,6 +299,8 @@ if (item.media && mediaBox) {
 
 }
 }
+
+
 /* ================= LOAD KIỂM TRA ================= */
 
 function loadExam(item) {
@@ -335,8 +372,43 @@ document.addEventListener("click", function(e){
 
 });
 
+/* ================= VĂN BẢN ================= */
+function loadVanbanList(data) {
+  const main = document.getElementById("main");
 
+  const list = Object.values(data || {});
 
+  if (!list.length) {
+    main.innerHTML = "<p>Không có văn bản</p>";
+    return;
+  }
+
+  let html = `
+    <h3>📚 Văn bản - Hội thảo</h3>
+    <ul>
+  `;
+
+  list.forEach((item, index) => {
+    html += `
+      <li class="vanban-item" data-index="${index}">
+        📄 ${item.title || item.tieude || "Không tên"}
+      </li>
+    `;
+  });
+
+  html += "</ul>";
+  main.innerHTML = html;
+
+  // click item
+  document.querySelectorAll(".vanban-item").forEach(el => {
+    el.onclick = () => {
+      const index = Number(el.dataset.index);
+      const item = list[index];
+
+      loadLesson(item); // dùng lại luôn
+    };
+  });
+}
 
 function loadClassList(data, type) {
   const main = document.getElementById("main");
@@ -346,10 +418,10 @@ function loadClassList(data, type) {
     // ===== Lấy ID lớp theo type =====
     let classId = "";
     if (type === "baigiang" || type === "baitap") {
-      classId = (item.classId || "").trim();
-    } else if (type === "kiemtra") {
-      classId = (item.lop || "").trim();
-    }
+  classId = (item.classId || "").trim();
+} else if (type === "kiemtra" || type === "vanban") {
+  classId = (item.lop || "").trim();
+}
 
     if (!classId) return; // bỏ nếu không có ID
 
@@ -358,7 +430,8 @@ function loadClassList(data, type) {
   });
 
   // ===== Render danh sách lớp =====
-  let html = "<h3>Danh sách lớp</h3><ul>";
+  let html = 
+"<h3>Danh sách lớp</h3><ul>";
   Object.entries(group).forEach(([id, list]) => {
     const className = GLOBAL_CLASS_MAP[id]?.name || "❌ Không tìm thấy";
     html += `<li class="class-item" data-id="${id}">📚 ${className} (${list.length})</li>`;
@@ -373,10 +446,25 @@ function loadClassList(data, type) {
   const id = el.dataset.id;
   const className = GLOBAL_CLASS_MAP[id]?.name || "";
 
-  // 🔥 START SESSION
-  if (window.startSession) {
-    await window.startSession(id, className);
+  const mode = document.querySelector('input[name="teacher_mode"]:checked')?.value;
+
+  if (!mode) {
+    alert("❌ Chọn Online hoặc Offline");
+    return;
   }
+
+  // 🔥 OFFLINE → start tại đây
+  if (mode === "truc_tiep") {
+
+  if (!offlineStarted) {
+    offlineStarted = true;
+
+    await window.startSession(id, className, "offline");
+
+    alert("📢 Bắt đầu điểm danh");
+  }
+
+}
 
   const items = group[id] || [];
   if (!items.length) {
@@ -431,8 +519,12 @@ function loadItemList(list, className, type) {
         return;
       }
 
-      if (type === "baigiang" || type === "baitap") loadLesson(item);
-      if (type === "kiemtra") loadExam(item);
+      if (type === "baigiang" || type === "baitap" || type === "vanban") {
+  loadLesson(item);
+}
+if (type === "kiemtra") {
+  loadExam(item);
+}
     };
   });
 }
