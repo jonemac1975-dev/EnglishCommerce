@@ -1527,3 +1527,16 @@ body {
 }
 
 
+
+/*=====Link CĐTM=======*/
+
+  a.school-link {
+    color: #ffd700;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  a.school-link:hover {
+    text-decoration: underline;
+    color: #ffd700;
+  }
