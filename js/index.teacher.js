@@ -1,10 +1,69 @@
 import { readData } from "../scripts/services/firebaseService.js";
-
+import { loadTeacherHeaderTheme } from "./index.head.dynamic.js";
 
 let GLOBAL_CLASS_MAP = {};
 let offlineStarted = false;
+let MAIN_HISTORY = [];
+let MAIN_HOME_HTML = "";
+
+/* ================= HISTORY ================= */
+function pushView(renderFn) {
+  MAIN_HISTORY.push(renderFn);
+}
+
+function goBack() {
+  // 🔥 nếu đã quay về hết thì reload lại trang cho sạch
+  if (MAIN_HISTORY.length <= 1) {
+    location.reload();
+    return;
+  }
+
+  MAIN_HISTORY.pop(); // bỏ view hiện tại
+  const prev = MAIN_HISTORY[MAIN_HISTORY.length - 1];
+  if (typeof prev === "function") prev();
+}
 
 
+
+function renderMainWithBack(content, showBack = true) {
+  const main = document.getElementById("main");
+  if (!main) return;
+
+  const grid = document.getElementById("mainGrid");
+  if (grid) grid.style.display = "none";
+
+  main.innerHTML = `
+    ${showBack ? `<button id="globalBackBtn" class="back-btn">⬅ Quay lại</button>` : ""}
+    ${content}
+  `;
+
+  if (showBack) {
+    const backBtn = document.getElementById("globalBackBtn");
+    if (backBtn) backBtn.onclick = goBack;
+  }
+}
+
+function showHomeView() {
+  const main = document.getElementById("main");
+  const grid = document.getElementById("mainGrid");
+  const mediaBox = document.getElementById("teacherMedia");
+  const playerBox = document.getElementById("teacherPlayer");
+
+  if (grid) grid.style.display = "grid";
+
+  // 🔥 khôi phục lại giao diện ban đầu của main
+  if (main) {
+    main.innerHTML = MAIN_HOME_HTML || "";
+  }
+
+  // ẩn media/player
+  if (mediaBox) mediaBox.style.display = "none";
+  if (playerBox) playerBox.innerHTML = "";
+
+  MAIN_HISTORY = [];
+}
+
+/* ================= DRIVE PREVIEW ================= */
 function convertDriveToPreview(url) {
   if (!url) return "";
 
@@ -17,23 +76,30 @@ function convertDriveToPreview(url) {
 }
 
 
+
+/* ================= INIT SIDEBAR ================= */
 async function initTeacherSidebar() {
+  const main = document.getElementById("main");
+  if (main && !MAIN_HOME_HTML) {
+    MAIN_HOME_HTML = main.innerHTML;
+  }
+
   const teacherId = localStorage.getItem("teacher_id");
   if (!teacherId) return;
 
-  // ===== LOAD TEACHER DATA =====
+  await loadTeacherHeaderTheme(); // 🔥 đổi head theo giáo viên
+
   const teacherData = await readData("teacher/" + teacherId);
   if (!teacherData) return;
 
-  // ===== LOAD CLASS MAP =====
   const config = await readData("config");
   GLOBAL_CLASS_MAP = config?.danh_muc?.lop || {};
-//  console.log("CLASS MAP:", GLOBAL_CLASS_MAP);
 
   // ===== MENU BÀI GIẢNG =====
   const menuBaigiang = document.getElementById("gv-baigiang");
   menuBaigiang.innerHTML = `<li class="menu-title">Bài giảng</li>`;
   menuBaigiang.querySelector(".menu-title").onclick = () => {
+    MAIN_HISTORY = [];
     loadClassList(teacherData.baigiang || {}, "baigiang");
   };
 
@@ -41,6 +107,7 @@ async function initTeacherSidebar() {
   const menuBaitap = document.getElementById("gv-baitap");
   menuBaitap.innerHTML = `<li class="menu-title">Bài tập</li>`;
   menuBaitap.querySelector(".menu-title").onclick = () => {
+    MAIN_HISTORY = [];
     loadClassList(teacherData.baitap || {}, "baitap");
   };
 
@@ -48,22 +115,20 @@ async function initTeacherSidebar() {
   const menuKiemtra = document.getElementById("gv-kiemtra");
   menuKiemtra.innerHTML = `<li class="menu-title">Bài kiểm tra</li>`;
   menuKiemtra.querySelector(".menu-title").onclick = () => {
+    MAIN_HISTORY = [];
     loadClassList(teacherData.kiemtra || {}, "kiemtra");
   };
 
-
-// ===== MENU VĂN BẢN =====
+  // ===== MENU VĂN BẢN =====
   const menuVanban = document.getElementById("gv-vanban");
   menuVanban.innerHTML = `<li class="menu-title">Văn bản - Hội thảo</li>`;
   menuVanban.querySelector(".menu-title").onclick = () => {
-  loadVanbanList(teacherData.vanban || {});
-};
+    MAIN_HISTORY = [];
+    loadVanbanList(teacherData.vanban || {});
+  };
 }
 
-
-
-
-// ================= TEACHER ONLINE/TRỰC TIẾP =================
+/* ================= TEACHER ONLINE/TRỰC TIẾP ================= */
 const teacherModeRadios = document.getElementsByName("teacher_mode");
 const teacherLop = document.getElementById("teacherLop");
 const teacherLinks = document.getElementById("teacherLinks");
@@ -81,7 +146,7 @@ teacherModeRadios.forEach(radio => {
   });
 });
 
-// ================= LOAD DROPDOWN LỚP =================
+/* ================= LOAD DROPDOWN LỚP ================= */
 async function loadTeacherLopDropdown() {
   const config = await readData("config/danh_muc/lop");
   if (!config) return;
@@ -95,7 +160,7 @@ async function loadTeacherLopDropdown() {
   });
 }
 
-// ================= CHỌN LỚP =================
+/* ================= CHỌN LỚP ================= */
 teacherLop.addEventListener("change", async () => {
   const lopId = teacherLop.value;
   if (!lopId) return;
@@ -106,7 +171,6 @@ teacherLop.addEventListener("change", async () => {
 
   teacherLinks.innerHTML = "";
 
-  // lọc các link của lớp này
   const lopLinks = Object.values(list).filter(l => l.lop === lopId);
 
   if (lopLinks.length === 0) {
@@ -118,206 +182,148 @@ teacherLop.addEventListener("change", async () => {
     return;
   }
 
-  // tạo nút [Vào dạy] cho từng link
   lopLinks.forEach(l => {
-  const linkBtn = document.createElement("button");
+    const linkBtn = document.createElement("button");
 
-  linkBtn.textContent = "Vào dạy";
-  linkBtn.classList.add("btn-vao-day");
+    linkBtn.textContent = "Vào dạy";
+    linkBtn.classList.add("btn-vao-day");
 
-  // 👉 STYLE TRỰC TIẾP
-  linkBtn.style.background = "#ffa94d";
-  linkBtn.style.color = "#fff";
-  linkBtn.style.padding = "4px 4px";
-  linkBtn.style.borderRadius = "4px";
-  linkBtn.style.border = "none";
-  linkBtn.style.cursor = "pointer";
-  linkBtn.style.margin = "4px 4px 4px 0";
-  linkBtn.style.display = "inline-block";
-
-  // hover (JS version 😎)
-  linkBtn.addEventListener("mouseover", () => {
-    linkBtn.style.background = "#ff922b";
-  });
-
-  linkBtn.addEventListener("mouseout", () => {
     linkBtn.style.background = "#ffa94d";
+    linkBtn.style.color = "#fff";
+    linkBtn.style.padding = "4px 4px";
+    linkBtn.style.borderRadius = "4px";
+    linkBtn.style.border = "none";
+    linkBtn.style.cursor = "pointer";
+    linkBtn.style.margin = "4px 4px 4px 0";
+    linkBtn.style.display = "inline-block";
+
+    linkBtn.addEventListener("mouseover", () => {
+      linkBtn.style.background = "#ff922b";
+    });
+
+    linkBtn.addEventListener("mouseout", () => {
+      linkBtn.style.background = "#ffa94d";
+    });
+
+    linkBtn.addEventListener("click", async () => {
+      const mode = document.querySelector('input[name="teacher_mode"]:checked')?.value;
+      const selectedClass = teacherLop.value;
+
+      if (!mode) {
+        alert("❌ Chọn Online hoặc Offline");
+        return;
+      }
+
+      if (!selectedClass) {
+        alert("❌ Chưa chọn lớp");
+        return;
+      }
+
+      if (l.lop !== selectedClass) {
+        alert("❌ Link không đúng lớp đã chọn");
+        return;
+      }
+
+      const className = GLOBAL_CLASS_MAP[selectedClass]?.name || "Lớp";
+
+      if (window.startSession) {
+        await window.startSession(selectedClass, className, mode);
+      } else {
+        return;
+      }
+
+      if (mode === "online") {
+        window.open(l.made, "_blank");
+      }
+    });
+
+    teacherLinks.appendChild(linkBtn);
   });
-
-  linkBtn.addEventListener("click", async () => {
-
-  const mode = document.querySelector('input[name="teacher_mode"]:checked')?.value;
-  const selectedClass = teacherLop.value;
-
-  // ❌ chưa chọn mode
-  if (!mode) {
-    alert("❌ Chọn Online hoặc Offline");
-    return;
-  }
-
-  // ❌ chưa chọn lớp
-  if (!selectedClass) {
-    alert("❌ Chưa chọn lớp");
-    return;
-  }
-
-  // ❌ link không đúng lớp
-  if (l.lop !== selectedClass) {
-    alert("❌ Link không đúng lớp đã chọn");
-    return;
-  }
-
-  const className = GLOBAL_CLASS_MAP[selectedClass]?.name || "Lớp";
-
-//  console.log("🚀 Vào dạy:", selectedClass, className, mode);
-
-  // 🔥 START SESSION (có mode)
-  if (window.startSession) {
-    await window.startSession(selectedClass, className, mode);
-  } else {
-//    console.error("❌ Không tìm thấy startSession");
-    return;
-  }
-
-  // 🔥 chỉ mở link nếu ONLINE
-  if (mode === "online") {
-    window.open(l.made, "_blank");
-  }
-
 });
 
-  teacherLinks.appendChild(linkBtn);
-});
-});
-
-
-
-function loadMenu(elementId, data, type, classMap = {}) {
-
-  const ul = document.getElementById(elementId);
-  if (!ul || !data) return;
-
-  ul.innerHTML = "";
-
-  const li = document.createElement("li");
-
-  // 👉 đổi tên theo loại
-  if (type === "baigiang") li.textContent = "📚 Bài giảng";
-  if (type === "baitap") li.textContent = "📝 Bài tập";
-  if (type === "kiemtra") li.textContent = "🧪 Kiểm tra";
-  if (type === "vanban") li.textContent = "📚 Văn bản - Hội thảo";
-  li.onclick = () => {
-  loadClassList(data, GLOBAL_CLASS_MAP, type);
-};
-
-  ul.appendChild(li);
-}
-/* ================= LOAD BÀI GIẢNG / BÀI TẬP================= */
-
+/* ================= LOAD BÀI GIẢNG / BÀI TẬP ================= */
 function loadLesson(item) {
-
-  const main = document.getElementById("main");
   const mediaBox = document.getElementById("teacherMedia");
   const playerBox = document.getElementById("teacherPlayer");
 
-//  console.log("LOAD LESSON:", item);
-
-  // Ẩn grid nếu có
-  const grid = document.getElementById("mainGrid");
-  if (grid) grid.style.display = "none";
-
-  // ===== LOAD HTML =====
   let content = "";
 
-if (item.content_html) {
-
-  // Nếu là link (http)
-  if (item.content_html.startsWith("http")) {
-
-    content = `
-      <iframe 
-  src="${item.content_html}" 
-  width="100%" 
-  height="600"
-  style="border:none;"
-  allowfullscreen
-  webkitallowfullscreen
-  mozallowfullscreen
-  allow="fullscreen">
-</iframe>
-    `;
-
+  if (item.content_html) {
+    if (item.content_html.startsWith("http")) {
+      content = `
+        <iframe 
+          src="${item.content_html}" 
+          width="100%" 
+          height="600"
+          style="border:none;"
+          allowfullscreen
+          webkitallowfullscreen
+          mozallowfullscreen
+          allow="fullscreen">
+        </iframe>
+      `;
+    } else {
+      content = item.content_html;
+    }
   } else {
-    // Nếu là HTML thật
-    content = item.content_html;
+    content = "<p>Không có nội dung</p>";
   }
 
-} else {
-  content = "<p>Không có nội dung</p>";
-}
-
-main.innerHTML = `
-  <div class="lesson-content">
-    ${content}
-  </div>
-`;
+  renderMainWithBack(`
+    <div class="lesson-content">
+      <h3>${item.title || item.tieude || "Nội dung"}</h3>
+      ${content}
+    </div>
+  `);
 
   // ===== LOAD MEDIA =====
-if (item.media && mediaBox) {
+  if (item.media && mediaBox) {
+    mediaBox.style.display = "flex";
+    mediaBox.style.flexDirection = "column";
 
-  mediaBox.style.display = "flex";
-  mediaBox.style.flexDirection = "column";
+    const mp3  = document.getElementById("gvMp3");
+    const mp32 = document.getElementById("gvMp32");
+    const mp4  = document.getElementById("gvMp4");
+    const yt   = document.getElementById("gvYoutube");
 
-  const mp3  = document.getElementById("gvMp3");
-  const mp32 = document.getElementById("gvMp32");
-  const mp4  = document.getElementById("gvMp4");
-  const yt   = document.getElementById("gvYoutube");
+    function renderMedia(el, icon, label, url) {
+      if (!el) return;
 
-  // helper render item
-  function renderMedia(el, icon, label, url) {
-    if (!el) return;
+      el.dataset.url = url || "";
+      el.innerHTML = `
+        <div class="media-item">
+          <span class="media-icon">${icon}</span>
+          <span class="media-title">${label} - ${item.title || ""}</span>
+        </div>
+      `;
+    }
 
-    el.dataset.url = url || "";
-
-    el.innerHTML = `
-      <div class="media-item">
-        <span class="media-icon">${icon}</span>
-        <span class="media-title">${label} - ${item.title || ""}</span>
-      </div>
-    `;
+    renderMedia(mp3,  "🎧", "MP3", item.media.mp3);
+    renderMedia(mp32, "🎧", "MP32", item.media.mp32);
+    renderMedia(mp4,  "🎬", "MP4", item.media.mp4);
+    renderMedia(yt,   "▶️", "YouTube", item.media.youtube);
+  } else {
+    if (mediaBox) mediaBox.style.display = "none";
+    if (playerBox) playerBox.innerHTML = "";
   }
-
-  renderMedia(mp3,  "🎧", "MP3", item.media.mp3);
-  renderMedia(mp32, "🎧", "MP32", item.media.mp32);
-  renderMedia(mp4,  "🎬", "MP4", item.media.mp4);
-  renderMedia(yt,   "▶️", "YouTube", item.media.youtube);
-
-} else {
-
-  if (mediaBox) mediaBox.style.display = "none";
-  if (playerBox) playerBox.innerHTML = "";
-
 }
-}
-
 
 /* ================= LOAD KIỂM TRA ================= */
-
 function loadExam(item) {
-
-  const main = document.getElementById("main");
-
-  const grid = document.getElementById("mainGrid");
-  if (grid) grid.style.display = "none";
-
-  main.innerHTML = item.noidung || "";
+  renderMainWithBack(`
+    <div class="exam-content">
+      <h3>${item.title || item.tieude || "Bài kiểm tra"}</h3>
+      ${item.noidung || "<p>Không có nội dung</p>"}
+    </div>
+  `);
 }
 
 initTeacherSidebar();
+loadTeacherHeaderTheme();
+window.loadTeacherHeaderTheme = loadTeacherHeaderTheme;
 
-
-document.addEventListener("click", function(e){
-
+/* ================= MEDIA CLICK ================= */
+document.addEventListener("click", function(e) {
   const parent = e.target.closest("#gvMp3, #gvMp32, #gvMp4, #gvYoutube");
   if (!parent) return;
 
@@ -327,15 +333,12 @@ document.addEventListener("click", function(e){
 
   const box = document.getElementById("teacherPlayer");
 
-  // ===== ACTIVE UI =====
   document.querySelectorAll(".media-item")
     .forEach(el => el.classList.remove("active"));
 
   parent.querySelector(".media-item")?.classList.add("active");
 
-  /* ================= YOUTUBE ================= */
   if (id === "gvYoutube") {
-
     const videoId = rawUrl.split("v=")[1]?.split("&")[0];
 
     box.innerHTML = `
@@ -345,186 +348,165 @@ document.addEventListener("click", function(e){
         allowfullscreen>
       </iframe>
     `;
-
-  }
-
-  /* ================= MP4 ================= */
-  else if (id === "gvMp4") {
-
+  } else if (id === "gvMp4") {
     const previewUrl = convertDriveToPreview(rawUrl);
-
     box.innerHTML = `
       <iframe src="${previewUrl}" width="100%" height="150" allow="autoplay"></iframe>
     `;
-
-  }
-
-  /* ================= MP3 + MP32 ================= */
-  else if (id === "gvMp3" || id === "gvMp32") {
-
+  } else if (id === "gvMp3" || id === "gvMp32") {
     const previewUrl = convertDriveToPreview(rawUrl);
-
     box.innerHTML = `
       <iframe src="${previewUrl}" width="100%" height="80" allow="autoplay"></iframe>
     `;
-
   }
-
 });
 
 /* ================= VĂN BẢN ================= */
 function loadVanbanList(data) {
-  const main = document.getElementById("main");
-
   const list = Object.values(data || {});
 
-  if (!list.length) {
-    main.innerHTML = "<p>Không có văn bản</p>";
-    return;
-  }
+  const render = () => {
+    if (!list.length) {
+      renderMainWithBack("<p>Không có văn bản</p>");
+      return;
+    }
 
-  let html = `
-    <h3>📚 Văn bản - Hội thảo</h3>
-    <ul>
-  `;
-
-  list.forEach((item, index) => {
-    html += `
-      <li class="vanban-item" data-index="${index}">
-        📄 ${item.title || item.tieude || "Không tên"}
-      </li>
+    let html = `
+      <h3>📚 Văn bản - Hội thảo</h3>
+      <ul>
     `;
-  });
 
-  html += "</ul>";
-  main.innerHTML = html;
+    list.forEach((item, index) => {
+      html += `
+        <li class="vanban-item" data-index="${index}">
+          📄 ${item.title || item.tieude || "Không tên"}
+        </li>
+      `;
+    });
 
-  // click item
-  document.querySelectorAll(".vanban-item").forEach(el => {
-    el.onclick = () => {
-      const index = Number(el.dataset.index);
-      const item = list[index];
+    html += "</ul>";
+    renderMainWithBack(html);
 
-      loadLesson(item); // dùng lại luôn
-    };
-  });
+    document.querySelectorAll(".vanban-item").forEach(el => {
+      el.onclick = () => {
+        const index = Number(el.dataset.index);
+        const item = list[index];
+
+        pushView(render);
+        loadLesson(item);
+      };
+    });
+  };
+
+  pushView(render);
+  render();
 }
 
+/* ================= LOAD DANH SÁCH LỚP ================= */
 function loadClassList(data, type) {
-  const main = document.getElementById("main");
   const group = {};
 
   Object.values(data).forEach(item => {
-    // ===== Lấy ID lớp theo type =====
     let classId = "";
     if (type === "baigiang" || type === "baitap") {
-  classId = (item.classId || "").trim();
-} else if (type === "kiemtra" || type === "vanban") {
-  classId = (item.lop || "").trim();
-}
+      classId = (item.classId || "").trim();
+    } else if (type === "kiemtra" || type === "vanban") {
+      classId = (item.lop || "").trim();
+    }
 
-    if (!classId) return; // bỏ nếu không có ID
+    if (!classId) return;
 
     if (!group[classId]) group[classId] = [];
     group[classId].push(item);
   });
 
-  // ===== Render danh sách lớp =====
-  let html = 
-"<h3>Danh sách lớp</h3><ul>";
-  Object.entries(group).forEach(([id, list]) => {
-    const className = GLOBAL_CLASS_MAP[id]?.name || "❌ Không tìm thấy";
-    html += `<li class="class-item" data-id="${id}">📚 ${className} (${list.length})</li>`;
-  });
-  html += "</ul>";
-  main.innerHTML = html;
+  const render = () => {
+    let html = `<h3>Danh sách lớp</h3><ul>`;
 
-  // ===== Click lớp =====
-  document.querySelectorAll(".class-item").forEach(el => {
-    el.onclick = async () => {
+    Object.entries(group).forEach(([id, list]) => {
+      const className = GLOBAL_CLASS_MAP[id]?.name || "❌ Không tìm thấy";
+      html += `<li class="class-item" data-id="${id}">📚 ${className} (${list.length})</li>`;
+    });
 
-  const id = el.dataset.id;
-  const className = GLOBAL_CLASS_MAP[id]?.name || "";
+    html += "</ul>";
+    renderMainWithBack(html);
 
-  const mode = document.querySelector('input[name="teacher_mode"]:checked')?.value;
+    document.querySelectorAll(".class-item").forEach(el => {
+      el.onclick = async () => {
+        const id = el.dataset.id;
+        const className = GLOBAL_CLASS_MAP[id]?.name || "";
+        const mode = document.querySelector('input[name="teacher_mode"]:checked')?.value;
 
-  if (!mode) {
-    alert("❌ Chọn Online hoặc Offline");
-    return;
-  }
+        if (!mode) {
+          alert("❌ Chọn Online hoặc Offline");
+          return;
+        }
 
-  // 🔥 OFFLINE → start tại đây
-  if (mode === "truc_tiep") {
+        if (mode === "truc_tiep") {
+          if (!offlineStarted) {
+            offlineStarted = true;
+            await window.startSession(id, className, "offline");
+            alert("📢 Bắt đầu điểm danh");
+          }
+        }
 
-  if (!offlineStarted) {
-    offlineStarted = true;
+        const items = group[id] || [];
+        if (!items.length) {
+          alert("❌ Không có bài nào trong lớp này");
+          return;
+        }
 
-    await window.startSession(id, className, "offline");
-
-    alert("📢 Bắt đầu điểm danh");
-  }
-
-}
-
-  const items = group[id] || [];
-  if (!items.length) {
-    alert("❌ Không có bài nào trong lớp này");
-    return;
-  }
-
-  loadItemList(items, className, type);
-};
-  });
-}
-
-
-function loadItemList(list, className, type) {
-  const main = document.getElementById("main");
-
-  let html = `
-    <button id="backBtn">⬅ Quay lại</button>
-    <h3>${className}</h3>
-    <ul>
-  `;
-
-  list.forEach((item, index) => {
-    html += `
-      <li class="item" data-index="${index}">
-        ▶ ${item.title || item.tieude || "Không tên"}
-      </li>
-    `;
-  });
-
-  html += "</ul>";
-  main.innerHTML = html;
-
-  // ===== BACK BUTTON =====
-  document.getElementById("backBtn").onclick = () => {
-    // quay lại danh sách lớp
-    loadClassList(list.reduce((acc, i) => { 
-      // build lại object gốc để loadClassList nhận
-      acc[i.classId || i.lop || ""] = i; 
-      return acc;
-    }, {}), type);
+        pushView(render);
+        loadItemList(items, className, type, data);
+      };
+    });
   };
 
-  // ===== CLICK ITEM =====
-  document.querySelectorAll(".item").forEach(el => {
-    el.onclick = () => {
-      const index = Number(el.dataset.index);
-      const item = list[index];
-
-      if (!item) {
-        alert("❌ Không tìm thấy bài");
-        return;
-      }
-
-      if (type === "baigiang" || type === "baitap" || type === "vanban") {
-  loadLesson(item);
+  pushView(render);
+  render();
 }
-if (type === "kiemtra") {
-  loadExam(item);
-}
-    };
-  });
+
+/* ================= LOAD DANH SÁCH BÀI ================= */
+function loadItemList(list, className, type) {
+  const render = () => {
+    let html = `
+      <h3>${className}</h3>
+      <ul>
+    `;
+
+    list.forEach((item, index) => {
+      html += `
+        <li class="item" data-index="${index}">
+          ▶ ${item.title || item.tieude || "Không tên"}
+        </li>
+      `;
+    });
+
+    html += "</ul>";
+    renderMainWithBack(html);
+
+    document.querySelectorAll(".item").forEach(el => {
+      el.onclick = () => {
+        const index = Number(el.dataset.index);
+        const item = list[index];
+
+        if (!item) {
+          alert("❌ Không tìm thấy bài");
+          return;
+        }
+
+        pushView(render);
+
+        if (type === "baigiang" || type === "baitap" || type === "vanban") {
+          loadLesson(item);
+        }
+
+        if (type === "kiemtra") {
+          loadExam(item);
+        }
+      };
+    });
+  };
+
+  render();
 }

@@ -20,11 +20,12 @@
   </div>
 
   <!-- CENTER -->
-  <div class="header-center">
-    <h1>CHƯƠNG TRÌNH ĐÀO TẠO CHUYÊN NGÀNH CHẾ BIẾN MÓN ĂN</h1>
-    <h2>Program Editor: Trần Thị Ngọc Dư - Nguyễn Huỳnh Ngọc Thanh</h2>
-    <p>Welcome To College of Commerce</p>
-  </div>
+  <!-- CENTER -->
+<div class="header-center">
+  <h1 id="siteTitle">CHƯƠNG TRÌNH ĐÀO TẠO CHUYÊN NGÀNH CHẾ BIẾN MÓN ĂN</h1>
+  <h2 id="siteTeacher">Program Editor: Trần Thị Ngọc Dư - Nguyễn Huỳnh Ngọc Thanh</h2>
+  <p id="siteSlogan">Welcome To College of Commerce</p>
+</div>
 
   <!-- RIGHT -->
 <div id="langSwitch">
@@ -119,7 +120,10 @@
   <!-- ===== MAIN CENTER ===== -->
 <section id="main">
   <div id="mainBg"></div>
-<div id="mainContent"></div>
+
+  <div id="mainContent"></div>
+
+  
 </section>
 
   <!-- ===== CỘT SINH VIÊN ===== -->
@@ -139,6 +143,9 @@
     <select id="lopSelect">
       <option value="">Chọn lớp</option>
     </select>
+    <select id="monhocSelect">
+      <option value="">Chọn môn</option>
+    </select>
     <div class="menu">
 
 
@@ -157,6 +164,22 @@
 
   <div class="menu-title" onclick="toggleMenu('hv-baitap')">Bài tập</div>
   <ul id="hv-baitap" class="submenu"></ul>
+
+<div class="menu-title" onclick="toggleMenu('hv-duan')">Project</div>
+<ul id="hv-duan" class="submenu"></ul>
+
+<!-- MEDIA PROJECT STUDENT -->
+  <div id="studentMediaBox" class="student-media-box" style="display:none;">
+<b>[Mp3 - Mp4 - Youtube]</b>
+    <div class="student-media-list">
+      <div id="svMp3" class="student-media-btn"></div>
+      <div id="svMp32" class="student-media-btn"></div>
+      <div id="svMp4" class="student-media-btn"></div>
+      <div id="svYoutube" class="student-media-btn"></div>
+    </div>
+
+    <div id="studentPlayer" class="student-player"></div>
+  </div>
 
   <!-- NÚT KIỂM TRA -->
   

@@ -30,10 +30,17 @@ async function loadTab(tab) {
 /* ===== MENU CLICK ===== */
 menuItems.forEach(item => {
   item.onclick = () => {
-    menuItems.forEach(i => i.classList.remove("active"));
-    item.classList.add("active");
-    loadTab(item.dataset.tab);
-  };
+  menuItems.forEach(i => i.classList.remove("active"));
+  item.classList.add("active");
+
+  const parent = item.closest(".menu-children");
+  if (parent) {
+    document.querySelectorAll(".menu-children").forEach(el => el.classList.remove("open"));
+    parent.classList.add("open");
+  }
+
+  loadTab(item.dataset.tab);
+};
 });
 
 /* ===== HEADER ACTION ===== */
@@ -48,6 +55,10 @@ window.openChangePass = () => {
 window.goHome = () => location.href = "../../index.html";
 /* ===== INIT ===== */
 loadTab("giaovienview");
+// mở group đầu tiên
+document.querySelector(".menu-children")?.classList.add("open");
+
+
 
 window.showToast = function(message, type = "info", time = 2500) {
   const toast = document.getElementById("toast");
@@ -65,3 +76,31 @@ window.showToast = function(message, type = "info", time = 2500) {
     toast.classList.remove("show");
   }, time);
 };
+
+
+window.addEventListener("DOMContentLoaded", () => {
+
+  const menuItems = document.querySelectorAll(".menu-item");
+  const groups = document.querySelectorAll(".menu-group");
+  const childrenList = document.querySelectorAll(".menu-children");
+
+  // ===== CLICK GROUP =====
+  groups.forEach(group => {
+    group.onclick = () => {
+
+      const children = group.nextElementSibling;
+      if (!children) return;
+
+      const isOpen = children.classList.contains("open");
+
+      // đóng tất cả
+      childrenList.forEach(c => c.classList.remove("open"));
+
+      // mở lại nếu đang đóng
+      if (!isOpen) {
+        children.classList.add("open");
+      }
+    };
+  });
+
+});

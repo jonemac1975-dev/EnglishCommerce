@@ -6,6 +6,7 @@ import "./avatar-gv.js";
 import "./index.student.js";
 import "./index.teacher.js";
 import "./sessionService.js";
+import { loadTeacherHeaderTheme } from "./index.head.dynamic.js";
 import { initSearch } from "./searchController.js";
 
 /* =========================
@@ -100,8 +101,17 @@ window.resetLandingMode = function () {
   const main = document.getElementById("main");
   if (main) main.classList.remove("working-mode");
 
-  const mediaBox = document.getElementById("teacherMedia");
-  if (mediaBox) mediaBox.style.display = "none";
+  const mainBg = document.getElementById("mainBg");
+  if (mainBg) mainBg.style.display = "block";
+
+  const teacherMedia = document.getElementById("teacherMedia");
+  if (teacherMedia) teacherMedia.style.display = "none";
+
+  const studentMediaBox = document.getElementById("studentMediaBox");
+  if (studentMediaBox) studentMediaBox.style.display = "none";
+
+  const studentPlayer = document.getElementById("studentPlayer");
+  if (studentPlayer) studentPlayer.innerHTML = "";
 
   mainMode = "landing";
 };
@@ -167,15 +177,19 @@ window.openStudentTest = openStudentTest; // ✅ đúng
 window.addEventListener("DOMContentLoaded", () => {
 
   const adminLock = document.getElementById("adminLock");
-  if (!adminLock) return;
+  if (adminLock) {
+    adminLock.addEventListener("click", () => {
+      location.href = "./pages/admin/adminlogin.html";
+    });
+  }
 
-  adminLock.addEventListener("click", () => {
-    location.href = "./pages/admin/adminlogin.html";
+  loadTeacherHeaderTheme(); // 🔥 load head theo giáo viên nếu có
+
+  window.addEventListener("load", () => {
+    document.body.classList.add("ready");
   });
-window.addEventListener("load", () => {
-  document.body.classList.add("ready");
-});
-initSearch();
+
+  initSearch();
 });
 
 /* =========================
@@ -277,4 +291,17 @@ window.switchTab = function(tab) {
     `.search-tabs button[onclick="switchTab('${tab}')"]`
   );
   if (btn) btn.classList.add("active");
+};
+
+/* =========================
+   MAIN BG CONTROL
+========================= */
+window.enterWorkingMode = function () {
+  const main = document.getElementById("main");
+  if (main) main.classList.add("working-mode");
+};
+
+window.exitWorkingMode = function () {
+  const main = document.getElementById("main");
+  if (main) main.classList.remove("working-mode");
 };

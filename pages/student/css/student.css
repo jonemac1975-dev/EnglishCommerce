@@ -1046,3 +1046,499 @@ color: #fff;
   padding: 5px 8px;
   border-radius: 6px;
 }
+
+/=====Dự án========/
+
+/* =========================
+   FORM ĐẸP HƠN
+========================= */
+.form-group input,
+.form-group select {
+  width: 100%;
+  height: 36px;
+  border: 1.5px solid #d7e6f5;
+  border-radius: 14px;
+  padding: 0 14px;
+  font-size: 15px;
+  font-weight: 500;
+  background: linear-gradient(180deg, #ffffff, #f9fcff);
+  color: #17324d;
+  transition: all 0.25s ease;
+  box-sizing: border-box;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.03);
+}
+
+.form-group input:hover,
+.form-group select:hover {
+  border-color: #9ec9f2;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #1d72d8;
+  box-shadow: 0 0 0 4px rgba(29, 114, 216, 0.12);
+  outline: none;
+  background: #fff;
+}
+
+.form-group input::placeholder {
+  color: #8aa2bc;
+}
+
+/* readonly */
+#daId {
+  background: linear-gradient(180deg, #eef5ff, #e7f1ff);
+  color: #0c4e93;
+  font-weight: 700;
+  border: 1.5px solid #c7ddf5;
+}
+
+/* =========================
+   BUTTONS ĐẸP HƠN
+========================= */
+.actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+.actions button,
+.editor-toolbar button {
+  position: relative;
+  overflow: hidden;
+  border: none;
+  border-radius: 14px;
+  padding: 5px 16px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  letter-spacing: 0.2px;
+}
+
+.actions button::before,
+.editor-toolbar button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 120%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+  transition: all 0.5s ease;
+}
+
+.actions button:hover::before,
+.editor-toolbar button:hover::before {
+  left: 120%;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #16a34a, #0f8f3f);
+  color: white;
+  box-shadow: 0 10px 22px rgba(22, 163, 74, 0.22);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 14px 28px rgba(22, 163, 74, 0.28);
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, #f8c100, #e8a600);
+  color: #1f1f1f;
+  box-shadow: 0 10px 22px rgba(248, 193, 0, 0.22);
+}
+
+.btn-secondary:hover {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 14px 28px rgba(248, 193, 0, 0.28);
+}
+
+.editor-toolbar button {
+  background: linear-gradient(135deg, #1976d2, #1258a8);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(25, 118, 210, 0.2);
+}
+
+.editor-toolbar button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(25, 118, 210, 0.28);
+}
+
+/* =========================
+   LABEL ĐẸP HƠN
+========================= */
+.form-group label {
+  font-size: 14px;
+  font-weight: 800;
+  color: #123d69;
+  margin-bottom: 8px;
+  letter-spacing: 0.2px;
+}
+
+/* =========================
+   PREVIEW KHUNG ĐẸP HƠN
+========================= */
+#previewMp3,
+#previewMp32,
+#previewMp4,
+#previewYoutube {
+  margin-top: 10px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #f8fcff, #eef7ff);
+  border: 1px solid #dbeaf8;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.03);
+}
+
+#previewMp3 iframe,
+#previewMp32 iframe,
+#previewMp4 iframe,
+#previewYoutube iframe {
+  width: 50%;
+  border: none;
+  border-radius: 14px;
+  display: block;
+}
+
+#daNoiDung img {
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+  display: block;
+  margin: 16px auto;
+  border-radius: 14px;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease;
+}
+
+#daNoiDung img:hover {
+  transform: scale(1.03);
+}
+
+/* =========================
+   DANH SÁCH DỰ ÁN
+========================= */
+.duan-card h3 {
+  margin: 26px 0 14px;
+  font-size: 22px;
+  font-weight: 900;
+  color: #123d69;
+  letter-spacing: 0.2px;
+  position: relative;
+  padding-left: 14px;
+}
+
+.duan-card h3::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 4px;
+  width: 5px;
+  height: 24px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #1976d2, #0d5eb6);
+}
+
+/* khung bảng */
+.da-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 12px;
+  margin-top: 10px;
+}
+
+/* header */
+.da-table thead th {
+  background: linear-gradient(135deg, #1d72d8, #1258a8);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  padding: 8px 16px;
+  text-align: center;
+  letter-spacing: 0.2px;
+  border: none;
+}
+
+.da-table thead th:first-child {
+  border-top-left-radius: 14px;
+  border-bottom-left-radius: 14px;
+}
+
+.da-table thead th:last-child {
+  border-top-right-radius: 14px;
+  border-bottom-right-radius: 14px;
+}
+
+/* body rows */
+.da-table tbody tr {
+  background: linear-gradient(180deg, #ffffff, #f8fbff);
+  box-shadow: 0 8px 20px rgba(18, 61, 105, 0.08);
+  transition: all 0.22s ease;
+  border-radius: 16px;
+}
+
+.da-table tbody tr:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(18, 61, 105, 0.12);
+}
+
+/* cell */
+.da-table tbody td {
+  padding: 16px 14px;
+  font-size: 15px;
+  color: #17324d;
+  font-weight: 600;
+  text-align: center;
+  vertical-align: middle;
+  border: none;
+}
+
+/* bo góc từng hàng */
+.da-table tbody td:first-child {
+  border-top-left-radius: 16px;
+  border-bottom-left-radius: 16px;
+  font-weight: 800;
+  color: #0d5eb6;
+  width: 70px;
+}
+
+.da-table tbody td:last-child {
+  border-top-right-radius: 16px;
+  border-bottom-right-radius: 16px;
+  width: 140px;
+}
+
+/* cột tên dự án */
+.da-table tbody td:nth-child(2) {
+  text-align: left;
+  font-size: 16px;
+  font-weight: 800;
+  color: #10395f;
+}
+
+/* cột ngày */
+.da-table tbody td:nth-child(3) {
+  color: #4c6f91;
+  font-weight: 700;
+  min-width: 130px;
+}
+
+/* nút xóa */
+.da-table tbody button {
+  border: none;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  background: linear-gradient(135deg, #ef4444, #d92d2d);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(239, 68, 68, 0.22);
+}
+
+.da-table tbody button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(239, 68, 68, 0.3);
+}
+
+/* hàng rỗng nếu chưa có dữ liệu */
+.da-empty {
+  text-align: center;
+  padding: 22px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #f8fbff, #eef6ff);
+  color: #5f7d99;
+  font-weight: 700;
+  margin-top: 12px;
+  border: 1px dashed #c7ddf5;
+}
+
+/* responsive */
+@media (max-width: 768px) {
+  .da-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .da-table thead th,
+  .da-table tbody td {
+    font-size: 14px;
+    padding: 12px 10px;
+  }
+
+  .da-table tbody td:nth-child(2) {
+    min-width: 220px;
+  }
+}
+
+/* =========================
+   EDITOR HTML - NỘI DUNG DỰ ÁN
+========================= */
+#daNoiDung {
+  min-height: 260px;
+  max-height: 420px;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  padding: 16px 18px;
+  border: 2px solid #cfe2f5;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #ffffff, #f8fbff);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.03);
+
+  font-size: 15px;
+  line-height: 1.7;
+  color: #17324d;
+  transition: all 0.25s ease;
+  outline: none;
+  box-sizing: border-box;
+}
+
+/* focus editor */
+#daNoiDung:focus {
+  border-color: #1976d2;
+  box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.12);
+  background: #fff;
+}
+
+/* placeholder giả cho contenteditable */
+#daNoiDung:empty:before {
+  content: "Dán nội dung Word hoặc nhập nội dung dự án tại đây...";
+  color: #8ea8c2;
+  font-style: italic;
+}
+
+/* scroll đẹp */
+#daNoiDung::-webkit-scrollbar {
+  width: 10px;
+}
+
+#daNoiDung::-webkit-scrollbar-track {
+  background: #edf5fc;
+  border-radius: 10px;
+}
+
+#daNoiDung::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #9cc8f2, #5da5e8);
+  border-radius: 10px;
+}
+
+#daNoiDung::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #7bb7ec, #3e94e0);
+}
+
+/* nội dung bên trong editor */
+#daNoiDung p {
+  margin: 10px 0;
+}
+
+
+
+#daNoiDung iframe {
+  width: 100%;
+  border: none;
+  border-radius: 14px;
+  margin: 14px 0;
+}
+
+/* =========================
+   DANH SÁCH DỰ ÁN - THU GỌN 75%
+========================= */
+.da-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 4px; /* trước 12px -> giờ thấp hơn */
+  margin-top: 10px;
+}
+
+/* header nhỏ gọn hơn */
+.da-table thead th {
+  background: linear-gradient(135deg, #1d72d8, #1258a8);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  padding: 10px 14px; /* trước 14px 16px */
+  text-align: center;
+  letter-spacing: 0.2px;
+  border: none;
+}
+
+/* row gọn hơn */
+.da-table tbody tr {
+  background: linear-gradient(180deg, #ffffff, #f8fbff);
+  box-shadow: 0 6px 16px rgba(18, 61, 105, 0.07);
+  transition: all 0.22s ease;
+  border-radius: 14px;
+}
+
+.da-table tbody tr:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(18, 61, 105, 0.11);
+}
+
+/* cell nhỏ gọn hơn */
+.da-table tbody td {
+  padding: 10px 12px;   /* trước 16px 14px */
+  font-size: 14px;      /* trước 15px */
+  color: #17324d;
+  font-weight: 600;
+  text-align: center;
+  vertical-align: middle;
+  border: none;
+  line-height: 1.3;
+}
+
+/* bo góc từng hàng */
+.da-table tbody td:first-child {
+  border-top-left-radius: 14px;
+  border-bottom-left-radius: 14px;
+  font-weight: 800;
+  color: #0d5eb6;
+  width: 58px; /* trước 70px */
+}
+
+.da-table tbody td:last-child {
+  border-top-right-radius: 14px;
+  border-bottom-right-radius: 14px;
+  width: 110px; /* trước 140px */
+}
+
+/* tên dự án */
+.da-table tbody td:nth-child(2) {
+  text-align: left;
+  font-size: 15px;
+  font-weight: 800;
+  color: #10395f;
+  padding-left: 16px;
+}
+
+/* ngày */
+.da-table tbody td:nth-child(3) {
+  color: #4c6f91;
+  font-weight: 700;
+  min-width: 110px;
+}
+
+/* nút xóa nhỏ gọn hơn */
+.da-table tbody button {
+  border: none;
+  border-radius: 10px;
+  padding: 7px 12px; /* trước 10px 14px */
+  font-size: 13px;   /* trước 14px */
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  background: linear-gradient(135deg, #ef4444, #d92d2d);
+  color: #fff;
+  box-shadow: 0 6px 14px rgba(239, 68, 68, 0.18);
+}
+
+.da-table tbody button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 18px rgba(239, 68, 68, 0.25);
+}

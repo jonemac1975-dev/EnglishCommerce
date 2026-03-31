@@ -1,14 +1,16 @@
-<h2>CẤP CHỨNG CHỈ HỌC VIÊN HOÀN THÀNH KHÓA HỌC</h2>
+<h2>CHỨNG NHẬN HOÀN THÀNH DỰ ÁN - THỰC HÀNH SINH VIÊN</h2>
 
 <div class="form-box">
   <label>Ảnh:</label>
-  <input type="file" id="hvImgFile" accept="image/*">
-  <button id="btnXoaAnh" type="button" style="display:none">Xóa ảnh</button>
-  <br>
-  <img id="hvImgPreview" style="display:none;max-width:120px;margin:6px 0">
+  <div class="avatar-box">
+    <img id="hvImgPreview" src="" alt="avatar" />
+  </div>
 
-  <label>Tên học viên:</label>
+  <label>Họ và tên:</label>
   <select id="hvTen"></select>
+
+  <label>Lớp:</label>
+  <input id="hvLop" type="text" readonly>
 
   <label>Môn học:</label>
   <select id="hvMon"></select>
@@ -30,7 +32,8 @@
   <thead>
     <tr>
       <th>STT</th>
-      <th>Tên học viên</th>
+      <th>Họ tên</th>
+      <th>Lớp</th>
       <th>Môn học</th>
       <th>Tháng</th>
       <th>Thành tích</th>

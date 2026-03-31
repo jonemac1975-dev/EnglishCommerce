@@ -81,8 +81,8 @@ function renderClass(stats) {
   div.innerHTML = `
     <hr/>
     <h3>Lớp: ${stats.className}</h3>
-    <p>Tổng sinh viên: ${stats.totalStudents}</p>
-    <p>Tổng buổi: ${stats.totalSessions}</p>
+    <p>Sỹ số sinh viên: ${stats.totalStudents}</p>
+    <p>Tổng số buổi học: ${stats.totalSessions}</p>
     <p>Tỷ lệ vắng: ${stats.absentRate}%</p>
 
     <!-- 🔥 BIỂU ĐỒ GIẢ -->

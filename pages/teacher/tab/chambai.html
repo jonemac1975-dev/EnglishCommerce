@@ -1,0 +1,55 @@
+<section class="chambai-wrap">
+  <h2 class="cb-title">CHẤM BÀI KIỂM TRA</h2>
+
+  <!-- Bộ lọc -->
+  <div class="cb-filter">
+    <div class="cb-row">
+      <label><b>Kỳ kiểm tra</b></label>
+      <select id="cb_kythi"></select>
+    </div>
+
+    <div class="cb-row">
+      <label><b>Lớp</b></label>
+      <select id="cb_lop"></select>
+    </div>
+
+    <div class="cb-row">
+      <label><b>Bài kiểm tra</b></label>
+      <select id="cb_baikt"></select>
+    </div>
+  </div>
+
+  <!-- Danh sách bài nộp -->
+  <h3><b>Danh sách học viên đã nộp</b></h3>
+  <table class="cb-table">
+    <thead>
+      <tr>
+        <th>STT</th>
+        <th>Họ tên sinh viên</th>
+        <th>Điểm TN</th>
+        <th>Điểm TL</th>
+        <th>Tổng điểm</th>
+        <th>Trạng thái</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+    <tbody id="cb_list"></tbody>
+  </table>
+
+  <!-- Khung chấm -->
+  <div id="cb_detail" style="display:none; margin-top:24px;">
+    <h3><b>CHẤM BÀI TỰ LUẬN</b></h3>
+
+    <div class="cb-info">
+      <p><b>Học viên:</b> <span id="cb_hocvien"></span></p>
+      <p><b>Bài kiểm tra:</b> <span id="cb_tenbai"></span></p>
+      <p><b>Điểm trắc nghiệm:</b> <span id="cb_diem_tn">0</span></p>
+    </div>
+
+    <div id="cb_essay_container"></div>
+
+    <div class="cb-actions">
+      <button id="cb_save">💾 Lưu điểm tự luận</button>
+    </div>
+  </div>
+</section>

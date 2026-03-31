@@ -32,7 +32,10 @@
     <span class="kt-label">Lớp</span>
     <span class="kt-value kt-lop-display" id="ktLop"></span>
   </div>
-
+<div class="kt-row">
+    <span class="kt-label">Môn học</span>
+    <span class="kt-value kt-monhoc-display" id="ktMonhoc"></span>
+  </div>
 </div>
 
 <!-- ===== CHỌN DANH MỤC ===== -->
@@ -50,9 +53,27 @@
 
 </div>
 
-  <!-- ===== NỘI DUNG ===== -->
+<div id="ktCoCauDiem" class="kt-score-structure" style="
+  margin: 12px 0;
+  padding: 10px 14px;
+  background: #fff8e1;
+  border: 1px solid #f0d98a;
+  border-radius: 10px;
+  font-weight: 600;
+  color: #8a5a00;
+">
+  Cơ cấu điểm: --
+</div>
+
+    <!-- ===== NỘI DUNG TRẮC NGHIỆM ===== -->
   <div id="ktNoiDung" class="kt-noidung">
     <!-- câu hỏi trắc nghiệm sinh ở đây -->
+  </div>
+
+  <!-- ===== PHẦN TỰ LUẬN ===== -->
+  <div id="ktEssayWrap" class="kt-essay-wrap" style="display:none; margin-top:24px;">
+    <h3>PHẦN TỰ LUẬN</h3>
+    <div id="ktEssayList"></div>
   </div>
 
   <!-- ===== ACTION ===== -->

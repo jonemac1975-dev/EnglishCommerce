@@ -1,0 +1,152 @@
+<div class="xemdiem-page">
+  <div class="xemdiem-header">
+    <h2>📊 Bảng điểm sinh viên</h2>
+
+    <div class="xemdiem-toolbar">
+      <label for="lopSelect"><strong>Lớp:</strong></label>
+      <select id="lopSelect">
+        <option value="">-- Chọn lớp --</option>
+      </select>
+
+    <label for="monhocSelect"><strong>Môn học:</strong></label>
+      <select id="monhocSelect">
+        <option value="">-- Chọn môn học --</option>
+      </select>
+
+      <button id="btnExportExcel" class="btn-export">📥 Xuất Excel</button>
+    </div>
+  </div>
+
+  <div class="xemdiem-table-wrap">
+    <table id="bangDiemTable" class="xemdiem-table">
+      <thead>
+        <tr>
+          <th>STT</th>
+          <th>TÊN SINH VIÊN</th>
+          <th>LỚP</th>
+          <th>MÔN HỌC</th>
+          <th>15 PHÚT (HK I)</th>
+          <th>1 TIẾT (HK I)</th>
+          <th>GIỮA KỲ I</th>
+          <th>HỌC KỲ I</th>
+          <th>TBHK I</th>
+          <th>15 PHÚT (HK II)</th>
+          <th>1 TIẾT (HK II)</th>
+          <th>GIỮA KỲ II</th>
+          <th>HỌC KỲ II</th>
+          <th>TBHK II</th>
+          <th>ĐIỂM TB NĂM</th>
+        </tr>
+      </thead>
+      <tbody id="bangDiemBody">
+        <tr>
+          <td colspan="14" style="text-align:center; padding:20px;">
+            Chọn lớp để xem bảng điểm
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<style>
+  .xemdiem-page {
+    padding: 16px;
+  }
+
+  .xemdiem-header {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .xemdiem-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .xemdiem-toolbar select,
+  .xemdiem-toolbar button {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+  }
+
+  .btn-export {
+    background: #198754;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  .btn-export:hover {
+    opacity: 0.9;
+  }
+
+  .xemdiem-table-wrap {
+    overflow-x: auto;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+  }
+
+  .xemdiem-table {
+    width: 100%;
+    min-width: 1800px;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  .xemdiem-table th,
+  .xemdiem-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+
+  .xemdiem-table th {
+    background: #f8f9fa;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    font-weight: bold;
+  }
+
+  .xemdiem-table td:nth-child(2),
+  .xemdiem-table th:nth-child(2) {
+    text-align: left;
+    min-width: 220px;
+  }
+
+  .xemdiem-table td:nth-child(3),
+  .xemdiem-table th:nth-child(3) {
+    min-width: 180px;
+  }
+
+  .score-cell {
+    min-width: 120px;
+  }
+
+  .tb-cell {
+    font-weight: bold;
+    color: #0d6efd;
+    background: #eef5ff;
+  }
+
+  .year-cell {
+    font-weight: bold;
+    color: #dc3545;
+    background: #fff1f1;
+  }
+
+  .student-name {
+    font-weight: 600;
+  }
+</style>
+

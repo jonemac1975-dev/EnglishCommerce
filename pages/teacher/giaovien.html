@@ -26,17 +26,50 @@
 
 
     <!-- MENU -->
-    <aside class="gv-menu">
-      <div class="menu-item active" data-tab="giaovienview">Hồ sơ giáo viên</div>
-      <div class="menu-item" data-tab="vanbanhoithao">Văn bản - Hội thảo</div>
-      <div class="menu-item" data-tab="theodoihv">Theo dõi học tập sinh viên</div>
-      <div class="menu-item" data-tab="lichday">Lịch dạy</div>
-      <div class="menu-item" data-tab="linkday">Link dạy (Zoom - GMeet)</div>
-      <div class="menu-item" data-tab="baigiang">Bài giảng</div>
-      <div class="menu-item" data-tab="baitap">Bài tập</div>
-      <div class="menu-item" data-tab="kiemtra">Kiểm tra</div>
-      <div class="menu-item" data-tab="test">Test</div>
-    </aside>
+    
+<aside class="gv-menu">
+
+  <div class="menu-group">
+    HỒ SƠ - VĂN BẢN - HỘI THẢO
+  </div>
+  <div class="menu-children">
+    <div class="menu-item active" data-tab="giaovienview">Xem Hồ sơ</div>
+    <div class="menu-item" data-tab="doihead">Đổi thông tin tiêu đề WEB</div>
+    <div class="menu-item" data-tab="vanbanhoithao">Văn bản - Hội thảo</div>
+    <div class="menu-item" data-tab="theodoihv">Theo dõi sinh viên vắng</div>
+  </div>
+
+  <div class="menu-group">
+    LỊCH DẠY - LINK ONLINE
+  </div>
+  <div class="menu-children">
+   <div class="menu-item" data-tab="lichday">Xem Lịch dạy</div>
+   <div class="menu-item" data-tab="linkday">Cập nhật Link dạy Online</div>
+  </div>
+
+  <div class="menu-group">
+    GIẢNG DẠY - BÀI TẬP
+  </div>
+  <div class="menu-children">
+    <div class="menu-item" data-tab="baigiang">Cập nhật Bài giảng</div>
+    <div class="menu-item" data-tab="baitap">Cập nhật Bài tập</div>
+    </div>
+<div class="menu-group">
+    KIỂM TRA - THI TEST
+  </div>
+  <div class="menu-children">
+    <div class="menu-item" data-tab="kiemtra">Cập nhật đề Kiểm tra</div>
+    <div class="menu-item" data-tab="test">Cập nhật đề Test</div>
+  </div>
+<div class="menu-group">
+    CHẤM ĐIỂM - XEM ĐIỂM
+</div>
+  <div class="menu-children">
+   <div class="menu-item" data-tab="chambai">Chấm bài Kiểm tra</div>
+   <div class="menu-item" data-tab="xemdiem">Xem điểm</div>
+  </div>
+</aside>
+
 
     <!-- CONTENT -->
     <main class="gv-content" id="content">
@@ -44,7 +77,7 @@
     </main>
 
   </div>
-
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
   <script type="module" src="./js/giaovien.js"></script>
 <div id="toast"></div>
 

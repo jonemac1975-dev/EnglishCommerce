@@ -1,34 +1,42 @@
-import { readData, writeData }
-from "../../../scripts/services/firebaseService.js";
+import { readData, writeData } from "../../../scripts/services/firebaseService.js";
 
-/* ========= BIẾN ========= */
-let hvTen, hvMon, hvThang, hvThanhTich;
-let hvImgFile, hvImgPreview, btnXoaAnh;
-let table, btnThem, btnLuu, btnXoa;
+/* =========================
+   DOM
+========================= */
+let hvImgPreview, hvTen, hvLop, hvMon, hvThang, hvThanhTich;
+let btnThem, btnLuu, btnXoa, hvTable;
 
-let hvMap = {}, monMap = {};
-let currentImg = "", editId = null;
+/* =========================
+   DATA
+========================= */
+let studentsMap = {}; // { studentId: { name, avatar, lopId } }
+let classesMap = {};  // { lopId: lopName }
+let subjectsMap = {}; // { monId: monName }
 
-/* ========= DOM ========= */
+let editId = null;
+let currentImg = "";
+
+/* =========================
+   DOM
+========================= */
 function getDOM() {
-  hvImgFile    = document.getElementById("hvImgFile");
   hvImgPreview = document.getElementById("hvImgPreview");
-  btnXoaAnh    = document.getElementById("btnXoaAnh");
-
   hvTen        = document.getElementById("hvTen");
+  hvLop        = document.getElementById("hvLop");
   hvMon        = document.getElementById("hvMon");
   hvThang      = document.getElementById("hvThang");
   hvThanhTich  = document.getElementById("hvThanhTich");
 
-  table        = document.getElementById("hvTable");
-
   btnThem = document.getElementById("btnThem");
   btnLuu  = document.getElementById("btnLuu");
   btnXoa  = document.getElementById("btnXoa");
+  hvTable = document.getElementById("hvTable");
 }
 
-/* ========= TOAST ========= */
-function showToast(msg, type="success") {
+/* =========================
+   TOAST
+========================= */
+function showToast(msg, type = "success") {
   const t = document.getElementById("toast");
   if (!t) return;
   t.textContent = msg;
@@ -36,72 +44,134 @@ function showToast(msg, type="success") {
   setTimeout(() => t.classList.remove("show"), 2500);
 }
 
-/* ========= LOAD SELECT ========= */
-async function loadSelect() {
-  // ===== HỌC VIÊN =====
-  const hv = await readData("users/students");
-  hvTen.innerHTML = `<option value="">-- chọn học viên --</option>`;
-  hvMap = {};
-
-  if (hv) {
-    Object.entries(hv).forEach(([id, v]) => {
-      const name = v.profile?.ho_ten || id;
-      hvMap[id] = name;
-      hvTen.innerHTML += `<option value="${id}">${name}</option>`;
-    });
-  }
-
-  // ===== MÔN HỌC =====
-  const mon = await readData("config/danh_muc/monhoc");
-  hvMon.innerHTML = `<option value="">-- chọn môn --</option>`;
-  monMap = {};
-
-  if (mon) {
-    Object.entries(mon).forEach(([id, v]) => {
-      monMap[id] = v.name || id;
-      hvMon.innerHTML += `<option value="${id}">${v.name}</option>`;
-    });
-  }
-}
-
-/* ========= ẢNH ========= */
-function bindImage() {
-  hvImgFile.onchange = () => {
-    const f = hvImgFile.files[0];
-    if (!f) return;
-
-    const r = new FileReader();
-    r.onload = e => {
-      currentImg = e.target.result;
-      hvImgPreview.src = currentImg;
-      hvImgPreview.style.display = "block";
-      btnXoaAnh.style.display = "inline-block";
-    };
-    r.readAsDataURL(f);
-  };
-
-  btnXoaAnh.onclick = () => {
-    currentImg = "";
-    hvImgFile.value = "";
+/* =========================
+   AVATAR
+========================= */
+function renderAvatar(img) {
+  if (img) {
+    hvImgPreview.src = img;
+    hvImgPreview.style.display = "block";
+  } else {
+    hvImgPreview.src = "";
     hvImgPreview.style.display = "none";
-    btnXoaAnh.style.display = "none";
-  };
+  }
 }
 
-/* ========= CLEAR ========= */
+/* =========================
+   LOAD LỚP
+========================= */
+async function loadClasses() {
+  classesMap = {};
+
+  const data = await readData("config/danh_muc/lop");
+  if (!data) return;
+
+  Object.entries(data).forEach(([id, v]) => {
+    classesMap[id] = v?.name || id;
+  });
+
+  console.log("📘 classesMap:", classesMap);
+}
+
+/* =========================
+   LOAD MÔN HỌC
+========================= */
+async function loadSubjects() {
+  subjectsMap = {};
+  hvMon.innerHTML = `<option value="">-- chọn môn học --</option>`;
+
+  const data = await readData("config/danh_muc/monhoc");
+  if (!data) return;
+
+  Object.entries(data).forEach(([id, v]) => {
+    const name = v?.name || id;
+    subjectsMap[id] = name;
+    hvMon.innerHTML += `<option value="${id}">${name}</option>`;
+  });
+}
+
+/* =========================
+   LOAD HỌC VIÊN
+========================= */
+async function loadStudents() {
+  studentsMap = {};
+  hvTen.innerHTML = `<option value="">-- chọn học viên --</option>`;
+
+  const data = await readData("users/students");
+  if (!data) return;
+
+  Object.entries(data).forEach(([id, v]) => {
+    const profile = v?.profile || {};
+    const name = profile?.ho_ten || id;
+    const avatar = profile?.avatar || "";
+    const lopId = profile?.lop || "";
+
+    studentsMap[id] = {
+      name,
+      avatar,
+      lopId
+    };
+
+    hvTen.innerHTML += `<option value="${id}">${name}</option>`;
+  });
+
+  console.log("👨‍🎓 studentsMap:", studentsMap);
+}
+
+/* =========================
+   CHỌN HỌC VIÊN
+========================= */
+function bindStudentChange() {
+  hvTen.addEventListener("change", () => {
+    const studentId = hvTen.value;
+    const student = studentsMap[studentId];
+
+    if (!student) {
+      currentImg = "";
+      hvLop.value = "";
+      renderAvatar("");
+      return;
+    }
+
+    currentImg = student.avatar || "";
+
+    // lấy tên lớp từ lopId
+    const lopName = classesMap[student.lopId] || "";
+    hvLop.value = lopName;
+
+    renderAvatar(currentImg);
+
+    console.log("✅ studentId:", studentId);
+    console.log("✅ student:", student);
+    console.log("✅ lopId:", student.lopId);
+    console.log("✅ lopName:", lopName);
+  });
+}
+
+/* =========================
+   CLEAR FORM
+========================= */
 function clearForm() {
   editId = null;
+  currentImg = "";
+
+  hvTen.value = "";
+  hvLop.value = "";
+  hvMon.value = "";
   hvThang.value = "";
   hvThanhTich.value = "";
-  hvImgFile.value = "";
-  hvImgPreview.style.display = "none";
+
+  renderAvatar("");
+
   btnThem.style.display = "inline-block";
-  btnLuu.style.display  = "none";
-  btnXoa.style.display  = "none";
+  btnLuu.style.display = "none";
+  btnXoa.style.display = "none";
 }
 
-/* ========= SAVE ========= */
-async function save(isEdit=false) {
+/* =========================
+   SAVE
+========================= */
+async function saveData(isEdit = false) {
   if (!hvTen.value || !hvMon.value || !hvThang.value) {
     showToast("Thiếu thông tin", "error");
     return;
@@ -110,78 +180,94 @@ async function save(isEdit=false) {
   const id = editId || ("hv_" + Date.now());
 
   await writeData(`tieubieu/chungchihv/${id}`, {
-    img: currentImg || "",
     hocvien: hvTen.value,
+    img: currentImg || "",
+    lop: hvLop.value || "",
     mon: hvMon.value,
     thang: hvThang.value,
-    thanhtich: hvThanhTich.value,
+    thanhtich: hvThanhTich.value || "",
     updated_at: Date.now()
   });
 
+  showToast(isEdit ? "Đã cập nhật" : "Đã thêm mới");
   clearForm();
   await loadTable();
-  showToast(isEdit ? "Đã cập nhật" : "Đã thêm chứng chỉ");
 }
 
-/* ========= LOAD TABLE ========= */
+/* =========================
+   LOAD TABLE
+========================= */
 async function loadTable() {
-  table.innerHTML = "";
+  hvTable.innerHTML = "";
   const data = await readData("tieubieu/chungchihv");
   if (!data) return;
 
   let stt = 1;
 
-  Object.entries(data).forEach(([id, v]) => {
+  Object.entries(data).forEach(([id, item]) => {
     const tr = document.createElement("tr");
+
+    const tenHv = studentsMap[item.hocvien]?.name || item.hocvien || "";
+    const tenMon = subjectsMap[item.mon] || item.mon || "";
 
     tr.innerHTML = `
       <td>${stt++}</td>
-      <td>${hvMap[v.hocvien] || ""}</td>
-      <td>${monMap[v.mon] || ""}</td>
-      <td>${v.thang || ""}</td>
-      <td>${v.thanhtich || ""}</td>
+      <td>${tenHv}</td>
+      <td>${item.lop || ""}</td>
+      <td>${tenMon}</td>
+      <td>${item.thang || ""}</td>
+      <td>${item.thanhtich || ""}</td>
     `;
 
-    tr.onclick = () => {
+    tr.addEventListener("click", () => {
       editId = id;
 
-      hvTen.value       = v.hocvien;
-      hvMon.value       = v.mon;
-      hvThang.value     = v.thang;
-      hvThanhTich.value = v.thanhtich || "";
+      hvTen.value = item.hocvien || "";
+      hvMon.value = item.mon || "";
+      hvThang.value = item.thang || "";
+      hvThanhTich.value = item.thanhtich || "";
+      hvLop.value = item.lop || "";
 
-      currentImg = v.img || "";
-      if (currentImg) {
-        hvImgPreview.src = currentImg;
-        hvImgPreview.style.display = "block";
-        btnXoaAnh.style.display = "inline-block";
-      }
+      currentImg = item.img || "";
+      renderAvatar(currentImg);
 
       btnThem.style.display = "none";
-      btnLuu.style.display  = "inline-block";
-      btnXoa.style.display  = "inline-block";
-    };
+      btnLuu.style.display = "inline-block";
+      btnXoa.style.display = "inline-block";
+    });
 
-    table.appendChild(tr);
+    hvTable.appendChild(tr);
   });
 }
 
-/* ========= INIT ========= */
+/* =========================
+   DELETE
+========================= */
+async function deleteData() {
+  if (!editId) return;
+  if (!confirm("Xóa chứng nhận học viên này?")) return;
+
+  await writeData(`tieubieu/chungchihv/${editId}`, null);
+  showToast("Đã xóa");
+  clearForm();
+  await loadTable();
+}
+
+/* =========================
+   INIT
+========================= */
 export async function init() {
   getDOM();
   if (!btnThem) return;
 
-  bindImage();
-  await loadSelect();
+  await loadClasses();   // phải load lớp trước
+  await loadSubjects();
+  await loadStudents();  // rồi mới load học viên
+
+  bindStudentChange();
   await loadTable();
 
-  btnThem.onclick = () => save(false);
-  btnLuu.onclick  = () => save(true);
-  btnXoa.onclick  = async () => {
-    if (!editId || !confirm("Xóa chứng chỉ học viên?")) return;
-    await writeData(`tieubieu/chungchihv/${editId}`, null);
-    clearForm();
-    loadTable();
-    showToast("Đã xóa");
-  };
+  btnThem.addEventListener("click", () => saveData(false));
+  btnLuu.addEventListener("click", () => saveData(true));
+  btnXoa.addEventListener("click", deleteData);
 }
