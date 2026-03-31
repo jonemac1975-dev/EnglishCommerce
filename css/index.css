@@ -1248,82 +1248,156 @@ body {
   flex-direction: row;
 }
 
-/* ===== SEARCH TABS XỊN ===== */
+
+/* =========================
+   SEARCH + TRANSLATE FIX
+========================= */
+
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+#searchInput {
+  padding: 6px 10px;
+  width: 220px;
+}
+
+#searchBtn {
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+/* ===== DROPDOWN TỔNG ===== */
+.search-dropdown {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  width: 420px;
+  max-height: 500px;
+  overflow-y: auto;
+
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 12px;
+
+  display: none;              /* 🔥 mặc định ẩn */
+  flex-direction: column;     /* 🔥 xếp dọc */
+  gap: 10px;
+
+  z-index: 9999;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+/* khi active thì hiện */
+.search-box.active .search-dropdown {
+  display: flex;
+}
+
+/* ===== TABS ===== */
 .search-tabs {
   display: flex;
-  flex-direction: row;   /* 🔥 đổi lại */
-  gap: 2px;
-  margin-bottom: 1px;
+  flex-direction: row;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
 }
 
 .search-tabs button {
-  flex: 2;
-  padding: 6px 25px;
- text-align: left;  
+  flex: 1;
+  min-width: 90px;
+  padding: 8px 12px;
+  text-align: center;
   border: none;
   border-radius: 20px;
-  background: #f1f3f4;
+  background: #fff3e0;
+  color: #e65100;
   cursor: pointer;
   font-size: 13px;
   transition: 0.25s;
 }
 
-/* hover */
-.search-tabs button:hover {
-  background: #e3f2fd;
-}
-
-/* active */
-.search-tabs button.active {
-  background: #3f6fc1;
-  color: #fff;
-  font-weight: 600;
-}
-
-.search-header {
-  font-weight: bold;
-  font-size: 14px;
-  margin-bottom: 6px;
-  color: #333;
-}
-
-
-/* tab thường */
-.search-tabs button {
-  background: #fff3e0;        /* cam nhạt */
-  color: #e65100;
-}
-
-/* hover */
 .search-tabs button:hover {
   background: #ffe0b2;
 }
 
-/* tab đang chọn */
 .search-tabs button.active {
-  background: #ff9800;        /* cam đậm */
+  background: #ff9800;
   color: #fff;
   font-weight: 600;
 }
 
+/* ===== NỘI DUNG TAB ===== */
+.tab-content {
+  display: none;
+  width: 100%;
+}
 
+.tab-content.active {
+  display: block;
+}
 
-/* box tổng */
+/* mặc định hiện tab dịch nếu JS chưa kịp chạy */
+#tab-translate {
+  display: block;
+}
+
+/* ===== HEADER ===== */
+.search-header {
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+/* ===== ITEM CHUNG ===== */
+.item {
+  display: flex;
+  gap: 10px;
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+  align-items: center;
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.item:hover {
+  background: #f9f9f9;
+  cursor: pointer;
+}
+
+.item .info {
+  flex: 1;
+}
+
+.item.video img {
+  width: 80px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+/* ===== TRANSLATE ===== */
 .translate-box {
   margin-top: 8px;
   padding: 10px;
   background: #fff;
   border-radius: 10px;
+  width: 100%;
 }
 
-/* dòng chứa text + nút */
 .translate-line {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-/* nút */
 .tools {
   display: flex;
   gap: 6px;
@@ -1343,15 +1417,22 @@ body {
   background: #e3f2fd;
 }
 
-/* kết quả dịch */
+/* ===== KẾT QUẢ DỊCH ===== */
 .translate-result {
-  margin-top: 1px; /* 👈 giảm khoảng cách xuống sát */
-  padding: 8px;
+  margin-top: 8px;
+  padding: 10px 12px;
   background: #f8f9fa;
   border-radius: 8px;
   color: #007bff;
   line-height: 1.6;
   font-size: 16px;
+
+  display: block;
+  width: 100%;
+  min-height: 40px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 
@@ -1540,3 +1621,74 @@ body {
     text-decoration: underline;
     color: #ffd700;
   }
+
+
+
+
+
+/* ===== SEARCH BOX ===== */
+
+#searchResults {
+  position: fixed !important;
+  top: 70px !important;
+  right: 50px !important;
+  width: 260px !important;
+  z-index: 99999 !important;
+  background: white !important;
+}
+
+/* =========================
+   BOX NHẬP DỊCH - THU GỌN
+========================= */
+.translate-panel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.search-box {
+  width: 180px;   /* 🔥 thu nhỏ ô nhập */
+  position: relative;
+}
+
+#searchInput {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid #bbb;
+  border-radius: 8px;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+#searchBtn {
+  padding: 7px 12px;
+  border: none;
+  border-radius: 8px;
+  background: #ffd700;
+  color: #000;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* =========================
+   KẾT QUẢ DỊCH - NẰM GIỮA MÀN HÌNH
+========================= */
+#searchResults {
+  position: fixed !important;
+  top: 65% !important;
+  left: 90% !important;
+  right: auto !important;
+  transform: translate(-50%, -50%) !important;
+
+  width: 280px !important;
+  max-width: 90vw !important;
+  max-height: 70vh !important;
+  overflow-y: auto !important;
+
+  z-index: 99999 !important;
+  background: white !important;
+  border: 1px solid #ddd !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.22) !important;
+  padding: 12px !important;
+}
