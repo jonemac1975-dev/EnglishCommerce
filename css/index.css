@@ -17,7 +17,7 @@ body {
   display: grid;
   grid-template-columns: 220px 1fr 220px;
   align-items: center;
-  padding: 15px 20px;
+  padding: 2px 10px;
   background: #3f6fc1;
   color: #fff;
 }
@@ -35,7 +35,7 @@ body {
   height: 80px;
   border-radius: 50%;
   object-fit: cover;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 /* Avatar giáo viên */
@@ -187,22 +187,22 @@ input:checked + .slider::before {
 /* ================= MAIN LAYOUT ================= */
 .layout {
   display: grid;
-  grid-template-columns: 240px minmax(0,1fr) 250px;
-  gap: 20px;
-  padding: 20px;
+  grid-template-columns: 200px minmax(0,08fr) 220px;
+  gap: 10px;
+  padding: 10px;
   align-items: start;
 }
 
 /* ================= SIDEBAR CHUNG ================= */
 .sidebar {
   background: #ffffff;
-  padding: 14px;
-/  border-right: 0px solid #ddd;
+  padding: 1px;
+
 }
 
 .sidebar.student {
   border-right: none;
-/  border-left: 1px solid #ddd;
+ 
 }
 
 .sidebar h3 {
@@ -726,15 +726,6 @@ body.ready{
   font-size: 16px;
 }
 
-/* ===== TIÊU BIỂU ===== */
-.highlight-row {
-  gap: 22px;
-}
-
-.highlight-card img {
-  width: 85px;
-  height: 85px;
-}
 
 @media (max-width: 768px) {
 
@@ -755,34 +746,6 @@ body.ready{
   .section-grid {
     grid-template-columns: 1fr;
     gap: 14px;
-  }
-
-  /* Card bo nhỏ lại */
-  .card {
-    border-radius: 10px;
-  }
-
-  .card-img {
-    height: 180px;
-  }
-
-  /* Header chữ nhỏ lại */
-  .header-center h1 {
-    font-size: 24px;
-  }
-
-  .header-center h2 {
-    font-size: 14px;
-  }
-
-  .header-center p {
-    font-size: 14px;
-  }
-
-  /* Cột tiêu biểu full width */
-  .main-section.center {
-    max-width: 100%;
-    grid-column: auto;
   }
 
   .highlight-row {
@@ -1086,83 +1049,6 @@ body {
 
 
 
-.search-box {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-#searchInput {
-  padding: 6px 10px;
-  width: 220px;
-}
-
-#searchBtn {
-  margin-left: 5px;
-  cursor: pointer;
-}
-
-/* dropdown */
-
-
-
-/* item */
-.search-dropdown iframe {
-  width: 100%;
-  margin-bottom: 10px;
-}
-
-.search-box.active .search-dropdown {
-  display: block;
-}
-
-
-
-/* mỗi item */
-.search-item {
-  display: flex;
-  gap: 10px;
-  padding: 8px;
-  border-bottom: 1px solid #eee;
-}
-
-.search-item:last-child {
-  border-bottom: none;
-}
-
-/* video */
-.search-item.video img {
-  width: 80px;
-  height: 60px;
-  object-fit: cover;
-  border-radius: 6px;
-}
-
-.search-item .info {
-  flex: 1;
-}
-
-.search-item .title {
-  font-weight: bold;
-  font-size: 14px;
-}
-
-.search-item .desc {
-  font-size: 13px;
-  color: #555;
-}
-
-/* section title */
-.search-section-title {
-  font-weight: bold;
-  margin: 10px 0 5px;
-}
-
-.item {
-  padding: 8px;
-  border-bottom: 1px solid #eee;
-}
-
 /* container dropdown */
 .search-dropdown {
   position: absolute;
@@ -1211,27 +1097,6 @@ body {
 }
 
 
-/* item */
-.item {
-  display: flex;
-  gap: 10px;
-  padding: 8px;
-  border-bottom: 1px solid #eee;
-  align-items: center;
-}
-
-.item:last-child {
-  border-bottom: none;
-}
-
-/* video */
-.item.video img {
-  width: 80px;
-  height: 60px;
-  object-fit: cover;
-  border-radius: 6px;
-}
-
 .item .info {
   flex: 1;
 }
@@ -1252,17 +1117,6 @@ body {
 /* =========================
    SEARCH + TRANSLATE FIX
 ========================= */
-
-.search-box {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-#searchInput {
-  padding: 6px 10px;
-  width: 220px;
-}
 
 #searchBtn {
   margin-left: 5px;
@@ -1416,26 +1270,6 @@ body {
 .tools button:hover {
   background: #e3f2fd;
 }
-
-/* ===== KẾT QUẢ DỊCH ===== */
-.translate-result {
-  background: rgba(255, 255, 255, 0.35);
-  backdrop-filter: blur(10px);
-  border-radius: 18px;
-  padding: 18px 16px;
-  min-height: 80px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  color: Black;
-  font-size: 8px;
-  font-weight: 400;
-  line-height: 1.7;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.3);
-}
-
-
 
 .student-actions {
   display: flex;
@@ -1595,19 +1429,6 @@ body {
 }
 
 
-/* =========================
-   HEADER DEFAULT
-========================= */
-#header {
-  background: #0f4c81; /* xanh nước biển mặc định */
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  transition: all 0.4s ease;
-}
-
-
-
 /*=====Link CĐTM=======*/
 
   a.school-link {
@@ -1621,20 +1442,6 @@ body {
     color: #ffd700;
   }
 
-
-
-
-
-/* ===== SEARCH BOX ===== */
-
-#searchResults {
-  position: fixed !important;
-  top: 70px !important;
-  right: 50px !important;
-  width: 260px !important;
-  z-index: 99999 !important;
-  background: white !important;
-}
 
 /* =========================
    BOX NHẬP DỊCH - THU GỌN
@@ -1670,12 +1477,12 @@ body {
 }
 
 /* =========================
-   KẾT QUẢ DỊCH - NẰM GIỮA MÀN HÌNH
+   KẾT QUẢ DỊCH 
 ========================= */
 #searchResults {
   position: fixed !important;
-  top: 65% !important;
-  left: 90% !important;
+  top: 60% !important;
+  left: 92% !important;
   right: auto !important;
   transform: translate(-50%, -50%) !important;
 
@@ -1692,12 +1499,9 @@ body {
   padding: 12px !important;
 }
 
-
-
-
 /* ===== KHU VỰC TRANSLATE MINI ===== */
 #translateResult {
-  margin-top: 10px;
+  margin-top: -20px;
   padding: 0 4px;
 }
 
