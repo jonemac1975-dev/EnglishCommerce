@@ -3,29 +3,59 @@ import { readData, writeData, updateData } from "../scripts/services/firebaseSer
 let _lastSessionData = "";
 let isStartingSession = false;
 let offlineStarted = false;
+window._skipAttendanceOnce = false;
+
+/* =========================
+   HỎI CÓ ĐIỂM DANH HAY KHÔNG
+========================= */
+window.askStartSession = async function (classId, className, mode = "online") {
+  const ok = confirm(`📋 Bạn có muốn điểm danh lớp "${className}" không?`);
+
+  if (!ok) {
+    console.log("⏭️ Bỏ qua điểm danh");
+    window._skipAttendanceOnce = true; // 🔥 khóa cứng 1 lần
+    return false;
+  }
+
+  window._skipAttendanceOnce = false;
+  await window.startSession(classId, className, mode);
+  return true;
+};
 
 
 /* =========================
    START SESSION (GV)
 ========================= */
+/* =========================
+   START SESSION (GV)
+========================= */
 window.startSession = async function (classId, className, mode = "online") {
 
+  // 🔥 nếu vừa bấm Cancel thì chặn cứng
+  if (window._skipAttendanceOnce === true) {
+    console.log("⛔ Đã Cancel điểm danh → không start session");
+    window._skipAttendanceOnce = false;
+    return false;
+  }
+
   if (isStartingSession && mode === "online") {
-//  console.warn("⛔ Đang tạo session");
-  return;
-}
+    return;
+  }
 
   isStartingSession = true;
 
   try {
-
     if (!classId || classId.trim() === "") {
       alert("❌ Chưa chọn lớp");
-      return;
+      isStartingSession = false;
+      return false;
     }
 
     const teacherId = localStorage.getItem("teacher_id");
-    if (!teacherId) return;
+    if (!teacherId) {
+      isStartingSession = false;
+      return false;
+    }
 
     // 🔥 1. XÓA SESSION CŨ
     const allSessions = await readData("sessions");
@@ -34,15 +64,14 @@ window.startSession = async function (classId, className, mode = "online") {
       for (const [sid, s] of Object.entries(allSessions)) {
         if (s.teacherId === teacherId && !s.finalized) {
           await updateData(`sessions/${sid}`, {
-  finalized: true
-});
+            finalized: true
+          });
         }
       }
     }
 
     // 🔥 2. LOAD HỌC SINH
     const studentsData = await readData("users/students");
-
     const students = {};
 
     Object.entries(studentsData || {}).forEach(([id, s]) => {
@@ -51,7 +80,7 @@ window.startSession = async function (classId, className, mode = "online") {
       students[id] = {
         name: s?.profile?.ho_ten || "Không tên",
         joined: false,
-        lastSeen: 0 // 👈 phục vụ detect chuồn
+        lastSeen: 0
       };
     });
 
@@ -62,7 +91,7 @@ window.startSession = async function (classId, className, mode = "online") {
       classId,
       className,
       teacherId,
-      mode, // 👈 online / offline
+      mode,
       startTime: Date.now(),
       students
     };
@@ -70,52 +99,51 @@ window.startSession = async function (classId, className, mode = "online") {
     await writeData(`sessions/${sessionId}`, session);
     localStorage.setItem("currentSessionId", sessionId);
 
-//    console.log("✅ START SESSION:", session);
-
     alert("✅ Đã bắt đầu điểm danh");
 
     // 🔥 4. START LISTEN
-// 🔥 4. START LISTEN
+    if (mode === "online") {
+      waitForFooterAndStart(sessionId);
+    } else {
+      const studentsArr = Object.values(students);
+      const total = studentsArr.length;
+      const joined = 0;
 
-if (mode === "online") {
-  waitForFooterAndStart(sessionId);
-} else {
-  // 👉 OFFLINE: render footer 1 lần
-  const studentsArr = Object.values(students);
-
-  const total = studentsArr.length;
-  const joined = 0;
-
-  renderFooter({
-    className,
-    startTime: Date.now(),
-    total,
-    joined,
-    absent: total,
-    absentList: studentsArr.map(s => s.name)
-  });
-}
+      renderFooter({
+        className,
+        startTime: Date.now(),
+        total,
+        joined,
+        absent: total,
+        absentList: studentsArr.map(s => s.name)
+      });
+    }
 
     // 🔥 5. AUTO CHỐT
     setTimeout(() => finalizeSession(sessionId), 5 * 60 * 1000);
 
-    // 🔥 6. Nếu OFFLINE → hiện bảng tick + QR
+    // 🔥 6. OFFLINE → hiện bảng tick + QR
     if (mode === "offline") {
+      if (offlineStarted) {
+        isStartingSession = false;
+        return true;
+      }
 
-  if (offlineStarted) return;
+      offlineStarted = true;
 
-  offlineStarted = true;
+      setTimeout(() => {
+        renderOfflinePanel(sessionId, students);
+        generateQRCode(sessionId);
+      }, 300);
+    }
 
-  setTimeout(() => {
-    renderOfflinePanel(sessionId, students);
-    generateQRCode(sessionId);
-  }, 300);
-
-//  console.log("🔥 CALL QR", sessionId);
-}
+    isStartingSession = false;
+    return true;
 
   } catch (err) {
-//  console.error("❌ startSession lỗi:", err);
+    console.error("❌ startSession lỗi:", err);
+    isStartingSession = false;
+    return false;
   }
 };
 

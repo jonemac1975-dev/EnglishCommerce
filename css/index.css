@@ -74,7 +74,7 @@ color: #ffd700;
 .header-center h2 {
   font-size: 25px;       /* 👈 to hơn */
   font-weight: 600;
-  margin-top: 6px;
+  margin-top: -8px;
   letter-spacing: 1px;
 animation: blinkText 3s infinite;  /* 👈 nhấp nháy */
 }
@@ -1419,22 +1419,21 @@ body {
 
 /* ===== KẾT QUẢ DỊCH ===== */
 .translate-result {
-  margin-top: 8px;
-  padding: 10px 12px;
-  background: #f8f9fa;
-  border-radius: 8px;
-  color: #007bff;
-  line-height: 1.6;
-  font-size: 16px;
-
-  display: block;
-  width: 100%;
-  min-height: 40px;
-  white-space: pre-wrap;
-  word-break: break-word;
-  overflow-wrap: break-word;
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(10px);
+  border-radius: 18px;
+  padding: 18px 16px;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: Black;
+  font-size: 8px;
+  font-weight: 400;
+  line-height: 1.7;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.3);
 }
-
 
 
 
@@ -1691,4 +1690,209 @@ body {
   border-radius: 12px !important;
   box-shadow: 0 10px 28px rgba(0,0,0,0.22) !important;
   padding: 12px !important;
+}
+
+
+
+
+/* ===== KHU VỰC TRANSLATE MINI ===== */
+#translateResult {
+  margin-top: 10px;
+  padding: 0 4px;
+}
+
+.translate-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: fadeUp 0.25s ease;
+}
+
+/* cụm nút */
+.tools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: -2px;
+  margin-bottom: 2px;
+}
+
+/* nút tool chung */
+.tool-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  font-size: 19px;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.tool-btn:hover {
+  transform: translateY(-2px) scale(1.05);
+  background: #ffffff;
+}
+
+.tool-btn:active {
+  transform: scale(0.95);
+}
+
+/* nút loa */
+.speak-btn.speaking {
+  animation: pulseGlow 1s infinite;
+}
+
+/* nút copy */
+.copy-btn {
+  background: #eef4ff;
+  color: #1d4ed8;
+}
+
+.copy-btn:hover {
+  background: #dbeafe;
+}
+
+/* copy xong */
+.copy-btn.copied {
+  background: #d8f5dc;
+  transform: scale(1.08);
+}
+
+/* nút đóng X */
+.close-btn {
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.close-btn:hover {
+  background: #ffe2e2;
+  color: #d10000;
+}
+
+/* khung kết quả dịch */
+.translate-result {
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(10px);
+  border-radius: 18px;
+  padding: 18px 16px;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #000 !important;
+  font-size: 12px !important;
+  font-weight: 400;
+  line-height: 1.7;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.3);
+}
+
+.translate-result,
+.translate-result * {
+  color: #000 !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  text-align: left !important;
+}
+
+/* loading */
+.loading-translate {
+  margin-top: 10px;
+  color: #666;
+  font-size: 15px;
+  padding-left: 4px;
+}
+
+/* toast copy */
+#miniToast {
+  position: fixed;
+  left: 50%;
+  bottom: 30px;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(30, 30, 30, 0.88);
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.28s ease;
+  z-index: 999999;
+  backdrop-filter: blur(8px);
+}
+
+#miniToast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* hiệu ứng */
+.animate-in {
+  animation: fadeUp 0.28s ease;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 0 0 rgba(255, 170, 0, 0.0);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 18px rgba(255, 170, 0, 0.55);
+    transform: scale(1.08);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(255, 170, 0, 0.0);
+    transform: scale(1);
+  }
+}
+
+.esc-hint {
+  font-size: 12px;
+  color: red;
+  text-align: center;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  font-style: italic;
+}
+
+
+/* ===== FIX NÚT X NẰM CÙNG HÀNG TOOL ===== */
+.tools .close-btn {
+  position: static !important;
+  top: auto !important;
+  right: auto !important;
+  left: auto !important;
+  bottom: auto !important;
+
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  padding: 0 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  margin: 0 !important;
+  float: none !important;
 }

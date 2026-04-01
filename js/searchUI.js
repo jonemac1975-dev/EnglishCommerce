@@ -7,6 +7,8 @@ export function renderResults(container, keyword, dict) {
       <button onclick="switchTab('dict')">Vocabulary</button>
     </div>
 
+    <div class="esc-hint">👉 Nhấn ESC hoặc [X] để thoát</div>
+
     <!-- TRANSLATE -->
     <div class="tab-content" id="tab-translate">
       <div id="translateResult" class="translate-box"></div>
@@ -36,4 +38,3 @@ export function renderResults(container, keyword, dict) {
   // 🔥 luôn mở translate
   window.switchTab && window.switchTab("translate");
 }
-

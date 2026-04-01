@@ -402,6 +402,7 @@ function loadVanbanList(data) {
   render();
 }
 
+
 /* ================= LOAD DANH SÁCH LỚP ================= */
 function loadClassList(data, type) {
   const group = {};
@@ -442,22 +443,40 @@ function loadClassList(data, type) {
           return;
         }
 
-        if (mode === "truc_tiep") {
-          if (!offlineStarted) {
-            offlineStarted = true;
-            await window.startSession(id, className, "offline");
-            alert("📢 Bắt đầu điểm danh");
-          }
-        }
-
         const items = group[id] || [];
         if (!items.length) {
           alert("❌ Không có bài nào trong lớp này");
           return;
         }
 
+        // =========================
+        // OFFLINE
+        // =========================
+        if (mode === "truc_tiep") {
+          if (!offlineStarted) {
+            const ok = await window.askStartSession(id, className, "offline");
+
+            // ❌ Cancel → chỉ load bài, tuyệt đối không điểm danh
+            if (!ok) {
+              pushView(render);
+              loadItemList(items, className, type);
+              return;
+            }
+
+            // ✅ OK → đánh dấu đã bật offline
+            offlineStarted = true;
+          }
+
+          pushView(render);
+          loadItemList(items, className, type);
+          return;
+        }
+
+        // =========================
+        // ONLINE / MODE KHÁC
+        // =========================
         pushView(render);
-        loadItemList(items, className, type, data);
+        loadItemList(items, className, type);
       };
     });
   };
