@@ -6,62 +6,61 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-  /* ===== NỀN NGOÀI (BÀN ĐỌC SÁCH) ===== */
-  body {
-    margin: 0;
-    padding: 0;
-    background: #e5e7eb;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
-    color: #111;
+  * {
+    box-sizing: border-box;
   }
 
-  /* ===== TRANG SÁCH ===== */
+  html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #e5e7eb;
+    color: #111827;
+  }
 
+  body.fullscreen-active {
+    overflow: hidden;
+  }
 
- .preview-wrapper {
-  max-width: 1100px;
-  margin: 30px auto;
-  background: #fff;
-  padding: 40px 48px;
-  border-radius: 6px;
-  box-shadow: ...
- 
-min-height: 100vh;   /* CHO PHÉP GIÃN */
-  height: auto;        /* RẤT QUAN TRỌNG */
-  overflow: visible;   /* KHÔNG ĐƯỢC hidden */
-}
-
-html, body {
-  height: 100%;
-}
-
-body.fullscreen-active {
-  overflow: hidden;   /* chỉ khóa scroll body thôi */
-}
+  .preview-wrapper {
+    max-width: 1100px;
+    margin: 28px auto;
+    background: #ffffff;
+    padding: 36px 42px;
+    border-radius: 18px;
+    box-shadow: 0 24px 70px rgba(15, 23, 42, 0.08);
+    min-height: 100vh;
+    overflow: visible;
+  }
 
   .lesson-title {
-    font-size: 26px;
-    font-weight: 700;
+    font-size: 30px;
+    font-weight: 900;
     text-align: center;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
+    color: #0f172a;
   }
 
   .lesson-meta {
     text-align: center;
     font-size: 14px;
-    color: #555;
-    margin-bottom: 24px;
+    color: #64748b;
+    margin-bottom: 28px;
   }
 
   .lesson-content {
-  font-size: 16px;
-  line-height: 1.6;
-  word-wrap: break-word;
-  overflow: visible;
-  max-height: none;
-  min-height: 60vh;
-}
+    font-size: 16px;
+    line-height: 1.75;
+    word-wrap: break-word;
+    overflow: visible;
+    min-height: 60vh;
+  }
 
+  .lesson-content * {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
 
   /* ===== TABLE ===== */
   .lesson-content table {
@@ -69,177 +68,284 @@ body.fullscreen-active {
     border-collapse: collapse !important;
     margin: 14px 0 !important;
   }
+
   .lesson-content th,
   .lesson-content td {
-    border: 1px solid #999 !important;
-    padding: 8px 10px !important;
+    border: 1px solid #cbd5e1 !important;
+    padding: 10px 12px !important;
     text-align: left !important;
     vertical-align: top !important;
   }
 
-  /* ===== ẢNH / VIDEO / PDF ===== */
-  .lesson-content img,
-  .lesson-content iframe,
-  .lesson-content video {
-    display: block;
-    margin: 16px auto;
-    max-width: 100%;
-    border-radius: 6px;
-  }
-
-  /* PDF iframe */
-  .lesson-content iframe {
-  display: block;
-  margin: 16px auto;
-  max-width: 100%;
-  border-radius: 6px;
-  border: none;
-}
-.lesson-content iframe[src*="audio"],
-.lesson-content iframe[style*="height:60px"] {
-  height: 60px !important;
-  max-width: 420px;
-}
-
-:fullscreen .lesson-content iframe[src*="/preview"] {
-  height: 100vh !important;
-}
-
-
-
-  /* ===== GIỮ STYLE WORD ===== */
-  .lesson-content * {
-    max-width: 100%;
-    box-sizing: border-box;
-  }
-
-  /* ===== TEXT WORD ===== */
+  /* ===== WORD TEXT ===== */
   .word-text {
     white-space: pre-wrap;
     font-family: "Times New Roman", serif;
     font-size: 16px;
-    line-height: 1.6;
+    line-height: 1.8;
     margin: 0;
   }
 
-  
-:fullscreen body {
-  background: #e5e7eb;
-}
+  /* ===== TOP CONTROLS ===== */
+  .top-controls {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 9999;
+    display: flex;
+    gap: 10px;
+  }
 
-:fullscreen .preview-wrapper {
-  margin: 0 auto;
-  min-height: 100vh;
-  max-width: 1200px;
-}
-/* ===== FULLSCREEN FIX ===== */
-:fullscreen .preview-wrapper {
-  max-width: 100vw !important;
-  width: 100vw !important;
-  margin: 0 !important;
-  border-radius: 0 !important;
-}
+  #btnHome,
+  #btnFullscreen {
+    background: rgba(15, 23, 42, 0.78);
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: 0.2s ease;
+  }
 
-/* xóa nền tối 2 bên */
-:fullscreen body {
-  background: #fff !important;
-}
-/* ===== FULLSCREEN MASK 2 DẢI ===== */
-:fullscreen,
-:fullscreen body {
-  background: #fff !important;   /* cùng màu preview */
-}
+  #btnHome:hover,
+  #btnFullscreen:hover {
+    background: rgba(15, 23, 42, 0.92);
+    transform: translateY(-1px);
+  }
 
-/* nếu browser dùng ::backdrop */
-::backdrop {
-  background: #e5e7eb !important;
-}
+  #btnFs {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 9999;
+    font-size: 18px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 10px;
+    background: rgba(15, 23, 42, 0.78);
+    color: #fff;
+    cursor: pointer;
+    transition: 0.2s ease;
+  }
 
-/* ===== ĐẨY TIÊU ĐỀ LÊN SÁT TRÊN ===== */
-:fullscreen .preview-wrapper {
-  margin-top: 0 !important;
-  padding-top: 6px !important;
-}
+  #btnFs:hover {
+    background: rgba(15, 23, 42, 0.92);
+    transform: translateY(-1px);
+  }
 
-/* nếu muốn sát nữa */
-:fullscreen .lesson-title {
-  margin-top: 0 !important;
-}
-/* ===== TOP CONTROLS ===== */
-.top-controls {
-  position: fixed;
-  top: 12px;
-  left: 12px;
-  z-index: 9999;
-  display: flex;
-  gap: 10px;
-}
+  /* ===== DOC FRAME ===== */
+  .doc-frame {
+    width: 100%;
+    height: 80vh;
+    border: none;
+    border-radius: 14px;
+    box-shadow: 0 14px 30px rgba(15,23,42,0.08);
+  }
 
-#btnHome,
-#btnFullscreen {
-  background: rgba(0, 0, 0, 0.6);
-  color: #fff;
-  border: none;
-  padding: 6px 10px;
-  font-size: 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  text-decoration: none;
-}
+  /* =========================================
+     TOEIC PREVIEW UI
+  ========================================= */
+  .tb-preview-media {
+    margin: 18px 0;
+    padding: 18px;
+    border-radius: 22px;
+    background: #f8fafc;
+    border: 1px solid rgba(15,23,42,0.06);
+    text-align: center;
+  }
 
-#btnHome:hover,
-#btnFullscreen:hover {
-  background: rgba(0, 0, 0, 0.85);
-}
+  .tb-preview-media img {
+    max-width: 70%;
+    border-radius: 16px;
+    box-shadow: 0 12px 24px rgba(15,23,42,0.08);
+  }
 
-:fullscreen .preview-wrapper {
-  height: 100vh;
-  overflow-y: auto;      /* ⭐ BẮT BUỘC */
-  -webkit-overflow-scrolling: touch;
-}
+  .tb-preview-media audio {
+    width: min(380px, 100%);
+  }
 
-.doc-frame {
-  width: 100%;
-  height: 80vh;
-  border: none;
-  border-radius: 6px;
-}
+  .tb-preview-media video,
+  .tb-preview-media iframe {
+    width: min(720px, 100%);
+    max-width: 100%;
+    aspect-ratio: 16 / 9;
+    border: none;
+    border-radius: 18px;
+    box-shadow: 0 14px 30px rgba(15,23,42,0.08);
+    background: #000;
+  }
 
-:fullscreen .doc-frame {
-  height: 100vh !important;
-}
+  .tb-preview-passage {
+    margin-bottom: 16px;
+    padding: 16px 18px;
+    background: #f8fafc;
+    border: 1px solid rgba(15,23,42,0.06);
+    border-radius: 18px;
+    color: #334155;
+    line-height: 1.85;
+  }
 
+  .tb-preview-question {
+    background: #ffffff;
+    border: 1px solid rgba(15,23,42,0.06);
+    border-radius: 24px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: 0 12px 28px rgba(15,23,42,0.04);
+  }
+
+  .tb-preview-qtop {
+    margin-bottom: 14px;
+  }
+
+  .tb-qbadge {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(22,61,143,0.08);
+    color: #163d8f;
+    font-weight: 900;
+    font-size: 12px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+
+  .tb-preview-qtext {
+    font-size: 19px;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 16px;
+    line-height: 1.8;
+  }
+
+  .tb-preview-options {
+    display: grid;
+    gap: 12px;
+  }
+
+  .tb-preview-option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border-radius: 18px;
+    border: 1px solid rgba(15,23,42,0.08);
+    background: #ffffff;
+    padding: 15px 16px;
+  }
+
+  .tb-preview-option.correct {
+    background: rgba(21,128,61,0.06);
+    border-color: rgba(21,128,61,0.18);
+  }
+
+  .tb-preview-letter {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #163d8f, #295fcf);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+  }
+
+  .tb-preview-optext {
+    flex: 1;
+    color: #334155;
+    font-weight: 700;
+    line-height: 1.75;
+  }
+
+  .tb-preview-ok {
+    color: #15803d;
+    font-size: 18px;
+    font-weight: 900;
+  }
+
+  .tb-empty-preview {
+    min-height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    color: #94a3b8;
+    text-align: center;
+  }
+
+  .tb-empty-icon {
+    font-size: 44px;
+    margin-bottom: 10px;
+  }
+
+  /* ===== FULLSCREEN ===== */
+  :fullscreen,
+  :fullscreen body {
+    background: #fff !important;
+  }
+
+  ::backdrop {
+    background: #e5e7eb !important;
+  }
+
+  :fullscreen .preview-wrapper {
+    max-width: 100vw !important;
+    width: 100vw !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    padding-top: 10px !important;
+    height: 100vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  :fullscreen .lesson-title {
+    margin-top: 0 !important;
+  }
+
+  :fullscreen .doc-frame {
+    height: 100vh !important;
+  }
+
+  @media (max-width: 768px) {
+    .preview-wrapper {
+      margin: 12px;
+      padding: 20px 16px;
+      border-radius: 16px;
+    }
+
+    .lesson-title {
+      font-size: 24px;
+    }
+
+    .tb-preview-qtext {
+      font-size: 17px;
+    }
+
+    .tb-preview-media img {
+      max-width: 100%;
+    }
+  }
 </style>
-
 </head>
 
 <body>
 
+<button id="btnFs">⛶</button>
 
+<div class="top-controls">
+  <a href="../index.html" id="btnHome"><==</a>
+</div>
 
 <div class="preview-wrapper">
-
   <div class="lesson-title" id="pTitle"></div>
   <div class="lesson-meta" id="pMeta"></div>
   <div class="lesson-content" id="pContent"></div>
-
-<button id="btnFs"
-style="
-position:fixed;
-top:10px;
-right:10px;
-z-index:9999;
-font-size:18px;
-padding:6px 10px;
-">
-⛶
-</button>
-<div class="top-controls">
-  <a href="../index.html" id="btnHome"><== </a>
-  
-</div>
-
-   
 </div>
 
 <script>
@@ -269,15 +375,114 @@ function isFlipbook(url) {
   return url.endsWith(".html");
 }
 
+function isLikelyToeicTest(html) {
+  const text = stripHtml(html || "");
+  return (
+    /câu\s*\d+/i.test(text) ||
+    /question\s*\d+/i.test(text) ||
+    /^[A-D][\.\)\-:]/im.test(text)
+  );
+}
+
+function escapeHtml(str = "") {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function stripHtml(html = "") {
+  const div = document.createElement("div");
+  div.innerHTML = html;
+  return div.innerText || div.textContent || "";
+}
+
 /* ===== WORD CLEAN ===== */
 function cleanWordHTML(html) {
   if (!html) return "<i>Không có nội dung</i>";
+
   return html
     .replace(/class="?Mso[a-zA-Z0-9]*"?/g, "")
     .replace(/style="[^"]*mso-[^"]*"/g, "")
     .replace(/<o:p>\s*<\/o:p>/g, "")
     .replace(/<span style="[^"]*"><\/span>/g, "")
     .replace(/<!--\[if[^>]*>.*?<!\[endif\]-->/g, "");
+}
+
+/* ===== TOEIC RENDER ===== */
+function renderToeicPreview(html) {
+  const tempDiv = document.createElement("div");
+  tempDiv.innerHTML = html;
+
+  const blocks = tempDiv.querySelectorAll("p, div, img, audio, video, iframe");
+  let out = "";
+  let qIndex = 0;
+  let currentQuestionOpen = false;
+
+  blocks.forEach(el => {
+    const tag = el.tagName.toLowerCase();
+
+    /* ========= MEDIA ========= */
+    if (["img", "audio", "video", "iframe"].includes(tag)) {
+      out += `<div class="tb-preview-media">${el.outerHTML}</div>`;
+      return;
+    }
+
+    const text = (el.innerText || "").trim();
+    if (!text) return;
+
+    const isQuestion =
+      /^câu\s*\d+/i.test(text) ||
+      /^question\s*\d+/i.test(text);
+
+    const isOption = /^[A-D][\.\)\-:]/i.test(text);
+
+    if (isQuestion) {
+      if (currentQuestionOpen) out += `</div></div>`;
+
+      qIndex++;
+      out += `
+        <div class="tb-preview-question">
+          <div class="tb-preview-qtop">
+            <span class="tb-qbadge">Question ${qIndex}</span>
+          </div>
+          <div class="tb-preview-qtext">${escapeHtml(text)}</div>
+          <div class="tb-preview-options">
+      `;
+      currentQuestionOpen = true;
+      return;
+    }
+
+    if (isOption) {
+      const letter = text.charAt(0).toUpperCase();
+      const optionText = text
+        .replace(/^[A-D][\.\)\-:]\s*/i, "")
+        .replace(/\*/g, "")
+        .trim();
+
+      const isCorrect = text.includes("*");
+
+      out += `
+        <div class="tb-preview-option ${isCorrect ? "correct" : ""}">
+          <div class="tb-preview-letter">${letter}</div>
+          <div class="tb-preview-optext">${escapeHtml(optionText)}</div>
+          ${isCorrect ? `<div class="tb-preview-ok">✔</div>` : ""}
+        </div>
+      `;
+      return;
+    }
+
+    out += `<div class="tb-preview-passage">${escapeHtml(text)}</div>`;
+  });
+
+  if (currentQuestionOpen) out += `</div></div>`;
+
+  return out || `
+    <div class="tb-empty-preview">
+      <div class="tb-empty-icon">📝</div>
+      <p>Không parse được nội dung</p>
+    </div>
+  `;
 }
 
 /* ===== MAIN RENDER ===== */
@@ -289,7 +494,7 @@ function cleanWordHTML(html) {
     return;
   }
 
-  // 👉 CASE: LINK
+  // CASE: LINK THUẦN
   if (isURL(raw)) {
     let label = "📄 Tài liệu";
 
@@ -297,7 +502,7 @@ function cleanWordHTML(html) {
     else if (isPDF(raw)) label = "📄 PDF / PPT";
 
     contentEl.innerHTML = `
-      <div style="text-align:center;font-weight:600;margin-bottom:8px;">
+      <div style="text-align:center;font-weight:700;margin-bottom:10px;">
         ${label}
       </div>
       <iframe 
@@ -310,7 +515,13 @@ function cleanWordHTML(html) {
     return;
   }
 
-  // 👉 CASE: WORD
+  // CASE: TOEIC TEST
+  if (isLikelyToeicTest(raw)) {
+    contentEl.innerHTML = renderToeicPreview(raw);
+    return;
+  }
+
+  // CASE: BÀI GIẢNG WORD / HTML THƯỜNG
   contentEl.innerHTML = cleanWordHTML(raw);
 })();
 </script>
@@ -328,8 +539,6 @@ btn.onclick = async () => {
   }
 };
 </script>
-
-
 
 </body>
 </html>

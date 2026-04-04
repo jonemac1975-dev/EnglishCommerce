@@ -33,6 +33,14 @@
       <input type="date" id="kt_ngay" />
     </div>
 
+<div class="form-group">
+  <label>Ngày- giờ làm bài</label>
+  <input type="datetime-local" id="kt_examTime" />
+  <small style="display:block;color:#666;margin-top:4px;">
+    Chỉ khi đến đúng thời điểm này sinh viên mới được mở đề.
+  </small>
+</div>
+
     <!-- LOẠI BÀI KIỂM TRA -->
     <div class="kt-row">
       <label><b>Loại bài kiểm tra</b></label>
@@ -101,8 +109,9 @@
       <tr>
         <th>STT</th>
         <th>Tiêu đề</th>
-        <th>Ngày</th>
+        <th>Ngày/giờ thi</th>
         <th>Loại</th>
+        <th>Cơ cấu điểm</th>
         <th>Hành động</th>
       </tr>
     </thead>

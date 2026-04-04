@@ -1,0 +1,312 @@
+.ai-teacher-page {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px;
+  color: #0f172a;
+}
+
+/* =========================
+   HEADER
+========================= */
+.ai-header {
+  margin-bottom: 22px;
+}
+
+.ai-header h2 {
+  margin: 0 0 8px;
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.ai-header p {
+  color: #64748b;
+  margin: 0;
+  font-size: 15px;
+}
+
+/* =========================
+   TABS
+========================= */
+.ai-type-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.ai-type-btn {
+  padding: 11px 18px;
+  border: none;
+  border-radius: 14px;
+  background: #e2e8f0;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  color: #0f172a;
+  transition: all 0.2s ease;
+}
+
+.ai-type-btn:hover {
+  transform: translateY(-1px);
+  background: #dbe4f0;
+}
+
+.ai-type-btn.active {
+  background: #2563eb;
+  color: white;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.18);
+}
+
+/* =========================
+   FORM SECTION
+========================= */
+.ai-form-section {
+  display: none;
+  background: linear-gradient(180deg, #f8fbff 0%, #f8fafc 100%);
+  padding: 22px;
+  border-radius: 20px;
+  margin-bottom: 22px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+}
+
+.ai-form-section.active {
+  display: block;
+}
+
+/* =========================
+   GRID
+========================= */
+.ai-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 16px;
+  margin-bottom: 16px;
+}
+
+/* =========================
+   INPUTS
+========================= */
+.ai-grid input,
+.ai-grid select,
+.ai-grid textarea,
+.ai-form-section textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 13px 15px;
+  border: 1px solid #cbd5e1;
+  border-radius: 14px;
+  font-size: 15px;
+  line-height: 1.5;
+  background: #ffffff;
+  color: #0f172a;
+  transition: all 0.2s ease;
+}
+
+.ai-grid input:focus,
+.ai-grid select:focus,
+.ai-grid textarea:focus,
+.ai-form-section textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+  outline: none;
+}
+
+/* =========================
+   TEXTAREA FULL WIDTH
+========================= */
+.ai-full {
+  width: 100%;
+  margin-bottom: 14px;
+}
+
+.ai-full textarea {
+  width: 100%;
+  display: block;
+  resize: vertical;
+}
+
+/* Ghi chú */
+#lesson_ghiChu,
+#exercise_ghiChu,
+#exam_ghiChu,
+#toeic_ghiChu {
+  min-height: 120px;
+}
+
+/* Dữ liệu gốc */
+#lesson_duLieuGoc,
+#exercise_duLieuGoc,
+#exam_duLieuGoc,
+#toeic_duLieuGoc {
+  min-height: 190px;
+}
+
+/* =========================
+   MAIN BUTTON
+========================= */
+.ai-main-btn {
+  padding: 8px 10px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  color: white;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 12px 28px rgba(22, 163, 74, 0.2);
+}
+
+.ai-main-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 32px rgba(22, 163, 74, 0.28);
+}
+
+/* =========================
+   ACTIONS
+========================= */
+.ai-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.ai-actions button {
+  padding: 7px 16px;
+  border: none;
+  border-radius: 12px;
+  background: #0f172a;
+  color: white;
+  cursor: pointer;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.ai-actions button:hover {
+  transform: translateY(-1px);
+  opacity: 0.95;
+}
+
+/* =========================
+   OUTPUT BOX
+========================= */
+.ai-output-box {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  min-height: 320px;
+  padding: 22px;
+  line-height: 1.75;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.04);
+}
+
+.ai-placeholder {
+  color: #94a3b8;
+  font-style: italic;
+}
+
+/* =========================
+   LOADING
+========================= */
+.ai-loading-box {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+}
+
+.ai-spinner {
+  width: 28px;
+  height: 28px;
+  border: 4px solid #cbd5e1;
+  border-top: 4px solid #2563eb;
+  border-radius: 50%;
+  animation: aiSpin 1s linear infinite;
+}
+
+@keyframes aiSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.ai-loading-text {
+  font-weight: 700;
+  color: #334155;
+}
+
+/* =========================
+   ERROR / SUCCESS
+========================= */
+.ai-error-box {
+  background: #fef2f2;
+  color: #b91c1c;
+  padding: 16px;
+  border-radius: 14px;
+  font-weight: 700;
+}
+
+.ai-success-box {
+  color: #0f172a;
+}
+
+.ai-render-content {
+  white-space: normal;
+}
+
+.ai-block-title {
+  font-weight: 800;
+  font-size: 18px;
+  margin: 16px 0 8px;
+  color: #1d4ed8;
+}
+
+.ai-bullet {
+  margin-left: 10px;
+  padding: 2px 0;
+}
+
+.ai-answer-line {
+  margin-left: 14px;
+  color: #334155;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 900px) {
+  .ai-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ai-teacher-page {
+    padding: 16px;
+  }
+
+  .ai-form-section {
+    padding: 18px;
+  }
+
+  .ai-header h2 {
+    font-size: 24px;
+  }
+
+  .ai-actions {
+    flex-direction: column;
+  }
+
+  .ai-actions button,
+  .ai-main-btn {
+    width: 100%;
+  }
+
+  #lesson_duLieuGoc,
+  #exercise_duLieuGoc,
+  #exam_duLieuGoc,
+  #toeic_duLieuGoc {
+    min-height: 160px;
+  }
+}

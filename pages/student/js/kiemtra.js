@@ -11,17 +11,299 @@ let teacherName;
 let baiKiemTraDangChon = null;
 let dapAnDungMap = {};
 let timerInterval = null;
-let timeRemaining = 0; // tính bằng giây
+let timeRemaining = 0; // giây
 let daCanhBao5Phut = false;
 let lopNameMap = {};
 let monHocNameMap = {};
 let examType = "multiple_choice";
 let essayAnswers = {};
-let essayImageInputMap = {};
+let currentExamSession = null;
+let draftSaveInterval = null;
+let examOpenCountdownInterval = null;
+let currentSelectedBaiId = null;
 
+// 🔥 Cho phép vào trễ tối đa 15 phút kể từ giờ mở đề
+const EXAM_LATE_WINDOW_MINUTES = 15;
+
+// 🔥 Firebase server offset
+let firebaseServerOffset = 0;
+let serverOffsetLoaded = false;
 
 /* ===============================
-   INIT (BẮT BUỘC)
+   DRAFT LOCAL
+================================ */
+function getDraftKey(baiId) {
+  return `exam_draft_${student?.id || "unknown"}_${baiId}`;
+}
+
+function getFirebaseDraftPath(baiId) {
+  return `users/students/${student?.id}/kiemtra_draft/${baiId}`;
+}
+
+async function saveDraftToFirebase() {
+  if (!baiKiemTraDangChon || !currentSelectedBaiId) return;
+
+  const tracNghiem = {};
+  Object.keys(dapAnDungMap).forEach((cau) => {
+    const checked = document.querySelector(`input[name="cau${cau}"]:checked`);
+    if (checked) tracNghiem[cau] = checked.value;
+  });
+
+  const essays = {};
+  const essayList = baiKiemTraDangChon.essays || [];
+  essayList.forEach((_, index) => {
+    const so = index + 1;
+    const textEl = document.getElementById(`essay_text_${so}`);
+
+    essays[so] = {
+      text: textEl?.value?.trim() || essayAnswers?.[so]?.text || "",
+      image: essayAnswers?.[so]?.image || ""
+    };
+  });
+
+  await writeData(getFirebaseDraftPath(currentSelectedBaiId), {
+    tracNghiem,
+    essays,
+    savedAt: Date.now()
+  });
+}
+
+function saveDraftToLocal() {
+  if (!baiKiemTraDangChon || !currentSelectedBaiId) return;
+
+  const baiId = currentSelectedBaiId;
+
+  const tracNghiem = {};
+  Object.keys(dapAnDungMap).forEach((cau) => {
+    const checked = document.querySelector(`input[name="cau${cau}"]:checked`);
+    if (checked) tracNghiem[cau] = checked.value;
+  });
+
+  const essays = {};
+  const essayList = baiKiemTraDangChon.essays || [];
+  essayList.forEach((_, index) => {
+    const so = index + 1;
+    const textEl = document.getElementById(`essay_text_${so}`);
+
+    essays[so] = {
+      text: textEl?.value?.trim() || essayAnswers?.[so]?.text || "",
+      image: essayAnswers?.[so]?.image || ""
+    };
+  });
+
+  localStorage.setItem(
+    getDraftKey(baiId),
+    JSON.stringify({
+      tracNghiem,
+      essays,
+      savedAt: Date.now()
+    })
+  );
+}
+
+async function loadBestDraft(baiId) {
+  try {
+    const localRaw = localStorage.getItem(getDraftKey(baiId));
+    const localDraft = localRaw ? JSON.parse(localRaw) : null;
+
+    const fireDraft = await readData(getFirebaseDraftPath(baiId));
+
+    if (fireDraft && localDraft) {
+      return (fireDraft.savedAt || 0) > (localDraft.savedAt || 0)
+        ? fireDraft
+        : localDraft;
+    }
+
+    return fireDraft || localDraft || null;
+  } catch {
+    return null;
+  }
+}
+
+function clearDraftLocal(baiId) {
+  localStorage.removeItem(getDraftKey(baiId));
+}
+
+async function clearDraftFirebase(baiId) {
+  await writeData(getFirebaseDraftPath(baiId), null);
+}
+
+/* ===============================
+   FIREBASE SERVER TIME
+================================ */
+async function loadFirebaseServerOffset() {
+  if (serverOffsetLoaded) return firebaseServerOffset;
+
+  try {
+    const offset = await readData(".info/serverTimeOffset");
+    firebaseServerOffset = Number(offset || 0);
+    serverOffsetLoaded = true;
+
+    console.log("🕒 Firebase server offset:", firebaseServerOffset);
+    return firebaseServerOffset;
+  } catch (err) {
+    console.warn("⚠️ Không lấy được Firebase server offset, fallback 0", err);
+    firebaseServerOffset = 0;
+    serverOffsetLoaded = true;
+    return 0;
+  }
+}
+
+async function getServerNow(force = false) {
+  if (!serverOffsetLoaded || force) {
+    await loadFirebaseServerOffset();
+  }
+  return Date.now() + firebaseServerOffset;
+}
+
+function formatTsVN(ts) {
+  if (!ts) return "--";
+  return new Date(ts).toLocaleString("vi-VN");
+}
+
+/* ===============================
+   HELPERS
+================================ */
+function removeResultSummary() {
+  document.querySelectorAll(".kt-summary").forEach(el => el.remove());
+}
+
+function getSafeTNMax(bai) {
+  let diemTN = Number(bai?.diemTN ?? 0);
+  let diemTL = Number(bai?.diemTL ?? 0);
+  const type = bai?.examType || "multiple_choice";
+
+  if (type === "multiple_choice") {
+    if (diemTN <= 0) diemTN = 10;
+    diemTL = 0;
+  }
+
+  if (type === "mixed") {
+    if (diemTN === 0 && diemTL === 0) {
+      diemTN = 5;
+      diemTL = 5;
+    }
+  }
+
+  return diemTN;
+}
+
+function getSafeTLMax(bai) {
+  let diemTN = Number(bai?.diemTN ?? 0);
+  let diemTL = Number(bai?.diemTL ?? 0);
+  const type = bai?.examType || "multiple_choice";
+
+  if (type === "multiple_choice") {
+    return 0;
+  }
+
+  if (type === "mixed" && diemTN === 0 && diemTL === 0) {
+    return 5;
+  }
+
+  return diemTL;
+}
+
+/* ===============================
+   CLEAR UI
+================================ */
+function clearExamUI(message = "") {
+  clearInterval(timerInterval);
+  clearInterval(draftSaveInterval);
+  clearInterval(examOpenCountdownInterval);
+
+  baiKiemTraDangChon = null;
+  dapAnDungMap = {};
+  essayAnswers = {};
+  currentExamSession = null;
+  examType = "multiple_choice";
+  timeRemaining = 0;
+  daCanhBao5Phut = false;
+
+  removeResultSummary();
+
+  const noiDung = document.getElementById("ktNoiDung");
+  const essayWrap = document.getElementById("ktEssayWrap");
+  const essayList = document.getElementById("ktEssayList");
+  const timerEl = document.getElementById("ktTimer");
+  const dungEl = document.getElementById("ktDung");
+  const diemEl = document.getElementById("ktDiem");
+  const btnSubmit = document.getElementById("btnSubmit");
+  const coCauEl = document.getElementById("ktCoCauDiem");
+
+  if (noiDung) {
+    noiDung.innerHTML = message
+      ? `<div style="padding:16px;border:1px dashed #f59f00;background:#fff8db;border-radius:12px;color:#8a5a00;">
+          ${message}
+        </div>`
+      : "";
+  }
+
+  if (essayWrap) essayWrap.style.display = "none";
+  if (essayList) essayList.innerHTML = "";
+  if (timerEl) {
+    timerEl.innerText = "";
+    timerEl.style.color = "";
+  }
+  if (dungEl) dungEl.innerText = "";
+  if (diemEl) diemEl.innerText = "";
+  if (coCauEl) coCauEl.innerText = "Cơ cấu điểm: --";
+  if (btnSubmit) btnSubmit.disabled = true;
+}
+
+/* ===============================
+   KIỂM TRA MỞ ĐỀ
+================================ */
+function getExamOpenStatus(baiKiemTra, serverNow) {
+  const examStartAt = Number(
+    baiKiemTra?.examStartAt ||
+    baiKiemTra?.examTimeTs ||
+    0
+  );
+
+  if (!examStartAt) {
+    return {
+      allowed: true,
+      examStartAt: 0,
+      tooLate: false,
+      notYetOpen: false,
+      message: ""
+    };
+  }
+
+  const lateDeadline = examStartAt + EXAM_LATE_WINDOW_MINUTES * 60 * 1000;
+
+  if (serverNow < examStartAt) {
+    return {
+      allowed: false,
+      examStartAt,
+      tooLate: false,
+      notYetOpen: true,
+      message: `⏳ Chưa đến giờ làm bài.<br>Thời gian mở đề: <b>${baiKiemTra.examStartText || baiKiemTra.examTimeText || formatTsVN(examStartAt)}</b>`
+    };
+  }
+
+  if (serverNow > lateDeadline) {
+    return {
+      allowed: false,
+      examStartAt,
+      tooLate: true,
+      notYetOpen: false,
+      message: `⛔ Đã quá thời gian cho phép vào bài.<br>Đề mở lúc: <b>${baiKiemTra.examStartText || baiKiemTra.examTimeText || formatTsVN(examStartAt)}</b><br>Chỉ được vào trong vòng <b>${EXAM_LATE_WINDOW_MINUTES} phút</b> đầu tiên.`
+    };
+  }
+
+  return {
+    allowed: true,
+    examStartAt,
+    tooLate: false,
+    notYetOpen: false,
+    message: ""
+  };
+}
+
+/* ===============================
+   INIT
 ================================ */
 export async function init() {
   console.log("🔥🔥 INIT KIEMTRA CHẠY");
@@ -35,61 +317,57 @@ export async function init() {
     return;
   }
 
-const selectedLop = localStorage.getItem("selectedLop");
-const selectedMonHoc = localStorage.getItem("selectedMonHoc");
+  const selectedLop = localStorage.getItem("selectedLop");
+  const selectedMonHoc = localStorage.getItem("selectedMonHoc");
 
-if (!selectedLop || !selectedMonHoc) {
-  alert("Vui lòng chọn Lớp và Môn học ở sidebar trước khi vào Kiểm tra");
-  return;
-}
+  if (!selectedLop || !selectedMonHoc) {
+    alert("Vui lòng chọn Giáo viên + Lớp + Môn học trước khi vào Kiểm tra");
+    return;
+  }
 
-  document.getElementById("ktHocVien").innerText =
-    `${student.ho_ten}`;
+  document.getElementById("ktHocVien").innerText = `${student.ho_ten}`;
+  document.getElementById("ktGiaoVien").innerText = teacherName;
 
-  document.getElementById("ktGiaoVien").innerText =
-    teacherName;
-
+  const nowTs = await getServerNow(true);
   document.getElementById("ktNgay").innerText =
-    new Date().toLocaleDateString("vi-VN");
+    new Date(nowTs).toLocaleDateString("vi-VN");
 
   await loadDanhMuc();
   await loadLopDisplay();
   await loadMonHocDisplay();
   await loadDanhSachBaiKiemTra();
 
-document
-  .getElementById("selKyThi")
-  .addEventListener("change", async () => {
-
-    clearInterval(timerInterval);
-
-    document.getElementById("ktNoiDung").innerHTML = "";
-    document.getElementById("ktTimer").innerText = "";
-    document.getElementById("ktDung").innerText = "";
-    document.getElementById("ktDiem").innerText = "";
- const coCauEl = document.getElementById("ktCoCauDiem");
-    if (coCauEl) coCauEl.innerText = "Cơ cấu điểm: --";
-
+  document.getElementById("selKyThi").addEventListener("change", async () => {
+    currentSelectedBaiId = null;
+    clearExamUI();
     await loadDanhSachBaiKiemTra();
   });
 
-document
+  document
     .getElementById("selBaiKT")
-    .addEventListener("change", onChonBaiKiemTra);
+    .addEventListener("change", async (e) => {
+      const baiId = e.target.value;
+      currentSelectedBaiId = baiId || null;
+
+      if (!baiId) {
+        clearExamUI();
+        return;
+      }
+
+      await loadExamById(baiId);
+    });
 
   document
     .getElementById("btnSubmit")
-    .addEventListener("click", nopBai);
+    .addEventListener("click", () => nopBai(false));
 }
-
-
 
 /* ===============================
    LOAD DANH MỤC
 ================================ */
 async function loadDanhMuc() {
   await loadSelect("kythi", "selKyThi");
-  }
+}
 
 async function loadSelect(dm, selectId) {
   const sel = document.getElementById(selectId);
@@ -97,7 +375,6 @@ async function loadSelect(dm, selectId) {
 
   sel.innerHTML = `<option value="">-- Chọn --</option>`;
 
-  // ✅ ĐÚNG: đọc theo danh mục truyền vào
   const data = await readData(`config/danh_muc/${dm}`);
   if (!data) return;
 
@@ -105,7 +382,6 @@ async function loadSelect(dm, selectId) {
     const opt = document.createElement("option");
     opt.value = id;
 
-    // Nếu là kỳ thi thì hiển thị thêm thời gian
     if (dm === "kythi" && item.thoigian) {
       opt.textContent = `${item.name} (${item.thoigian} phút)`;
     } else {
@@ -120,7 +396,6 @@ async function loadSelect(dm, selectId) {
    LOAD LỚP
 ================================ */
 async function loadLopDisplay() {
-
   const lopId = localStorage.getItem("selectedLop");
 
   if (!lopId) {
@@ -167,95 +442,222 @@ async function loadMonHocDisplay() {
 }
 
 /* ===============================
-   LOAD BÀI KIỂM TRA
+   LOAD DANH SÁCH BÀI KIỂM TRA
 ================================ */
 async function loadDanhSachBaiKiemTra() {
-
   const select = document.getElementById("selBaiKT");
   if (!select) return;
 
   select.innerHTML = `<option value="">-- chọn bài kiểm tra --</option>`;
 
   const lopId = localStorage.getItem("selectedLop");
-const monHocId = localStorage.getItem("selectedMonHoc");
-const kyThiId = document.getElementById("selKyThi").value;
+  const monHocId = localStorage.getItem("selectedMonHoc");
+  const kyThiId = document.getElementById("selKyThi").value;
 
   if (!lopId || !monHocId || !kyThiId) return;
 
   const data = await readData(`teacher/${teacherId}/kiemtra`);
   if (!data) return;
 
+  const serverNow = await getServerNow(true);
+
   Object.entries(data).forEach(([id, kt]) => {
+    if (kt.lop !== lopId) return;
+    if (kt.kythi !== kyThiId) return;
+    if ((kt.monhoc || "") !== monHocId) return;
 
-  if (kt.lop !== lopId) return;
-  if (kt.kythi !== kyThiId) return;
-  if ((kt.monhoc || "") !== monHocId) return;
+    const status = getExamOpenStatus(kt, serverNow);
 
-  const opt = document.createElement("option");
-  opt.value = id;
-  opt.textContent = kt.tieude || "Bài kiểm tra";
+    const opt = document.createElement("option");
+    opt.value = id;
 
-  select.appendChild(opt);
-});
+    const examTimeText = (kt.examStartText || kt.examTimeText)
+      ? ` | Mở: ${kt.examStartText || kt.examTimeText}`
+      : "";
+
+    let statusText = " ⏳ Chưa khả dụng";
+    if (status.allowed) statusText = " ✅ Được làm";
+    else if (status.tooLate) statusText = " ⛔ Hết thời gian vào";
+
+    opt.textContent = `${kt.tieude || "Bài kiểm tra"}${examTimeText}${statusText}`;
+    select.appendChild(opt);
+  });
 }
 
 /* ===============================
-   CHỌN BÀI
+   TẠO / LẤY PHIÊN LÀM BÀI
 ================================ */
-async function onChonBaiKiemTra(e) {
-  const baiId = e.target.value;
-  if (!baiId) return;
+async function ensureExamSession(baiId, baiKiemTra, thoiGianPhut) {
+  const path = `users/students/${student.id}/kiemtra_danglam/${baiId}`;
+  const oldSession = await readData(path);
 
-  const baiKiemTra =
-    await readData(`teacher/${teacherId}/kiemtra/${baiId}`);
+  const examStartAt = Number(
+    baiKiemTra.examStartAt ||
+    baiKiemTra.examTimeTs ||
+    0
+  );
 
-  if (!baiKiemTra || !baiKiemTra.noidung) {
-    alert("Bài kiểm tra chưa có nội dung");
+  if (!examStartAt) {
+    alert("Bài kiểm tra chưa được cấu hình thời gian mở đề");
+    return null;
+  }
+
+  const now = await getServerNow(true);
+  const lateDeadline = examStartAt + EXAM_LATE_WINDOW_MINUTES * 60 * 1000;
+  const durationMs = Number(thoiGianPhut || 15) * 60 * 1000;
+
+  if (oldSession?.startedAt && oldSession?.deadlineAt) {
+    if (now >= oldSession.deadlineAt) {
+      alert("⛔ Phiên làm bài của bạn đã hết thời gian.");
+      return null;
+    }
+    return oldSession;
+  }
+
+  if (now < examStartAt) {
+    return null;
+  }
+
+  if (now > lateDeadline) {
+    alert(
+      `⛔ Bạn đã vào trễ quá ${EXAM_LATE_WINDOW_MINUTES} phút kể từ giờ mở đề.\nKhông thể bắt đầu bài kiểm tra này.`
+    );
+    return null;
+  }
+
+  const session = {
+    startedAt: now,
+    deadlineAt: now + durationMs,
+    teacherId,
+    lop: localStorage.getItem("selectedLop"),
+    monhoc: localStorage.getItem("selectedMonHoc"),
+    kythi: document.getElementById("selKyThi").value,
+    examStartAt,
+    lateDeadline,
+    durationMinutes: Number(thoiGianPhut || 15),
+    createdAt: now
+  };
+
+  await writeData(path, session);
+  return session;
+}
+
+/* ===============================
+   CHỜ ĐẾN GIỜ MỞ ĐỀ
+================================ */
+function startExamOpenCountdown(baiKiemTra, baiId) {
+  clearInterval(examOpenCountdownInterval);
+
+  const timerEl = document.getElementById("ktTimer");
+  const btnSubmit = document.getElementById("btnSubmit");
+  const examStartAt = Number(
+    baiKiemTra?.examStartAt || baiKiemTra?.examTimeTs || 0
+  );
+
+  if (!examStartAt) return;
+
+  if (btnSubmit) btnSubmit.disabled = true;
+
+  const tick = async () => {
+    const now = await getServerNow(true);
+    const remain = Math.max(0, Math.floor((examStartAt - now) / 1000));
+
+    const phut = Math.floor(remain / 60);
+    const giay = remain % 60;
+
+    if (timerEl) {
+      timerEl.innerText = `⏳ Chưa đến giờ mở đề: ${phut
+        .toString()
+        .padStart(2, "0")}:${giay.toString().padStart(2, "0")}`;
+      timerEl.style.color = "#d97706";
+    }
+
+    if (remain <= 0) {
+      clearInterval(examOpenCountdownInterval);
+
+      if (timerEl) {
+        timerEl.innerText = "📢 Đã đến giờ mở đề, đang tải bài...";
+        timerEl.style.color = "#198754";
+      }
+
+      setTimeout(async () => {
+        if (currentSelectedBaiId === baiId) {
+          await loadExamById(baiId, true);
+        }
+      }, 1200);
+    }
+  };
+
+  tick();
+  examOpenCountdownInterval = setInterval(tick, 1000);
+}
+
+
+/* ===============================
+   LOAD BÀI THEO ID
+================================ */
+async function loadExamById(baiId, isAutoRetryOpen = false) {
+  if (!baiId) {
+    clearExamUI();
     return;
   }
 
-  baiKiemTraDangChon = baiKiemTra;
-  examType = baiKiemTra.examType || "multiple_choice";
+  currentSelectedBaiId = baiId;
+  removeResultSummary();
+  clearInterval(timerInterval);
+  clearInterval(draftSaveInterval);
+  clearInterval(examOpenCountdownInterval);
 
-const diemTNMax = Number(baiKiemTra?.diemTN || 0);
-const diemTLMax = Number(baiKiemTra?.diemTL || 0);
+  const baiKiemTra = await readData(`teacher/${teacherId}/kiemtra/${baiId}`);
 
-const coCauEl = document.getElementById("ktCoCauDiem");
-if (coCauEl) {
-  coCauEl.innerText =
-    `Cơ cấu điểm: Trắc nghiệm ${diemTNMax} | Tự luận ${diemTLMax}`;
-}
-  essayAnswers = {};
-  essayImageInputMap = {};
-  hienThiCoCauDiem(baiKiemTra);
-
-
-  // Lấy kỳ thi đang chọn
-  const kyThiId = document.getElementById("selKyThi").value;
-  let thoiGianPhut = 15;
-
-  if (kyThiId) {
-    const kyThiData = await readData(`config/danh_muc/kythi/${kyThiId}`);
-    if (kyThiData?.thoigian) {
-      thoiGianPhut = kyThiData.thoigian;
-    }
+  if (!baiKiemTra || !baiKiemTra.noidung) {
+    alert("Bài kiểm tra chưa có nội dung");
+    clearExamUI();
+    return;
   }
 
-  // 🔥 KIỂM TRA ĐÃ LÀM CHƯA
-  const daLam = await readData(
-    `users/students/${student.id}/kiemtra/${baiId}`
-  );
+  const serverNow = await getServerNow(true);
+  const openStatus = getExamOpenStatus(baiKiemTra, serverNow);
 
-  clearInterval(timerInterval);
+  // Gán state trước
+  baiKiemTraDangChon = baiKiemTra;
+  examType = baiKiemTra.examType || "multiple_choice";
+  essayAnswers = {};
 
+  const diemTNMax = getSafeTNMax(baiKiemTra);
+  const diemTLMax = getSafeTLMax(baiKiemTra);
+
+  const coCauEl = document.getElementById("ktCoCauDiem");
+  if (coCauEl) {
+    coCauEl.innerText =
+      `Cơ cấu điểm: Trắc nghiệm ${diemTNMax} | Tự luận ${diemTLMax}`;
+  }
+
+  hienThiCoCauDiem(baiKiemTra);
+
+  // 🔥 CHECK BÀI ĐÃ LÀM TRƯỚC
+  const daLam = await readData(`users/students/${student.id}/kiemtra/${baiId}`);
+
+  // =========================================================
+  // 🔥 NẾU ĐÃ NỘP BÀI → CHỈ CHO XEM, KHÔNG TẠO SESSION NỮA
+  // =========================================================
   if (daLam) {
+    // Xóa rác nếu lỡ còn sót
+    await writeData(`users/students/${student.id}/kiemtra_danglam/${baiId}`, null);
+    await clearDraftFirebase(baiId);
+    clearDraftLocal(baiId);
+
     const timerEl = document.getElementById("ktTimer");
-    if (timerEl) timerEl.innerText = "Bài đã làm";
+    if (timerEl) {
+      timerEl.innerText = "📄 Đang xem bài đã nộp";
+      timerEl.style.color = "#198754";
+    }
 
     renderTracNghiem(
       baiKiemTra.noidung,
       true,
-      daLam.traLoi || {}
+      daLam.traLoi || {},
+      false // KHÔNG tick đúng trước
     );
 
     renderEssaySection(
@@ -265,38 +667,98 @@ if (coCauEl) {
     );
 
     document.getElementById("btnSubmit").disabled = true;
+
     hienKetQua(daLam, dapAnDungMap);
-
-  } else {
-    renderTracNghiem(baiKiemTra.noidung);
-    renderEssaySection(
-      baiKiemTra.essays || [],
-      false,
-      {}
-    );
-
-    document.getElementById("btnSubmit").disabled = false;
-    startTimer(thoiGianPhut);
-  }
-}
-
-
-/* ===============================
-   RENDER Nội dung
-================================ */
-function renderHTMLNoiDung(html) {
-  const container = document.getElementById("ktNoiDung");
-
-  if (!html) {
-    container.innerHTML = "<i>Chưa có nội dung</i>";
     return;
   }
 
-  container.innerHTML = html; // ✅ HTML chạy đúng
+  // =========================================================
+  // 🔥 CHƯA NỘP → MỚI KIỂM TRA GIỜ MỞ ĐỀ
+  // =========================================================
+  if (!openStatus.allowed) {
+    clearExamUI(openStatus.message);
+
+    if (openStatus.notYetOpen && !openStatus.tooLate) {
+      startExamOpenCountdown(baiKiemTra, baiId);
+    }
+
+    return;
+  }
+
+  const kyThiId = document.getElementById("selKyThi").value;
+  let thoiGianPhut = 15;
+
+  if (kyThiId) {
+    const kyThiData = await readData(`config/danh_muc/kythi/${kyThiId}`);
+    if (kyThiData?.thoigian) {
+      thoiGianPhut = Number(kyThiData.thoigian);
+    }
+  }
+
+  // =========================================================
+  // 🔥 CHỈ TẠO SESSION KHI CHƯA NỘP BÀI
+  // =========================================================
+  const session = await ensureExamSession(baiId, baiKiemTra, thoiGianPhut);
+
+  if (!session) {
+    const freshNow = await getServerNow(true);
+    const freshStatus = getExamOpenStatus(baiKiemTra, freshNow);
+
+    if (freshStatus.notYetOpen && !freshStatus.tooLate) {
+      clearExamUI(freshStatus.message);
+      startExamOpenCountdown(baiKiemTra, baiId);
+      return;
+    }
+
+    document.getElementById("ktNoiDung").innerHTML = `
+      <div style="padding:16px;border:1px solid #f5c2c7;background:#fff3f4;border-radius:10px;color:#842029;">
+        ⛔ Bài kiểm tra hiện chưa khả dụng hoặc đã hết giờ.
+      </div>
+    `;
+    document.getElementById("ktEssayWrap").style.display = "none";
+    document.getElementById("btnSubmit").disabled = true;
+    return;
+  }
+
+  currentExamSession = session;
+
+  clearInterval(timerInterval);
+  clearInterval(draftSaveInterval);
+
+  const draft = await loadBestDraft(baiId);
+
+  renderTracNghiem(
+    baiKiemTra.noidung,
+    false,
+    draft?.tracNghiem || {},
+    false
+  );
+
+  renderEssaySection(
+    baiKiemTra.essays || [],
+    false,
+    draft?.essays || {}
+  );
+
+  document.getElementById("btnSubmit").disabled = false;
+
+  const freshNow = await getServerNow(true);
+  const remainSeconds = Math.max(
+    0,
+    Math.floor((session.deadlineAt - freshNow) / 1000)
+  );
+
+  startTimerFromRemaining(remainSeconds);
+
+  draftSaveInterval = setInterval(async () => {
+    saveDraftToLocal();
+    await saveDraftToFirebase();
+  }, 5000);
 }
 
-
-
+/* ===============================
+   RENDER ESSAY
+================================ */
 function renderEssaySection(essays = [], isDaLam = false, tuLuanCu = {}) {
   const wrap = document.getElementById("ktEssayWrap");
   const list = document.getElementById("ktEssayList");
@@ -372,6 +834,7 @@ function renderEssaySection(essays = [], isDaLam = false, tuLuanCu = {}) {
           ...(essayAnswers[so] || {}),
           text: textArea.value
         };
+        saveDraftToLocal();
       });
 
       imgInput?.addEventListener("change", async (e) => {
@@ -384,6 +847,8 @@ function renderEssaySection(essays = [], isDaLam = false, tuLuanCu = {}) {
           ...(essayAnswers[so] || {}),
           image: compressed
         };
+
+        saveDraftToLocal();
 
         preview.innerHTML = `
           <img src="${compressed}" style="max-width:260px; border-radius:8px; border:1px solid #ddd;">
@@ -399,52 +864,117 @@ function renderEssaySection(essays = [], isDaLam = false, tuLuanCu = {}) {
     }
   });
 }
+
 /* ===============================
    RENDER TRẮC NGHIỆM
 ================================ */
-function renderTracNghiem(html, isDaLam = false, traLoiCu = {}) {
+function renderTracNghiem(html, isDaLam = false, traLoiCu = {}, showCorrectNow = false) {
   const container = document.getElementById("ktNoiDung");
+  if (!container) return;
+
   container.innerHTML = "";
   dapAnDungMap = {};
 
-  // 👉 Parse HTML thành DOM thật
   const tempDiv = document.createElement("div");
   tempDiv.innerHTML = html;
 
-//  const paragraphs = tempDiv.querySelectorAll("p");
-const paragraphs = tempDiv.querySelectorAll("div, p, br");
+  const allLines = [];
+
+  function walk(node) {
+    if (!node) return;
+
+    if (node.nodeType === Node.TEXT_NODE) {
+      const txt = node.textContent?.trim();
+      if (txt) allLines.push(txt);
+      return;
+    }
+
+    if (node.nodeType !== Node.ELEMENT_NODE) return;
+
+    const tag = node.tagName?.toLowerCase();
+
+    if (["img", "iframe", "audio", "video"].includes(tag)) {
+      allLines.push({ html: node.outerHTML });
+      return;
+    }
+
+    if (tag === "br") {
+      allLines.push("\n");
+      return;
+    }
+
+    Array.from(node.childNodes).forEach(walk);
+
+    if (["p", "div", "li"].includes(tag)) {
+      allLines.push("\n");
+    }
+  }
+
+  walk(tempDiv);
+
+  const normalized = [];
+  let buffer = "";
+
+  allLines.forEach(item => {
+    if (typeof item === "object" && item.html) {
+      if (buffer.trim()) {
+        normalized.push(buffer.trim());
+        buffer = "";
+      }
+      normalized.push(item);
+      return;
+    }
+
+    if (item === "\n") {
+      if (buffer.trim()) {
+        normalized.push(buffer.trim());
+        buffer = "";
+      }
+      return;
+    }
+
+    buffer += " " + item;
+  });
+
+  if (buffer.trim()) normalized.push(buffer.trim());
 
   let cauSo = 0;
   let cauDiv = null;
-let daGapCauHoi = false;
+  let daGapCauHoi = false;
 
-paragraphs.forEach(p => {
-  const line = p.innerText.trim();
-  if (!line) return;
+  normalized.forEach(item => {
+    if (typeof item === "object" && item.html) {
+      if (cauDiv) {
+        cauDiv.insertAdjacentHTML("beforeend", item.html);
+      } else {
+        container.insertAdjacentHTML("beforeend", item.html);
+      }
+      return;
+    }
 
-// ===== TIÊU ĐỀ / MÔ TẢ =====
-  if (!/^Câu\s*\d+/i.test(line) && !daGapCauHoi) {
-    container.innerHTML += `<p>${line}</p>`;
-    return;
-  }
+    const line = String(item || "").trim();
+    if (!line) return;
 
-    // ===== CÂU HỎI =====
-  if (/^Câu\s*\d+/i.test(line)) {
-  daGapCauHoi = true;
-  cauSo++;
+    if (!/^Câu\s*\d+/i.test(line) && !/^[A-D]\./.test(line) && !daGapCauHoi) {
+      container.innerHTML += `<p>${line}</p>`;
+      return;
+    }
 
-  cauDiv = document.createElement("div");
-  cauDiv.className = "cau";
-  cauDiv.id = `cau${cauSo}`; // 🔥 QUAN TRỌNG
-  cauDiv.dataset.cau = cauSo;
+    if (/^Câu\s*\d+/i.test(line)) {
+      daGapCauHoi = true;
+      cauSo++;
 
-  cauDiv.innerHTML = `<h4>${line}</h4>`;
-  container.appendChild(cauDiv);
-  return;
-}
+      cauDiv = document.createElement("div");
+      cauDiv.className = "cau";
+      cauDiv.id = `cau${cauSo}`;
+      cauDiv.dataset.cau = cauSo;
 
-    // ===== ĐÁP ÁN =====
-  if (/^[A-D]\./.test(line) && cauDiv) {
+      cauDiv.innerHTML = `<h4>${line}</h4>`;
+      container.appendChild(cauDiv);
+      return;
+    }
+
+    if (/^[A-D]\./.test(line) && cauDiv) {
       const dapAn = line[0];
       const isDung = line.includes("*");
 
@@ -455,36 +985,36 @@ paragraphs.forEach(p => {
       const textHienThi = line.replace("*", "").trim();
 
       const label = document.createElement("label");
-label.style.display = "flex";
-label.style.alignItems = "center";
-label.style.gap = "8px";
-label.style.margin = "6px 0";
+      label.style.display = "flex";
+      label.style.alignItems = "center";
+      label.style.gap = "8px";
+      label.style.margin = "6px 0";
 
-const input = document.createElement("input");
-input.type = "radio";
-input.name = `cau${cauSo}`;
-input.value = dapAn;
+      const input = document.createElement("input");
+      input.type = "radio";
+      input.name = `cau${cauSo}`;
+      input.value = dapAn;
+      input.addEventListener("change", saveDraftToLocal);
 
-if (isDaLam) input.disabled = true;
+      if (isDaLam) input.disabled = true;
 
-if (traLoiCu?.[cauSo] === dapAn) {
-  input.checked = true;
-  if (isDaLam) {
-    label.style.color =
-      dapAnDungMap[cauSo] === dapAn
-        ? "green"
-        : "red";
-  }
-}
+      if (traLoiCu?.[cauSo] === dapAn) {
+        input.checked = true;
+      }
 
-label.appendChild(input);
-label.appendChild(document.createTextNode(textHienThi));
+      label.appendChild(input);
+      label.appendChild(document.createTextNode(textHienThi));
+      cauDiv.appendChild(label);
+      return;
+    }
 
-cauDiv.appendChild(label);
+    if (cauDiv) {
+      cauDiv.innerHTML += `<p>${line}</p>`;
+    } else {
+      container.innerHTML += `<p>${line}</p>`;
     }
   });
 }
-
 
 /* ===============================
    HIỂN THỊ CƠ CẤU ĐIỂM
@@ -493,66 +1023,45 @@ function hienThiCoCauDiem(baiKiemTra) {
   const el = document.getElementById("ktCoCauDiem");
   if (!el) return;
 
-  const examType = baiKiemTra.examType || "multiple_choice";
-
-  let diemTN = Number(baiKiemTra.diemTN ?? 0);
-  let diemTL = Number(baiKiemTra.diemTL ?? 0);
-
-  // fallback cho dữ liệu cũ chưa có điểm
-  if (examType === "multiple_choice") {
-    if (diemTN <= 0) diemTN = 10;
-    diemTL = 0;
-  }
-
-  if (examType === "mixed") {
-    if (diemTN === 0 && diemTL === 0) {
-      diemTN = 5;
-      diemTL = 5;
-    }
-  }
+  const diemTN = getSafeTNMax(baiKiemTra);
+  const diemTL = getSafeTLMax(baiKiemTra);
 
   el.innerHTML = `
-  <b>Cơ cấu điểm bài kiểm tra:</b><br>
-  Trắc nghiệm: <span style="color:#0d6efd">${diemTN} điểm</span>
-  &nbsp;|&nbsp;
-  Tự luận: <span style="color:#dc3545">${diemTL} điểm</span>
-`;
+    <b>Cơ cấu điểm bài kiểm tra:</b><br>
+    Trắc nghiệm: <span style="color:#0d6efd">${diemTN} điểm</span>
+    &nbsp;|&nbsp;
+    Tự luận: <span style="color:#dc3545">${diemTL} điểm</span>
+  `;
 }
+
 /* ===============================
-   ĐẾM NGƯỢC
+   TIMER
 ================================ */
-function startTimer(phut) {
+function startTimerFromRemaining(seconds) {
   clearInterval(timerInterval);
 
-  timeRemaining = phut * 60;
+  timeRemaining = seconds;
   daCanhBao5Phut = false;
 
   updateTimerDisplay();
 
-  timerInterval = setInterval(() => {
+  timerInterval = setInterval(async () => {
     timeRemaining--;
-
     updateTimerDisplay();
 
-    // 🔔 Cảnh báo còn 5 phút
     if (timeRemaining === 300 && !daCanhBao5Phut) {
       daCanhBao5Phut = true;
       alert("⚠️ Còn 5 phút! Vui lòng kiểm tra lại bài.");
     }
 
-    // ⏰ Hết giờ
     if (timeRemaining <= 0) {
       clearInterval(timerInterval);
       alert("⏰ Hết giờ! Hệ thống tự động nộp bài.");
-      nopBai();
+      await nopBai(true);
     }
-
   }, 1000);
 }
 
-/* ===============================
-   HIỂN THỊ THỜI GIAN
-================================ */
 function updateTimerDisplay() {
   const el = document.getElementById("ktTimer");
   if (!el) return;
@@ -565,17 +1074,29 @@ function updateTimerDisplay() {
 
   if (timeRemaining <= 300) {
     el.style.color = "red";
+  } else {
+    el.style.color = "";
   }
 }
 
 /* ===============================
    NỘP BÀI
 ================================ */
-async function nopBai() {
+async function nopBai(isAutoSubmit = false) {
   clearInterval(timerInterval);
+  clearInterval(draftSaveInterval);
+  clearInterval(examOpenCountdownInterval);
 
   if (!baiKiemTraDangChon) {
     alert("Chưa chọn bài kiểm tra");
+    return;
+  }
+
+  const baiId = currentSelectedBaiId || document.getElementById("selBaiKT").value;
+  const nowServer = await getServerNow(true);
+
+  if (!baiId) {
+    alert("Không xác định được bài kiểm tra");
     return;
   }
 
@@ -584,9 +1105,7 @@ async function nopBai() {
   const traLoi = {};
 
   Object.entries(dapAnDungMap).forEach(([cau, dapAnDung]) => {
-    const checked = document.querySelector(
-      `input[name="cau${cau}"]:checked`
-    );
+    const checked = document.querySelector(`input[name="cau${cau}"]:checked`);
 
     if (checked) {
       traLoi[cau] = checked.value;
@@ -594,29 +1113,18 @@ async function nopBai() {
     }
   });
 
-  // =========================
-  // LẤY CƠ CẤU ĐIỂM TỪ ĐỀ
-  // =========================
-  const diemTNMax = Number(baiKiemTraDangChon?.diemTN || 0);
-  const diemTLMax = Number(baiKiemTraDangChon?.diemTL || 0);
+  const diemTNMax = getSafeTNMax(baiKiemTraDangChon);
+  const diemTLMax = getSafeTLMax(baiKiemTraDangChon);
 
-  // =========================
-  // TÍNH ĐIỂM TRẮC NGHIỆM THỰC TẾ
-  // =========================
   let diemTNThucTe = 0;
-
   if (tong > 0 && diemTNMax > 0) {
     diemTNThucTe = (dung / tong) * diemTNMax;
   }
-
   diemTNThucTe = Number(diemTNThucTe.toFixed(1));
 
-  // =========================
-  // GOM PHẦN TỰ LUẬN
-  // =========================
   const tuLuan = {};
-
   const essays = baiKiemTraDangChon.essays || [];
+
   essays.forEach((_, index) => {
     const so = index + 1;
     const textEl = document.getElementById(`essay_text_${so}`);
@@ -627,54 +1135,46 @@ async function nopBai() {
     };
   });
 
-  // =========================
-  // TÍNH ĐIỂM TẠM / CUỐI
-  // =========================
   const laDeTongHop = examType === "mixed";
-
-  const diemTamThoi = diemTNThucTe;
   const finalScore = laDeTongHop ? null : diemTNThucTe;
 
-  // Header hiển thị
   document.getElementById("ktDung").innerText = `${dung}/${tong}`;
   document.getElementById("ktDiem").innerText = diemTNThucTe;
 
-  const baiId = document.getElementById("selBaiKT").value;
+  await writeData(`users/students/${student.id}/kiemtra/${baiId}`, {
+    bai: baiId,
+    giao_vien: teacherId,
+    lop: localStorage.getItem("selectedLop"),
+    monhoc: localStorage.getItem("selectedMonHoc"),
+    kythi: document.getElementById("selKyThi").value,
 
-  await writeData(
-    `users/students/${student.id}/kiemtra/${baiId}`,
-    {
-      bai: baiId,
-      giao_vien: teacherId,
-      lop: localStorage.getItem("selectedLop"),
-      monhoc: localStorage.getItem("selectedMonHoc"),
-      kythi: document.getElementById("selKyThi").value,
+    examType,
 
-      examType,
+    dung,
+    tong,
 
-      dung,
-      tong,
+    diem: diemTNThucTe,
+    diem_tn: diemTNThucTe,
+    diem_tl: null,
+    diemTNMax,
+    diemTLMax,
 
-      // 🔥 điểm theo cơ cấu đề
-      diem: diemTNThucTe,          // điểm TN thực tế
-      diem_tn: diemTNThucTe,       // rõ nghĩa hơn cho file tổng hợp điểm
-      diem_tl: null,               // chưa chấm lúc học sinh nộp
-      diemTNMax,                   // ví dụ 3
-      diemTLMax,                   // ví dụ 7
+    traLoi,
+    tuLuan,
 
-      traLoi,
-      tuLuan,
+    essayPending: laDeTongHop,
+    essayScore: null,
 
-      essayPending: laDeTongHop,
-      essayScore: null,
+    finalScore,
+    tong_diem: finalScore,
 
-      // đề tổng hợp thì chưa có điểm cuối
-      finalScore,
-      tong_diem: finalScore,
+    ngay: new Date(nowServer).toISOString(),
+    submittedAt: nowServer
+  });
 
-      ngay: new Date().toISOString()
-    }
-  );
+  clearDraftLocal(baiId);
+  await clearDraftFirebase(baiId);
+  await writeData(`users/students/${student.id}/kiemtra_danglam/${baiId}`, null);
 
   hienKetQua(
     {
@@ -686,44 +1186,42 @@ async function nopBai() {
     dapAnDungMap
   );
 
-  alert(
-    laDeTongHop
-      ? `Đã nộp bài!\nTrắc nghiệm: ${diemTNThucTe}/${diemTNMax} điểm\nTự luận tối đa: ${diemTLMax} điểm\nPhần tự luận chờ giáo viên chấm.`
-      : `Hoàn thành!\nĐiểm: ${diemTNThucTe}/${diemTNMax}`
-  );
+  if (!isAutoSubmit) {
+    alert(
+      laDeTongHop
+        ? `Đã nộp bài!\nTrắc nghiệm: ${diemTNThucTe}/${diemTNMax} điểm\nTự luận tối đa: ${diemTLMax} điểm\nPhần tự luận chờ giáo viên chấm.`
+        : `Hoàn thành!\nĐiểm: ${diemTNThucTe}/${diemTNMax}`
+    );
+  }
 
   document.getElementById("btnSubmit").disabled = true;
   disableForm();
 }
 
 /* ===============================
-  HIỂN THỊ KẾT QUẢ
+   HIỂN THỊ KẾT QUẢ
 ================================ */
-
 function hienKetQua(duLieuNop, dapAnDung) {
+  removeResultSummary();
 
   document.getElementById("ktDung").innerText =
     `${duLieuNop.dung}/${duLieuNop.tong || Object.keys(dapAnDung).length}`;
 
-  document.getElementById("ktDiem").innerText =
-    duLieuNop.diem;
+  document.getElementById("ktDiem").innerText = duLieuNop.diem;
 
   const traLoi = duLieuNop.traLoi || {};
   let cauSaiList = [];
   let firstSaiElement = null;
 
   Object.keys(dapAnDung).forEach((soCau) => {
-
     const dapAn = dapAnDung[soCau];
     const dapAnChon = traLoi[soCau];
     const cauDiv = document.getElementById(`cau${soCau}`);
     if (!cauDiv) return;
 
-    const radios =
-      document.querySelectorAll(`input[name="cau${soCau}"]`);
+    const radios = document.querySelectorAll(`input[name="cau${soCau}"]`);
 
     radios.forEach(radio => {
-
       radio.disabled = true;
 
       if (radio.value === dapAnChon) {
@@ -731,12 +1229,11 @@ function hienKetQua(duLieuNop, dapAnDung) {
       }
 
       const label = radio.closest("label");
+      if (!label) return;
 
-      // Xóa icon cũ nếu có
-      label.querySelectorAll(".answer-icon")
-        .forEach(el => el.remove());
+      label.querySelectorAll(".answer-icon").forEach(el => el.remove());
+      label.classList.remove("dung", "sai");
 
-      // ĐÁP ÁN ĐÚNG
       if (radio.value === dapAn) {
         label.classList.add("dung");
 
@@ -746,7 +1243,6 @@ function hienKetQua(duLieuNop, dapAnDung) {
         label.appendChild(icon);
       }
 
-      // ĐÁP ÁN SAI
       if (dapAnChon && dapAnChon !== dapAn && radio.value === dapAnChon) {
         label.classList.add("sai");
 
@@ -755,10 +1251,10 @@ function hienKetQua(duLieuNop, dapAnDung) {
         icon.innerText = "✖";
         label.appendChild(icon);
       }
-
     });
 
-    // Đánh dấu câu
+    cauDiv.classList.remove("dung-cau", "sai-cau");
+
     if (dapAnChon === dapAn) {
       cauDiv.classList.add("dung-cau");
     } else {
@@ -769,19 +1265,12 @@ function hienKetQua(duLieuNop, dapAnDung) {
         firstSaiElement = cauDiv;
       }
     }
-
   });
 
-  // ===== THỐNG KÊ =====
   if (cauSaiList.length > 0) {
-
     const summary = document.createElement("div");
     summary.className = "kt-summary";
-    summary.innerHTML =
-      `❌ Bạn sai câu: ${cauSaiList.join(", ")}`;
-
-    const old = document.querySelector(".kt-summary");
-    if (old) old.remove();
+    summary.innerHTML = `❌ Bạn sai câu: ${cauSaiList.join(", ")}`;
 
     document.getElementById("ktNoiDung")
       .insertAdjacentElement("beforebegin", summary);
@@ -793,10 +1282,11 @@ function hienKetQua(duLieuNop, dapAnDung) {
       });
     }, 400);
   }
-
 }
 
-
+/* ===============================
+   COMPRESS ẢNH
+================================ */
 async function compressImage(file, maxWidth = 1200, quality = 0.7) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -833,13 +1323,18 @@ async function compressImage(file, maxWidth = 1200, quality = 0.7) {
   });
 }
 
-
-
 /* ===============================
-   DISABLE
+   DISABLE FORM
 ================================ */
 function disableForm() {
   document
-    .querySelectorAll("#ktNoiDung input, #ktNoiDung textarea, #ktEssayWrap input, #ktEssayWrap textarea, select, #btnSubmit")
+    .querySelectorAll("#ktNoiDung input, #ktNoiDung textarea, #ktEssayWrap input, #ktEssayWrap textarea, #btnSubmit")
     .forEach(el => el.disabled = true);
 }
+
+/* ===============================
+   AUTO SAVE TRƯỚC KHI THOÁT
+================================ */
+window.addEventListener("beforeunload", () => {
+  saveDraftToLocal();
+});

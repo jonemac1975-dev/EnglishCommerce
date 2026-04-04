@@ -335,6 +335,7 @@ export async function init() {
   await loadMonHoc();
   await loadLop();
   await loadList();
+applyAIPushedExercise();
 
   btMon.onchange = loadList;
   btLop.onchange = loadList;
@@ -344,4 +345,43 @@ export async function init() {
   btnPreview.onclick = previewContent;
   btnAdd.onclick = themBaiTap;
   btnSave.onclick = luuBaiTap;
+}
+
+function applyAIPushedExercise() {
+  const raw = localStorage.getItem("teacher_ai_push_baitap");
+  if (!raw) return;
+
+  try {
+    const data = JSON.parse(raw);
+    if (!data) return;
+
+    // ==== ĐỔI ID CHO KHỚP FILE BÀI TẬP CỦA ANH ====
+    const tenBai = document.getElementById("btTenBai");
+    const noiDung = document.getElementById("btNoiDung");
+    const monHoc = document.getElementById("btMonHoc");
+    const lop = document.getElementById("btLop");
+
+    if (tenBai) tenBai.value = data.title || "";
+    if (noiDung) noiDung.value = data.content_text || "";
+
+    selectOptionByText(monHoc, data.subjectText);
+    selectOptionByText(lop, data.classText);
+
+    localStorage.removeItem("teacher_ai_push_baitap");
+    showToast?.("🤖 Đã nhận nội dung AI cho Bài tập", "success");
+  } catch (e) {
+    console.error("Lỗi applyAIPushedExercise:", e);
+  }
+}
+
+function selectOptionByText(selectEl, text = "") {
+  if (!selectEl || !text) return;
+
+  const keyword = text.trim().toLowerCase();
+
+  [...selectEl.options].forEach(opt => {
+    if (opt.textContent.trim().toLowerCase() === keyword) {
+      selectEl.value = opt.value;
+    }
+  });
 }

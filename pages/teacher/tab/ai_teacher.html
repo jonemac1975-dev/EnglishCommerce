@@ -1,0 +1,115 @@
+<div class="ai-teacher-page">
+  <div class="ai-header">
+    <h2>🤖 AI Teacher Assistant - Bảng demo</h2>
+    <p>Soạn bài giảng, bài tập, đề kiểm tra, đề TOEIC bằng AI</p>
+  </div>
+
+  <div class="ai-type-tabs">
+    <button class="ai-type-btn active" data-type="lesson">📘 Bài giảng</button>
+    <button class="ai-type-btn" data-type="exercise">📝 Bài tập</button>
+    <button class="ai-type-btn" data-type="exam">📋 Đề kiểm tra</button>
+    <button class="ai-type-btn" data-type="toeic">🎧 TOEIC</button>
+  </div>
+
+  <!-- ================= BÀI GIẢNG ================= -->
+  <div class="ai-form-section active" id="form-lesson">
+    <div class="ai-grid">
+      <input id="lesson_monHoc" placeholder="Môn học">
+      <input id="lesson_chuDe" placeholder="Chủ đề bài giảng">
+      <input id="lesson_trinhDo" placeholder="Trình độ / Lớp">
+      <input id="lesson_mucTieu" placeholder="Mục tiêu bài học">
+      <input id="lesson_soPhan" placeholder="Số phần chính (VD: 4)">
+      <input id="lesson_phongCach" placeholder="Phong cách giảng dạy (dễ hiểu, sinh động, học thuật...)">
+      <input id="lesson_mucChiTiet" placeholder="Mức chi tiết (ngắn / vừa / rất chi tiết)">
+    </div>
+
+    <div class="ai-full">
+  <textarea id="lesson_ghiChu" rows="4" placeholder="Ghi chú thêm cho AI (VD: có ví dụ thực tế, dễ hiểu, có câu hỏi cuối bài...)"></textarea>
+</div>
+<div class="ai-full">
+  <textarea id="lesson_duLieuGoc" rows="8" placeholder="Dữ liệu gốc / giáo trình / dàn ý / nội dung tham khảo (nếu có)..."></textarea>
+</div>
+
+    <button id="btnGenerateLesson" class="ai-main-btn">🤖 Tạo bài giảng</button>
+  </div>
+
+  <!-- ================= BÀI TẬP ================= -->
+  <div class="ai-form-section" id="form-exercise">
+    <div class="ai-grid">
+      <input id="exercise_monHoc" placeholder="Môn học">
+      <input id="exercise_chuDe" placeholder="Chủ đề bài tập">
+      <input id="exercise_dangBai" placeholder="Dạng bài (trắc nghiệm / điền từ / tự luận...)">
+      <input id="exercise_doKho" placeholder="Độ khó">
+      <input id="exercise_soLuong" placeholder="Số lượng câu">
+      <input id="exercise_dapAn" placeholder="Có đáp án? (Có / Không)">
+      <input id="exercise_mucChiTiet" placeholder="Mức chi tiết (ngắn / vừa / kỹ)">
+    </div>
+
+    <div class="ai-full">
+  <textarea id="exercise_ghiChu" rows="4" placeholder="Yêu cầu thêm cho AI (VD: có giải thích, có mẹo làm bài, có phân loại câu dễ/khó...)"></textarea>
+</div>
+<div class="ai-full">
+  <textarea id="exercise_duLieuGoc" rows="8" placeholder="Dữ liệu gốc / bài mẫu / tài liệu tham khảo / đề cũ..."></textarea>
+</div>
+
+    <button id="btnGenerateExercise" class="ai-main-btn">🤖 Tạo bài tập</button>
+  </div>
+
+  <!-- ================= ĐỀ KIỂM TRA ================= -->
+  <div class="ai-form-section" id="form-exam">
+    <div class="ai-grid">
+      <input id="exam_monHoc" placeholder="Môn học">
+      <input id="exam_chuDe" placeholder="Chủ đề kiểm tra">
+      <input id="exam_thoiGian" placeholder="Thời gian làm bài">
+      <input id="exam_soCau" placeholder="Số câu">
+      <input id="exam_doKho" placeholder="Độ khó">
+      <input id="exam_loaiDe" placeholder="Loại đề (trắc nghiệm / tự luận / mix)">
+      <input id="exam_dapAn" placeholder="Có đáp án? (Có / Không)">
+    </div>
+
+    <div class="ai-full">
+  <textarea id="exam_ghiChu" rows="4" placeholder="Yêu cầu thêm cho AI (VD: chia theo mức độ, có thang điểm, có phần đọc hiểu...)"></textarea>
+</div>
+<div class="ai-full">
+  <textarea id="exam_duLieuGoc" rows="8" placeholder="Đề cũ / tài liệu tham khảo / chương cần kiểm tra / ma trận đề..."></textarea>
+</div>
+
+    <button id="btnGenerateExam" class="ai-main-btn">🤖 Tạo đề kiểm tra</button>
+  </div>
+
+  <!-- ================= TOEIC ================= -->
+  <div class="ai-form-section" id="form-toeic">
+    <div class="ai-grid">
+      <input id="toeic_part" placeholder="TOEIC Part">
+      <input id="toeic_chuDe" placeholder="Chủ đề TOEIC">
+      <input id="toeic_soCau" placeholder="Số câu">
+      <input id="toeic_doKho" placeholder="Độ khó">
+      <input id="toeic_vocab" placeholder="Từ vựng trọng tâm">
+      <input id="toeic_style" placeholder="Style (Business / Office / Travel / HR...)">
+      <input id="toeic_target" placeholder="Mục tiêu đầu ra (VD: band 450-650)">
+    </div>
+
+    <div class="ai-full">
+  <textarea id="toeic_ghiChu" rows="4" placeholder="Yêu cầu thêm cho AI (VD: giống format ETS, có giải thích, thiên về grammar...)"></textarea>
+</div>
+<div class="ai-full">
+  <textarea id="toeic_duLieuGoc" rows="8" placeholder="Nguồn tham khảo / đoạn văn mẫu / câu hỏi cũ / dữ liệu gốc..."></textarea>
+</div>
+
+    <button id="btnGenerateToeic" class="ai-main-btn">🤖 Tạo đề TOEIC</button>
+  </div>
+
+  <div class="ai-actions">
+  <button id="btnCopyAI">📋 Copy</button>
+  <button id="btnSaveDraftAI">💾 Lưu nháp</button>
+
+  <button id="btnPushToLesson">📘 Đưa sang Bài giảng</button>
+  <button id="btnPushToExercise">📝 Đưa sang Bài tập</button>
+  <button id="btnPushToExam">📋 Đưa sang Đề kiểm tra</button>
+  <button id="btnPushToToeic">🎧 Đưa sang TOEIC</button>
+</div>
+
+  <div id="aiOutputBox" class="ai-output-box">
+    <div class="ai-placeholder">Nội dung AI sẽ hiển thị tại đây...</div>
+  </div>
+</div>

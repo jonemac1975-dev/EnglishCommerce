@@ -8,7 +8,44 @@ if (!teacherId) location.href = "../../index.html";
 let currentEditId = null;
 let essayBlocks = [];
 
-/* ================= HELPER LẤY INPUT ĐIỂM ================= */
+/* ================= DATE TIME HELPER ================= */
+function formatDateTimeLocal(ts) {
+  if (!ts) return "";
+
+  const d = new Date(ts);
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  const hh = String(d.getHours()).padStart(2, "0");
+  const mi = String(d.getMinutes()).padStart(2, "0");
+
+  return `${yyyy}-${mm}-${dd}T${hh}:${mi}`;
+}
+
+function parseExamDateTime(datetimeLocalValue) {
+  if (!datetimeLocalValue) {
+    return { text: "", iso: "", ts: 0 };
+  }
+
+  const d = new Date(datetimeLocalValue);
+  if (isNaN(d.getTime())) {
+    return { text: "", iso: "", ts: 0 };
+  }
+
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const yyyy = d.getFullYear();
+  const hh = String(d.getHours()).padStart(2, "0");
+  const mi = String(d.getMinutes()).padStart(2, "0");
+
+  return {
+    text: `${dd}/${mm}/${yyyy} ${hh}:${mi}`,
+    iso: datetimeLocalValue,
+    ts: d.getTime()
+  };
+}
+
+/* ================= HELPER INPUT ĐIỂM ================= */
 function getDiemInputs() {
   return {
     diemTNInput: document.getElementById("kt_diemTN"),
@@ -21,6 +58,8 @@ export async function init() {
   await loadTeacherName();
   await loadDanhMuc();
   await loadDanhSach();
+applyAIPushedExam();
+
   initEditor();
   initEssayBuilder();
 
@@ -46,6 +85,8 @@ async function loadDanhMuc() {
 
 async function loadSelect(dm, selectId) {
   const sel = document.getElementById(selectId);
+  if (!sel) return;
+
   sel.innerHTML = `<option value="">-- Chọn --</option>`;
 
   const data = await readData(`config/danh_muc/${dm}`);
@@ -54,7 +95,7 @@ async function loadSelect(dm, selectId) {
   Object.entries(data).forEach(([id, item]) => {
     const opt = document.createElement("option");
     opt.value = id;
-    opt.textContent = item.name;
+    opt.textContent = item.name || id;
     sel.appendChild(opt);
   });
 }
@@ -64,23 +105,12 @@ async function addBaiKiemTra() {
   const data = getFormData();
   if (!data) return;
 
-  if (!data.tieude) {
-    showToast("Chưa nhập tiêu đề", "error");
-    return;
-  }
-
-  if (!data.monhoc || !data.lop || !data.kythi) {
-    showToast("Vui lòng chọn đủ Môn học / Lớp / Kỳ kiểm tra", "error");
-    return;
-  }
-
-  if (!data.noidung.trim()) {
-    showToast("Chưa có nội dung phần trắc nghiệm", "error");
-    return;
-  }
-
   const id = "kt_" + Date.now();
-  await writeData(`teacher/${teacherId}/kiemtra/${id}`, data);
+
+  await writeData(`teacher/${teacherId}/kiemtra/${id}`, {
+    ...data,
+    createdAt: Date.now()
+  });
 
   showToast("Đã thêm bài kiểm tra");
   clearForm();
@@ -97,15 +127,13 @@ async function saveBaiKiemTra() {
   const data = getFormData();
   if (!data) return;
 
-  if (!data.tieude) {
-    showToast("Chưa nhập tiêu đề", "error");
-    return;
-  }
+  const oldCreatedAt =
+    await readData(`teacher/${teacherId}/kiemtra/${currentEditId}/createdAt`);
 
-  await writeData(
-    `teacher/${teacherId}/kiemtra/${currentEditId}`,
-    data
-  );
+  await writeData(`teacher/${teacherId}/kiemtra/${currentEditId}`, {
+    ...data,
+    createdAt: oldCreatedAt || Date.now()
+  });
 
   showToast("Đã lưu thay đổi");
   clearForm();
@@ -115,51 +143,63 @@ async function saveBaiKiemTra() {
 /* ================= LIST ================= */
 async function loadDanhSach() {
   const tbody = kt_list;
+  if (!tbody) return;
+
   tbody.innerHTML = "";
 
   const data = await readData(`teacher/${teacherId}/kiemtra`);
   if (!data) return;
 
   let i = 1;
-  Object.entries(data).forEach(([id, item]) => {
-    const loai = item.examType === "mixed"
-      ? "Tổng hợp"
-      : "Trắc nghiệm";
 
-    const diemTN = item.diemTN ?? "";
-    const diemTL = item.diemTL ?? "";
-    const coCauDiem = `TN: ${diemTN} | TL: ${diemTL}`;
+  Object.entries(data)
+    .sort((a, b) => (b[1]?.createdAt || 0) - (a[1]?.createdAt || 0))
+    .forEach(([id, item]) => {
+      const loai =
+        item.examType === "mixed" ? "Tổng hợp" : "Trắc nghiệm";
 
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${i++}</td>
-      <td>${item.tieude || ""}</td>
-      <td>${item.ngay || ""}</td>
-      <td>${loai}</td>
-      <td>${coCauDiem}</td>
-      <td>
-        <button onclick="window.editKT('${id}')">Sửa</button>
-        <button onclick="window.deleteKT('${id}')">Xóa</button>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
+      const diemTN = Number(item.diemTN ?? 0);
+      const diemTL = Number(item.diemTL ?? 0);
+      const coCauDiem = `TN: ${diemTN} | TL: ${diemTL}`;
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${i++}</td>
+        <td>${item.tieude || ""}</td>
+        <td>${item.examStartText || ""}</td>
+        <td>${loai}</td>
+        <td>${coCauDiem}</td>
+        <td>
+          <button onclick="window.editKT('${id}')">Sửa</button>
+          <button onclick="window.deleteKT('${id}')">Xóa</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
 }
 
 /* ================= EDIT / DELETE ================= */
-window.editKT = async id => {
+window.editKT = async (id) => {
   const d = await readData(`teacher/${teacherId}/kiemtra/${id}`);
   if (!d) return;
 
+  currentEditId = id;
+
   const { diemTNInput, diemTLInput } = getDiemInputs();
 
-  currentEditId = id;
   kt_monhoc.value = d.monhoc || "";
   kt_lop.value = d.lop || "";
   kt_kythi.value = d.kythi || "";
   kt_tieude.value = d.tieude || "";
   kt_ngay.value = d.ngay || "";
   kt_examType.value = d.examType || "multiple_choice";
+  kt_noidung.innerHTML = d.noidung || "";
+
+  const examTimeInput = document.getElementById("kt_examTime");
+  if (examTimeInput) {
+    examTimeInput.value =
+      d.examStartISO || (d.examStartAt ? formatDateTimeLocal(d.examStartAt) : "");
+  }
 
   if (diemTNInput) {
     diemTNInput.value = d.diemTN ?? (d.examType === "mixed" ? 5 : 10);
@@ -168,8 +208,6 @@ window.editKT = async id => {
   if (diemTLInput) {
     diemTLInput.value = d.diemTL ?? (d.examType === "mixed" ? 5 : 0);
   }
-
-  kt_noidung.innerHTML = d.noidung || "";
 
   essayBlocks = (d.essays || []).map((html, i) => ({
     id: "essay_" + i + "_" + Date.now(),
@@ -180,9 +218,11 @@ window.editKT = async id => {
   renderEssayBlocks();
 };
 
-window.deleteKT = async id => {
+window.deleteKT = async (id) => {
   if (!confirm("Xóa bài này?")) return;
+
   await writeData(`teacher/${teacherId}/kiemtra/${id}`, null);
+
   showToast("Đã xóa bài", "error");
   clearForm();
   loadDanhSach();
@@ -193,13 +233,38 @@ function getFormData() {
   const examType = kt_examType.value;
   const { diemTNInput, diemTLInput } = getDiemInputs();
 
+  const examTimeRaw = document.getElementById("kt_examTime")?.value || "";
+  const examTimeData = parseExamDateTime(examTimeRaw);
+
+  const monhoc = kt_monhoc.value;
+  const lop = kt_lop.value;
+  const kythi = kt_kythi.value;
+  const tieude = kt_tieude.value.trim();
+  const ngay = kt_ngay.value.trim();
+  const noidung = kt_noidung.innerHTML.trim();
+
+  if (!tieude) {
+    showToast("Chưa nhập tiêu đề", "error");
+    return null;
+  }
+
+  if (!monhoc || !lop || !kythi) {
+    showToast("Vui lòng chọn đủ Môn học / Lớp / Kỳ kiểm tra", "error");
+    return null;
+  }
+
+  if (!examTimeRaw || !examTimeData.ts) {
+    showToast("Chưa chọn ngày giờ kiểm tra", "error");
+    return null;
+  }
+
+  if (!noidung) {
+    showToast("Chưa có nội dung phần trắc nghiệm", "error");
+    return null;
+  }
+
   let diemTN = Number(diemTNInput?.value || 0);
   let diemTL = Number(diemTLInput?.value || 0);
-
-  console.log("🔥 examType:", examType);
-  console.log("🔥 diemTN raw:", diemTNInput?.value);
-  console.log("🔥 diemTL raw:", diemTLInput?.value);
-  console.log("🔥 parsed:", diemTN, diemTL);
 
   // ===== Chuẩn hóa theo loại đề =====
   if (examType === "multiple_choice") {
@@ -233,18 +298,25 @@ function getFormData() {
   }
 
   return {
-    monhoc: kt_monhoc.value,
-    lop: kt_lop.value,
-    kythi: kt_kythi.value,
-    tieude: kt_tieude.value,
-    ngay: kt_ngay.value,
+    monhoc,
+    lop,
+    kythi,
+    tieude,
+    ngay,
+
+    // ===== THỜI GIAN MỞ ĐỀ (CHUẨN MỚI) =====
+    examStartAt: examTimeData.ts,
+    examStartISO: examTimeData.iso,
+    examStartText: examTimeData.text,
+
     examType,
     diemTN,
     diemTL,
-    noidung: kt_noidung.innerHTML,
-    essays: examType === "mixed"
-      ? essayBlocks.map(x => x.content).filter(x => x.trim() !== "")
-      : [],
+    noidung,
+    essays:
+      examType === "mixed"
+        ? essayBlocks.map(x => x.content).filter(x => x.trim() !== "")
+        : [],
     updatedAt: Date.now()
   };
 }
@@ -261,6 +333,9 @@ function clearForm() {
   kt_ngay.value = "";
   kt_examType.value = "multiple_choice";
   kt_noidung.innerHTML = "";
+
+  const examTimeInput = document.getElementById("kt_examTime");
+  if (examTimeInput) examTimeInput.value = "";
 
   if (diemTNInput) diemTNInput.value = 10;
   if (diemTLInput) diemTLInput.value = 0;
@@ -293,7 +368,7 @@ function toggleExamTypeUI() {
   }
 }
 
-/* ================= EDITOR (Y HỆT BAITAP) ================= */
+/* ================= EDITOR ================= */
 function initEditor() {
   const content = kt_noidung;
   const fileInput = document.getElementById("fileInput");
@@ -312,26 +387,31 @@ function initEditor() {
     const r = new FileReader();
     r.onload = e => {
       let html = "";
-      if (f.type.startsWith("image/"))
+
+      if (f.type.startsWith("image/")) {
         html = `<img src="${e.target.result}" style="max-width:70%;display:block;margin:16px auto">`;
-      else if (f.type.startsWith("audio/"))
+      } else if (f.type.startsWith("audio/")) {
         html = `<audio controls src="${e.target.result}" style="width:70%;display:block;margin:16px auto"></audio>`;
-      else if (f.type.startsWith("video/"))
+      } else if (f.type.startsWith("video/")) {
         html = `<video controls src="${e.target.result}" style="width:70%;display:block;margin:16px auto"></video>`;
-      else return alert("Chỉ hỗ trợ ảnh / audio / video");
+      } else {
+        return alert("Chỉ hỗ trợ ảnh / audio / video");
+      }
 
       insertAtCursor(html);
       fileInput.value = "";
     };
+
     r.readAsDataURL(f);
   };
 
   btnAudio.onclick = () => insertDrive("audio", 60);
-  btnMp4.onclick   = () => insertDrive("video", 340);
+  btnMp4.onclick = () => insertDrive("video", 340);
 
   function insertDrive(type, h) {
     const url = prompt(`Dán link ${type.toUpperCase()} Google Drive`);
     if (!url) return;
+
     const m = url.match(/\/d\/([^/]+)/) || url.match(/id=([^&]+)/);
     if (!m) return alert("Link sai");
 
@@ -344,6 +424,7 @@ function initEditor() {
   btnYoutube.onclick = () => {
     const url = prompt("Link YouTube");
     if (!url) return;
+
     const id = url.includes("v=")
       ? url.split("v=")[1].split("&")[0]
       : url.split("/").pop();
@@ -372,14 +453,16 @@ function initEditor() {
   };
 
   btnPreview.onclick = () => {
-    if (!content.innerHTML.trim())
+    if (!content.innerHTML.trim()) {
       return showToast("Chưa có nội dung", "error");
+    }
 
     localStorage.setItem("lesson_preview", JSON.stringify({
       name: kt_tieude.value || "Bài kiểm tra",
       meta: `Môn: ${kt_monhoc.value} | Lớp: ${kt_lop.value}`,
       content: content.innerHTML
     }));
+
     window.open("/preview.html", "_blank");
   };
 }
@@ -431,7 +514,48 @@ window.updateEssayBlock = (id, html) => {
   item.content = html;
 };
 
-window.deleteEssayBlock = id => {
+window.deleteEssayBlock = (id) => {
   essayBlocks = essayBlocks.filter(x => x.id !== id);
   renderEssayBlocks();
 };
+
+
+
+function applyAIPushedExam() {
+  const raw = localStorage.getItem("teacher_ai_push_kiemtra");
+  if (!raw) return;
+
+  try {
+    const data = JSON.parse(raw);
+    if (!data) return;
+
+    // ==== ĐỔI ID CHO KHỚP FILE KIỂM TRA CỦA ANH ====
+    const tenDe = document.getElementById("ktTenDe");
+    const noiDung = document.getElementById("ktNoiDung");
+    const monHoc = document.getElementById("ktMonHoc");
+    const thoiGian = document.getElementById("ktThoiGian");
+
+    if (tenDe) tenDe.value = data.title || "";
+    if (noiDung) noiDung.value = data.content_text || "";
+    if (thoiGian) thoiGian.value = data.thoiGian || "";
+
+    selectOptionByText(monHoc, data.subjectText);
+
+    localStorage.removeItem("teacher_ai_push_kiemtra");
+    showToast?.("🤖 Đã nhận nội dung AI cho Đề kiểm tra", "success");
+  } catch (e) {
+    console.error("Lỗi applyAIPushedExam:", e);
+  }
+}
+
+function selectOptionByText(selectEl, text = "") {
+  if (!selectEl || !text) return;
+
+  const keyword = text.trim().toLowerCase();
+
+  [...selectEl.options].forEach(opt => {
+    if (opt.textContent.trim().toLowerCase() === keyword) {
+      selectEl.value = opt.value;
+    }
+  });
+}

@@ -1,46 +1,127 @@
-<h2>📘 CẬP NHẬT ĐỀ TEST</h2>
+<link rel="stylesheet" href="/pages/teacher/css/teacher.css">
 
-<div class="kt-form">
+<section class="toeic-builder-page">
 
-  <div class="row">
-    <label>Mã đề (01 – 50)</label>
-    <input id="test_made" type="text" placeholder="VD: 01">
+  <!-- HEADER -->
+  <div class="tb-header">
+    <div class="tb-header-left">
+      <div class="tb-logo">TOEIC</div>
+      <div>
+        <h2>TOEIC TEST BUILDER</h2>
+        <p>Teacher Premium Examination Editor</p>
+      </div>
+    </div>
+    <div class="tb-header-right">
+      <button class="tb-mini-btn" onclick="location.reload()">↻ Làm mới</button>
+    </div>
   </div>
-<label>Chọn lớp</label>
-<select id="testLop">
-  <option value="">Chọn lớp</option>
-</select>
 
-  <div class="kt-row">
-<label<b>Dán đề test từ Word vào Ô dưới :  </label>
+  <!-- FORM -->
+  <div class="tb-card">
+    <div class="tb-card-head">
+      <h3>📘 Cập nhật đề TOEIC</h3>
+      <span class="tb-badge">Professional Editor</span>
+    </div>
+
+    <div class="tb-form-grid">
+      <div class="tb-field">
+        <label>Mã đề (01 – 50)</label>
+        <input id="test_made" type="text" placeholder="VD: 01">
+      </div>
+
+      <div class="tb-field">
+        <label>Chọn lớp</label>
+        <select id="testLop">
+          <option value="">Chọn lớp</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- TOOLBAR -->
+    <div class="tb-toolbar">
+      <button type="button" class="tb-tool-btn" id="btnInsertImage">🖼 Ảnh</button>
+      <button type="button" class="tb-tool-btn" id="btnInsertAudio">🎧 MP3</button>
+      <button type="button" class="tb-tool-btn" id="btnInsertVideo">🎬 MP4</button>
+      <button type="button" class="tb-tool-btn" id="btnInsertYoutube">▶ YouTube</button>
+      <button type="button" class="tb-tool-btn accent" id="btnFormatTest">✨ Chuẩn hóa đề</button>
+      <button id="btnPreviewInline" class="tb-secondary-btn">👁 Preview nhanh</button>
+     </div>
+
+<input type="file" id="imagePicker" accept="image/*" hidden>
+
+    <div class="tb-note-box">
+      <div>📌 Dán nội dung từ Word vào ô dưới.</div>
+      <div>✔ Đáp án đúng thêm dấu <b>*</b> cuối dòng. Ví dụ: <b>A. booking*</b></div>
+      <div>🧠 Hỗ trợ: <b>Câu 1</b> hoặc <b>Question 1</b></div>
+    </div>
+
+    <!-- EDITOR -->
+    <div class="tb-editor-wrap">
+      <div
+        id="test_noidung"
+        class="tb-editor"
+        contenteditable="true"
+        placeholder="Dán nội dung Word vào đây..."
+      ></div>
+    </div>
+
+    <div class="tb-actions">
+      <button id="btnAdd" class="tb-primary-btn">➕ Thêm</button>
+      <button id="btnSave" class="tb-secondary-btn">💾 Lưu</button>
+      
+    </div>
+  </div>
+
+  <!-- PREVIEW -->
+    <!-- LIST -->
+  <div class="tb-card">
+    <div class="tb-card-head">
+      <h3>📋 Danh sách đề TOEIC</h3>
+      <span class="tb-badge gold">Teacher Library</span>
+    </div>
+
+    <div class="tb-table-wrap">
+      <table class="tb-table">
+        <thead>
+          <tr>
+            <th>STT</th>
+            <th>Mã đề</th>
+            <th>Lớp</th>
+            <th>Hành động</th>
+          </tr>
+        </thead>
+        <tbody id="test_list"></tbody>
+      </table>
+    </div>
+  </div>
+
+
+<!-- ================= MEDIA POPUP ================= -->
+<div id="mediaModal" class="tb-modal hidden">
+  <div class="tb-modal-box">
+    <div class="tb-modal-head">
+      <h3 id="mediaModalTitle">Chèn media</h3>
+      <button type="button" id="closeMediaModal" class="tb-close-btn">✕</button>
+    </div>
+
+    <div class="tb-modal-body">
+      <label class="tb-modal-label">Dán link media</label>
+      <input
+        type="text"
+        id="mediaUrlInput"
+        class="tb-modal-input"
+        placeholder="Dán link MP3 / MP4 / YouTube..."
+      >
+
+      <div class="tb-modal-actions">
+        <button type="button" id="btnPreviewMedia" class="tb-secondary-btn">👁 Test</button>
+        <button type="button" id="btnInsertMedia" class="tb-primary-btn">➕ Chèn vào đề</button>
+      </div>
+
+      <div id="mediaPreviewBox" class="tb-modal-preview">
+        <div class="tb-modal-placeholder">Chưa có preview</div>
+      </div>
+    </div>
+  </div>
 </div>
-    <div
-      id="test_noidung"
-      class="editor"
-      contenteditable="true"
-      placeholder="Dán nội dung Word vào đây..."
-    ></div>
-    <small>• Đáp án có dấu <b>*</b> cuối câu là đáp án đúng</small>
-  </div>
-
-  <div class="actions">
-    <button id="btnAdd">➕ Thêm</button>
-    <button id="btnSave">💾 Lưu</button>
-  </div>
-</div>
-
-<hr>
-
-<h3>📋 Danh sách đề test</h3>
-
-<table class="kt-table">
-  <thead>
-    <tr>
-      <th>STT</th>
-      <th>Mã đề</th>
-      <th>Lớp</th>
-      <th>Hành động</th>
-    </tr>
-  </thead>
-  <tbody id="test_list"></tbody>
-</table>
+</section>

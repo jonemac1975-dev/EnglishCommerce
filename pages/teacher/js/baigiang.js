@@ -280,6 +280,7 @@ export async function init() {
   await loadMonHoc();
   await loadLop();
   await loadList();
+  applyAIPushedLesson();
 
   bgMp3.addEventListener("input", () => {
   const previewUrl = convertDriveToPreview(bgMp3.value);
@@ -463,3 +464,42 @@ window.chooseImage = function () {
 
   input.click();
 };
+
+
+function applyAIPushedLesson() {
+  const raw = localStorage.getItem("teacher_ai_push_baigiang");
+  if (!raw) return;
+
+  try {
+    const data = JSON.parse(raw);
+    if (!data) return;
+
+    if (bgTenBai) bgTenBai.value = data.title || "";
+    if (bgNgay) bgNgay.value = data.ngay || "";
+
+    // cố gắng map môn/lớp nếu option text trùng
+    selectOptionByText(bgMonHoc, data.subjectText);
+    selectOptionByText(bgLop, data.classText);
+
+    if (bgNoiDung) {
+      bgNoiDung.innerHTML = data.content_html || "";
+    }
+
+    localStorage.removeItem("teacher_ai_push_baigiang");
+    showToast?.("🤖 Đã nhận nội dung từ AI Teacher", "success");
+  } catch (e) {
+    console.error("Lỗi applyAIPushedLesson:", e);
+  }
+}
+
+function selectOptionByText(selectEl, text = "") {
+  if (!selectEl || !text) return;
+
+  const keyword = text.trim().toLowerCase();
+
+  [...selectEl.options].forEach(opt => {
+    if (opt.textContent.trim().toLowerCase() === keyword) {
+      selectEl.value = opt.value;
+    }
+  });
+}
