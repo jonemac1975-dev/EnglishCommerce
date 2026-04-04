@@ -16,7 +16,7 @@ export async function init() {
   student = JSON.parse(localStorage.getItem("studentLogin") || "null");
   teacherId = localStorage.getItem("selectedTeacher");
 
-  console.log("TeacherId:", teacherId);
+  
 
   if (!student || !teacherId) {
     alert("Thiếu thông tin học viên / giáo viên");
@@ -29,7 +29,7 @@ export async function init() {
   await loadDanhSachDe();
 
   document.getElementById("btnSubmitTest")
-    .addEventListener("click", moModalNopBai);
+    ?.addEventListener("click", moModalNopBai);
 
   document.getElementById("btnScrollTop")
     ?.addEventListener("click", () => {
@@ -58,6 +58,56 @@ export async function init() {
   initToolbarFilter();
 }
 
+/* ===================== UTIL ===================== */
+function lamSachTraLoi(raw = {}) {
+  const clean = {};
+
+  Object.entries(raw || {}).forEach(([cau, value]) => {
+    const v = String(value || "").trim().toUpperCase();
+
+    if (["A", "B", "C", "D"].includes(v)) {
+      clean[cau] = v;
+    }
+  });
+
+  return clean;
+}
+
+function htmlToCleanToeicText(html = "") {
+  const tempDiv = document.createElement("div");
+  tempDiv.innerHTML = html;
+
+  // Xóa rác editor
+  tempDiv.querySelectorAll("script, style, meta, link, iframe, svg, canvas").forEach(el => el.remove());
+
+  // Chuyển br thành xuống dòng
+  tempDiv.querySelectorAll("br").forEach(br => br.replaceWith("\n"));
+
+  // Chèn xuống dòng quanh block
+  tempDiv.querySelectorAll("p, div, li, h1, h2, h3, h4, h5, h6").forEach(el => {
+    el.insertAdjacentText("beforebegin", "\n");
+    el.insertAdjacentText("afterend", "\n");
+  });
+
+  let text = tempDiv.textContent || "";
+
+  text = text
+    .replace(/\r/g, "")
+    .replace(/\u00A0/g, " ")
+    .replace(/[ \t]+/g, " ")
+    .replace(/\n{2,}/g, "\n")
+    .trim();
+
+  // Ép xuống dòng đúng format TOEIC
+  text = text
+    .replace(/(Câu\s*\d+\s*:?\s*)/gi, "\n$1")
+    .replace(/([A-D]\.\s*)/g, "\n$1")
+    .replace(/\n{2,}/g, "\n")
+    .trim();
+
+  return text;
+}
+
 /* ===================== LOAD DANH SÁCH ĐỀ ===================== */
 async function loadDanhSachDe() {
   const grid = document.getElementById("testGrid");
@@ -69,7 +119,7 @@ async function loadDanhSachDe() {
   const selectedLop = localStorage.getItem("selectedLop");
 
   if (!selectedTeacher || !selectedLop) {
-    console.warn("Chưa chọn giáo viên hoặc lớp");
+    
     grid.innerHTML = "<p>Chưa chọn giáo viên hoặc lớp</p>";
     return;
   }
@@ -127,10 +177,12 @@ function loadDe(id, html, duLieuDaLam = null) {
   document.getElementById("testProgressPercent").innerText = "0%";
   document.getElementById("testProgressBar").style.width = "0%";
 
+  const traLoiSach = lamSachTraLoi(duLieuDaLam?.traLoi || {});
+
   renderTracNghiem(
     html,
     !!duLieuDaLam,
-    duLieuDaLam?.traLoi || {}
+    traLoiSach
   );
 
   setTimeout(() => {
@@ -148,7 +200,10 @@ function loadDe(id, html, duLieuDaLam = null) {
     document.getElementById("testTimer").innerText = "Nộp lúc " + time;
 
     setTimeout(() => {
-      hienKetQuaTest(duLieuDaLam);
+      hienKetQuaTest({
+        ...duLieuDaLam,
+        traLoi: traLoiSach
+      });
     }, 100);
 
     document.getElementById("btnSubmitTest").disabled = true;
@@ -160,6 +215,7 @@ function loadDe(id, html, duLieuDaLam = null) {
   }
 }
 
+document.getElementById("questionNav").innerHTML = `<div class="nav-empty">Đang tải câu hỏi...</div>`;
 /* ===================== RENDER ===================== */
 function renderTracNghiem(html, isDaLam = false, traLoiCu = {}) {
   const container = document.getElementById("testNoiDung");
@@ -167,77 +223,150 @@ function renderTracNghiem(html, isDaLam = false, traLoiCu = {}) {
   dapAnDungMap = {};
   tongSoCau = 0;
 
-  const tempDiv = document.createElement("div");
-  tempDiv.innerHTML = html;
+  const cleanText = htmlToCleanToeicText(html);
 
-  const paragraphs = tempDiv.querySelectorAll("div, p, br");
-  let cauSo = 0;
-  let cauDiv = null;
-  let daGapCauHoi = false;
+  // ===== TÁCH INTRO + BLOCK CÂU HỎI =====
+  const lines = cleanText
+    .split("\n")
+    .map(line => line.trim())
+    .filter(line => line);
 
-  paragraphs.forEach(p => {
-    const line = p.innerText?.trim();
-    if (!line) return;
+  let introLines = [];
+  let questionBlocks = [];
+  let currentBlock = [];
 
-    if (!/^Câu\s*\d+/i.test(line) && !daGapCauHoi) {
-      const introLine = document.createElement("p");
-      introLine.className = "toeic-intro-line";
-      introLine.innerText = line;
-      container.appendChild(introLine);
-      return;
-    }
-
+  lines.forEach(line => {
     if (/^Câu\s*\d+/i.test(line)) {
-      daGapCauHoi = true;
-      cauSo++;
-      tongSoCau = cauSo;
-
-      cauDiv = document.createElement("div");
-      cauDiv.className = "toeic-question-card";
-      cauDiv.id = `cau${cauSo}`;
-      cauDiv.dataset.cau = cauSo;
-      cauDiv.dataset.flagged = "false";
-      cauDiv.dataset.wrong = "false";
-
-      cauDiv.innerHTML = `
-        <div class="question-top">
-          <span class="question-badge">Question ${cauSo}</span>
-          <button class="flag-btn" data-cau="${cauSo}" title="Đánh dấu câu này">🚩</button>
-        </div>
-        <div class="question-text"><b>${line}</b></div>
-        <div class="question-options" id="options-${cauSo}"></div>
-      `;
-      container.appendChild(cauDiv);
-      return;
+      if (currentBlock.length) {
+        questionBlocks.push([...currentBlock]);
+      }
+      currentBlock = [line];
+    } else {
+      if (currentBlock.length) {
+        currentBlock.push(line);
+      } else {
+        introLines.push(line);
+      }
     }
+  });
 
-    if (/^[A-D]\./.test(line) && cauDiv) {
-      const dapAn = line[0];
-      const isDung = line.includes("*");
+  if (currentBlock.length) {
+    questionBlocks.push([...currentBlock]);
+  }
 
-      if (isDung) dapAnDungMap[cauSo] = dapAn;
+  // ===== INTRO =====
+  introLines.forEach(line => {
+    const introLine = document.createElement("p");
+    introLine.className = "toeic-intro-line";
+    introLine.innerText = line;
+    container.appendChild(introLine);
+  });
 
-      const text = line.replace("*", "").trim();
-      const optionWrap = cauDiv.querySelector(`#options-${cauSo}`);
+  // ===== RENDER TỪNG CÂU =====
+  questionBlocks.forEach((block, index) => {
+    const cauSo = index + 1;
+    tongSoCau = cauSo;
 
-      const label = document.createElement("label");
-      label.className = "toeic-option";
+    const cauDiv = document.createElement("div");
+    cauDiv.className = "toeic-question-card";
+    cauDiv.id = `cau${cauSo}`;
+    cauDiv.dataset.cau = cauSo;
+    cauDiv.dataset.flagged = "false";
+    cauDiv.dataset.wrong = "false";
+
+    // dòng đầu là "Câu X ..."
+    const firstLine = block[0];
+
+    // gom phần text câu hỏi + đáp án
+    let questionTextLines = [];
+    let optionMap = { A: "", B: "", C: "", D: "" };
+    let currentOption = null;
+
+    block.forEach((line, i) => {
+      if (i === 0) {
+        questionTextLines.push(line);
+        return;
+      }
+
+      const optionMatch = line.match(/^([A-D])\.\s*(.*)$/i);
+
+      if (optionMatch) {
+        currentOption = optionMatch[1].toUpperCase();
+        optionMap[currentOption] = optionMatch[2].trim();
+      } else {
+        if (currentOption) {
+          optionMap[currentOption] += " " + line;
+        } else {
+          questionTextLines.push(line);
+        }
+      }
+    });
+
+    // chỉ giữ đáp án có nội dung
+    const validOptions = Object.entries(optionMap)
+      .filter(([_, text]) => text && text.trim());
+
+    cauDiv.innerHTML = `
+      <div class="question-top">
+        <span class="question-badge">Question ${cauSo}</span>
+        <button class="flag-btn" data-cau="${cauSo}" title="Đánh dấu câu này">🚩</button>
+      </div>
+      <div class="question-text">
+        <b>${questionTextLines[0] || `Câu ${cauSo}`}</b>
+        ${
+          questionTextLines.length > 1
+            ? questionTextLines.slice(1).map(line => `<div class="question-subline">${line}</div>`).join("")
+            : ""
+        }
+      </div>
+      <div class="question-options" id="options-${cauSo}"></div>
+    `;
+
+    container.appendChild(cauDiv);
+
+    const optionWrap = cauDiv.querySelector(`#options-${cauSo}`);
+    const traLoiDaLuu = String(traLoiCu[cauSo] || "").trim().toUpperCase();
+
+    validOptions.forEach(([dapAn, rawText]) => {
+      const isDung = rawText.includes("*");
+      const text = rawText.replace(/\*/g, "").trim();
+
+      if (isDung) {
+        dapAnDungMap[cauSo] = dapAn;
+      }
+
+      const optionId = `cau_${cauSo}_${dapAn}`;
+
+      const wrap = document.createElement("div");
+      wrap.className = "toeic-option-wrap";
 
       const input = document.createElement("input");
       input.type = "radio";
-      input.name = `cau${cauSo}`;
+      input.name = `cau_${cauSo}`; // mỗi câu chỉ 1 nhóm radio
       input.value = dapAn;
+      input.id = optionId;
+      input.dataset.cau = cauSo;
+      input.className = "toeic-radio-real";
+      input.checked = false; // ép reset sạch
 
       if (isDaLam) input.disabled = true;
 
-      if (traLoiCu[cauSo] === dapAn) {
+      const label = document.createElement("label");
+      label.className = "toeic-option";
+      label.setAttribute("for", optionId);
+
+      if (
+        ["A", "B", "C", "D"].includes(traLoiDaLuu) &&
+        traLoiDaLuu === dapAn
+      ) {
         input.checked = true;
         label.classList.add("selected");
       }
 
       input.addEventListener("change", () => {
-        document.querySelectorAll(`input[name="cau${cauSo}"]`).forEach(i => {
-          i.closest(".toeic-option")?.classList.remove("selected");
+        document.querySelectorAll(`input[name="cau_${cauSo}"]`).forEach(i => {
+          const lb = document.querySelector(`label[for="${i.id}"]`);
+          lb?.classList.remove("selected");
         });
 
         if (input.checked) {
@@ -256,12 +385,13 @@ function renderTracNghiem(html, isDaLam = false, traLoiCu = {}) {
       optionText.className = "option-text";
       optionText.innerText = text;
 
-      label.appendChild(input);
       label.appendChild(optionLetter);
       label.appendChild(optionText);
 
-      optionWrap.appendChild(label);
-    }
+      wrap.appendChild(input);
+      wrap.appendChild(label);
+      optionWrap.appendChild(wrap);
+    });
   });
 
   bindFlagButtons();
@@ -328,7 +458,7 @@ function updateNavigatorState(cauSo) {
   const btn = document.querySelector(`.q-nav-btn[data-cau="${cauSo}"]`);
   if (!btn) return;
 
-  const checked = document.querySelector(`input[name="cau${cauSo}"]:checked`);
+  const checked = document.querySelector(`input[name="cau_${cauSo}"]:checked`);
   btn.classList.remove("answered", "unanswered");
 
   if (checked) {
@@ -371,7 +501,7 @@ function updateProgress() {
   let answered = 0;
 
   for (let i = 1; i <= tongSoCau; i++) {
-    const checked = document.querySelector(`input[name="cau${i}"]:checked`);
+    const checked = document.querySelector(`input[name="cau_${i}"]:checked`);
     if (checked) answered++;
   }
 
@@ -400,7 +530,7 @@ function applyQuestionFilter(filter) {
 
   cards.forEach(card => {
     const cau = Number(card.dataset.cau);
-    const checked = document.querySelector(`input[name="cau${cau}"]:checked`);
+    const checked = document.querySelector(`input[name="cau_${cau}"]:checked`);
     const isFlagged = flaggedQuestions.has(cau);
     const isWrong = reviewWrongSet.has(cau);
 
@@ -425,7 +555,7 @@ function moModalNopBai() {
 
   let answered = 0;
   for (let i = 1; i <= tongSoCau; i++) {
-    const checked = document.querySelector(`input[name="cau${i}"]:checked`);
+    const checked = document.querySelector(`input[name="cau_${i}"]:checked`);
     if (checked) answered++;
   }
 
@@ -458,7 +588,7 @@ async function nopBai() {
   const traLoi = {};
 
   Object.entries(dapAnDungMap).forEach(([cau, dapAn]) => {
-    const checked = document.querySelector(`input[name="cau${cau}"]:checked`);
+    const checked = document.querySelector(`input[name="cau_${cau}"]:checked`);
 
     if (checked) {
       traLoi[cau] = checked.value;
@@ -466,7 +596,7 @@ async function nopBai() {
     }
   });
 
-  const diem = Math.round((dung / tong) * 10);
+  const diem = tong ? Math.round((dung / tong) * 10) : 0;
 
   document.getElementById("testDung").innerText = `${dung}/${tong}`;
   document.getElementById("testDiem").innerText = diem;
@@ -502,22 +632,22 @@ function hienKetQuaTest(data) {
   document.getElementById("testDung").innerText = `${data.dung}/${data.tong}`;
   document.getElementById("testDiem").innerText = data.diem;
 
-  const traLoi = data.traLoi || {};
+  const traLoi = lamSachTraLoi(data.traLoi || {});
   let cauSaiList = [];
   let firstSai = null;
   reviewWrongSet = new Set();
 
   Object.keys(dapAnDungMap).forEach(cau => {
     const dapAn = dapAnDungMap[cau];
-    const chon = traLoi[cau];
+    const chon = String(traLoi[cau] || "").trim().toUpperCase();
 
     const cauDiv = document.getElementById(`cau${cau}`);
-    const radios = document.querySelectorAll(`input[name="cau${cau}"]`);
+    const radios = document.querySelectorAll(`input[name="cau_${cau}"]`);
 
     radios.forEach(radio => {
       radio.disabled = true;
 
-      const label = radio.closest(".toeic-option");
+      const label = document.querySelector(`label[for="${radio.id}"]`);
       if (!label) return;
 
       if (radio.value === dapAn) {
@@ -546,7 +676,7 @@ function hienKetQuaTest(data) {
       cauSaiList.push(cau);
       reviewWrongSet.add(cauNum);
       navBtn?.classList.add("wrong");
-      cauDiv.dataset.wrong = "true";
+      if (cauDiv) cauDiv.dataset.wrong = "true";
 
       if (!firstSai) firstSai = cauDiv;
     }
@@ -592,7 +722,7 @@ function renderSummaryResult(data, cauSaiList) {
         </div>
         <div class="result-item">
           <span>Accuracy</span>
-          <b>${Math.round((data.dung / data.tong) * 100)}%</b>
+          <b>${data.tong ? Math.round((data.dung / data.tong) * 100) : 0}%</b>
         </div>
       </div>
 

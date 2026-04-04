@@ -1685,854 +1685,27 @@ color: #fff;
 
 
 
-/* =========================================
-   TOEIC TEST UI
-========================================= */
-.toeic-page {
-  padding: 22px;
-  max-width: 1500px;
-  margin: 0 auto;
-  color: #1f2937;
-}
-
-.toeic-topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-bottom: 18px;
-}
-
-.toeic-brand {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.toeic-badge {
-  background: linear-gradient(135deg, #0f3d8f, #1d5fd1);
-  color: #fff;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 8px 12px;
-  border-radius: 999px;
-  letter-spacing: 1px;
-  box-shadow: 0 8px 20px rgba(15, 61, 143, 0.18);
-}
-
-.toeic-brand h1 {
-  margin: 0;
-  font-size: 30px;
-  color: #0f172a;
-}
-
-.toeic-brand p {
-  margin: 4px 0 0;
-  color: #64748b;
-  font-size: 14px;
-}
-
-.toeic-top-actions {
-  display: flex;
-  gap: 10px;
-}
-
-.toeic-mini-btn,
-.toeic-primary-btn,
-.toeic-secondary-btn,
-.test-btn {
-  border: none;
-  border-radius: 14px;
-  cursor: pointer;
-  transition: all 0.22s ease;
-  font-weight: 700;
-}
-
-.toeic-mini-btn {
-  background: #0f3d8f;
-  color: white;
-  padding: 5px 10px;
-}
-
-.toeic-mini-btn.ghost {
-  background: white;
-  color: #0f3d8f;
-  border: 1px solid #dbe3f0;
-}
-
-.toeic-mini-btn:hover,
-.toeic-primary-btn:hover,
-.toeic-secondary-btn:hover,
-.test-btn:hover {
-  transform: translateY(-2px);
-}
-
-.toeic-info-card {
-  background: linear-gradient(180deg, #ffffff, #f8fbff);
-  border: 1px solid #e5eefb;
-  border-radius: 24px;
-  padding: 20px;
-  box-shadow: 0 16px 45px rgba(15, 61, 143, 0.08);
-  margin-bottom: 22px;
-}
-
-.toeic-info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 14px;
-}
-
-.info-box {
-  background: #fff;
-  border: 1px solid #edf2f7;
-  border-radius: 18px;
-  padding: 16px;
-}
-
-.info-label {
-  display: block;
-  font-size: 12px;
-  text-transform: uppercase;
-  color: #64748b;
-  margin-bottom: 8px;
-  letter-spacing: 0.5px;
-}
-
-.info-value {
-  font-size: 20px;
-  font-weight: 800;
-  color: #0f172a;
-}
-
-.info-value.timer {
-  color: #0f3d8f;
-}
-
-.info-value.timer.warning {
-  color: #d97706;
-  animation: pulseWarning 1s infinite;
-}
-
-.info-value.timer.danger {
-  color: #dc2626;
-  animation: pulseDanger 0.8s infinite;
-}
-
-@keyframes pulseWarning {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.03); opacity: 0.8; }
-}
-
-@keyframes pulseDanger {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.08); opacity: 0.7; }
-}
-
-.toeic-layout {
-  display: grid;
-  grid-template-columns: 1fr 240px;
-  gap: 24px;
-  align-items: start;
-}
-
-.toeic-main {
-  min-width: 0;
-}
-
-.toeic-sidebar {
-  position: sticky;
-  top: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.toeic-side-card,
-.toeic-section,
-.toeic-result-box {
-  background: #fff;
-  border: 1px solid #e7edf6;
-  border-radius: 24px;
-  padding: 10px;
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05);
-}
-
-.toeic-side-card h3,
-.toeic-section h2 {
-  margin-top: 0;
-  margin-bottom: 14px;
-  color: #0f172a;
-}
-
-.intro-box {
-  margin-bottom: 18px;
-}
-
-.intro-box p {
-  color: #475569;
-  margin: 0;
-}
-
-.toeic-question-wrap {
-  min-height: 500px;
-}
-
-.toeic-empty {
-  min-height: 340px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  color: #94a3b8;
-  text-align: center;
-}
-
-.toeic-empty-icon {
-  font-size: 12px;
-  margin-bottom: 5px;
-}
-
-.toeic-intro-line {
-  background: #f8fafc;
-  border-left: 4px solid #0f3d8f;
-  padding: 8px 10px;
-  border-radius: 14px;
-  color: #334155;
-  margin-bottom: 14px;
-}
-
-.toeic-question-card {
-  background: linear-gradient(180deg, #ffffff, #fbfdff);
-  border: 1px solid #e8eef8;
-  border-radius: 22px;
-  padding: 22px;
-  margin-bottom: 18px;
-  transition: all 0.2s ease;
-}
-
-.toeic-question-card:hover {
-  box-shadow: 0 12px 28px rgba(15, 61, 143, 0.08);
-}
-
-.question-top {
-  margin-bottom: 12px;
-}
-
-.question-badge {
-  display: inline-block;
-  background: #eaf2ff;
-  color: #0f3d8f;
-  font-weight: 800;
-  font-size: 14px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  letter-spacing: 0.6px;
-}
-
-.question-text {
-  font-size: 14px;
-  line-height: 1.7;
-  margin-bottom: 10px;
-  color: #111827;
-}
-
-.question-options {
-  display: grid;
-  gap: 10px;
-}
-
-.toeic-option {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  position: relative;
-  background: #f8fbff;
-  border: 2px solid #e6edf8;
-  border-radius: 18px;
-  padding: 12px 14px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.toeic-option:hover {
-  border-color: #bcd1f8;
-  background: #f2f7ff;
-  transform: translateY(-1px);
-}
-
-.toeic-option input {
-  display: none;
-}
-
-.toeic-option.selected {
-  border-color: #0f3d8f;
-  background: #edf4ff;
-  box-shadow: 0 8px 20px rgba(15, 61, 143, 0.08);
-}
-
-.option-letter {
-  width: 38px;
-  height: 38px;
-  min-width: 38px;
-  border-radius: 50%;
-  background: #0f3d8f;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-}
-
-.option-text {
-  flex: 1;
-  font-size: 15px;
-  line-height: 1.6;
-  color: #1f2937;
-}
-
-.toeic-option.dung {
-  border-color: #16a34a !important;
-  background: #f0fdf4 !important;
-}
-
-.toeic-option.sai {
-  border-color: #dc2626 !important;
-  background: #fef2f2 !important;
-}
-
-.answer-icon {
-  position: absolute;
-  right: 8px;
-  font-size: 10px;
-  font-weight: 900;
-}
-
-.icon-dung {
-  color: #16a34a;
-}
-
-.icon-sai {
-  color: #dc2626;
-}
-
-.toeic-bottom-actions {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-top: 20px;
-}
-
-.toeic-primary-btn {
-  background: linear-gradient(135deg, #0f3d8f, #1d5fd1);
-  color: #fff;
-  padding: 10px 18px;
-  font-size: 15px;
-  box-shadow: 0 12px 24px rgba(15, 61, 143, 0.18);
-}
-
-.toeic-primary-btn:disabled {
-  opacity: 0.65;
-  cursor: not-allowed;
-  transform: none !important;
-}
-
-.toeic-secondary-btn {
-  background: #fff;
-  color: #0f3d8f;
-  border: 1px solid #d9e5f7;
-  padding: 8px 15px;
-  font-size: 15px;
-}
-
-.test-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-}
-
-.test-btn {
-  background: #f8fbff;
-  color: #0f3d8f;
-  border: 1px solid #dce8f8;
-  padding: 8px 8px;
-  font-size: 14px;
-}
-
-.test-btn.active {
-  background: linear-gradient(135deg, #0f3d8f, #1d5fd1);
-  color: white;
-  box-shadow: 0 10px 20px rgba(15, 61, 143, 0.18);
-}
-
-.test-btn.da-lam {
-  background: #e8fff0;
-  border-color: #b8ebc8;
-  color: #15803d;
-  font-weight: 800;
-}
-
-.question-nav {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
-}
-
-.q-nav-btn {
-  border: none;
-  border-radius: 14px;
-  padding: 12px 0;
-  font-weight: 800;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  background: #f1f5f9;
-  color: #334155;
-}
-
-.q-nav-btn:hover {
-  transform: translateY(-2px);
-}
-
-.q-nav-btn.unanswered {
-  background: #eef2f7;
-  color: #475569;
-}
-
-.q-nav-btn.answered {
-  background: #dbeafe;
-  color: #0f3d8f;
-}
-
-.q-nav-btn.current {
-  outline: 3px solid #f59e0b;
-}
-
-.q-nav-btn.wrong {
-  background: #fee2e2 !important;
-  color: #b91c1c !important;
-}
-
-.nav-empty {
-  color: #94a3b8;
-  font-style: italic;
-}
-
-.legend-wrap {
-  display: grid;
-  gap: 10px;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: #334155;
-  font-size: 14px;
-}
-
-.legend-dot {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  display: inline-block;
-}
-
-.legend-dot.current {
-  background: #f59e0b;
-}
-
-.legend-dot.answered {
-  background: #93c5fd;
-}
-
-.legend-dot.unanswered {
-  background: #cbd5e1;
-}
-
-.legend-dot.wrong {
-  background: #fca5a5;
-}
-
-.toeic-result-box {
-  margin-bottom: 18px;
-  border: 1px solid #dbeafe;
-  background: linear-gradient(180deg, #ffffff, #f8fbff);
-}
-
-.result-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 14px;
-  flex-wrap: wrap;
-  margin-bottom: 18px;
-}
-
-.result-header h3 {
-  margin: 0;
-  color: #0f172a;
-}
-
-.result-score {
-  background: #0f3d8f;
-  color: #fff;
-  padding: 10px 14px;
-  border-radius: 14px;
-  font-weight: 800;
-}
-
-.result-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 14px;
-  margin-bottom: 16px;
-}
-
-.result-item {
-  background: white;
-  border: 1px solid #e8eef8;
-  border-radius: 16px;
-  padding: 16px;
-}
-
-.result-item span {
-  display: block;
-  color: #64748b;
-  margin-bottom: 8px;
-  font-size: 13px;
-}
-
-.result-item b {
-  font-size: 22px;
-  color: #0f172a;
-}
-
-.wrong-list {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #b91c1c;
-  padding: 14px 16px;
-  border-radius: 16px;
-  font-weight: 700;
-}
-
-.all-correct {
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  color: #166534;
-  padding: 14px 16px;
-  border-radius: 16px;
-  font-weight: 700;
-}
-
-/* ================= RESPONSIVE ================= */
-@media (max-width: 1100px) {
-  .toeic-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .toeic-sidebar {
-    position: static;
-  }
-}
-
-@media (max-width: 768px) {
-  .toeic-page {
-    padding: 14px;
-  }
-
-  .toeic-brand h1 {
-    font-size: 24px;
-  }
-
-  .toeic-info-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .question-nav {
-    grid-template-columns: repeat(4, 1fr);
-  }
-
-  .test-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .question-text {
-    font-size: 16px;
-  }
-
-  .toeic-option {
-    padding: 14px;
-  }
-}
-
-
-
-
-
-/* =========================================
-   TOEIC PRO ADD-ON
-========================================= */
-
-.toeic-progress-wrap {
-  margin-top: 18px;
-}
-
-.toeic-progress-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-  color: #334155;
-  font-weight: 700;
-  font-size: 14px;
-}
-
-.toeic-progress-bar {
-  height: 14px;
-  background: #e7eef8;
-  border-radius: 999px;
-  overflow: hidden;
-  position: relative;
-}
-
-.toeic-progress-fill {
-  height: 100%;
-  width: 0%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #0f3d8f, #1d5fd1, #4f8cff);
-  transition: width 0.3s ease;
-}
-
-.toeic-toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 18px;
-}
-
-.toolbar-left {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.toolbar-chip {
-  border: 1px solid #dbe5f3;
-  background: #fff;
-  color: #334155;
-  border-radius: 999px;
-  padding: 10px 14px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.toolbar-chip:hover {
-  transform: translateY(-1px);
-  border-color: #b8cae8;
-}
-
-.toolbar-chip.active {
-  background: linear-gradient(135deg, #0f3d8f, #1d5fd1);
-  color: white;
-  border-color: transparent;
-  box-shadow: 0 8px 18px rgba(15, 61, 143, 0.18);
-}
-
-.question-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-}
-
-.flag-btn {
-  border: none;
-  background: #fff7ed;
-  color: #ea580c;
-  border: 1px solid #fed7aa;
-  border-radius: 12px;
-  padding: 8px 12px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: all 0.2s ease;
-}
-
-.flag-btn:hover {
-  transform: translateY(-1px);
-}
-
-.flag-btn.active {
-  background: #ea580c;
-  color: white;
-  border-color: #ea580c;
-  box-shadow: 0 8px 18px rgba(234, 88, 12, 0.18);
-}
-
-.flagged-card {
-  border-color: #fb923c !important;
-  box-shadow: 0 10px 24px rgba(251, 146, 60, 0.14) !important;
-}
-
-.q-nav-btn.flagged {
-  box-shadow: inset 0 0 0 2px #f97316;
-}
-
-.legend-dot.flagged {
-  background: #fb923c;
-}
-
-.toeic-modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.48);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  z-index: 99999;
-  backdrop-filter: blur(4px);
-}
-
-.toeic-modal.show {
-  display: flex;
-}
-
-.toeic-modal-box {
-  width: 100%;
-  max-width: 720px;
-  background: #fff;
-  border-radius: 28px;
-  overflow: hidden;
-  box-shadow: 0 25px 80px rgba(15, 23, 42, 0.24);
-  animation: modalPop 0.22s ease;
-}
-
-@keyframes modalPop {
-  from {
-    transform: translateY(18px) scale(0.97);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
-}
-
-.toeic-modal-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 22px 24px;
-  border-bottom: 1px solid #edf2f7;
-}
-
-.toeic-modal-head h3 {
-  margin: 0;
-  color: #0f172a;
-  font-size: 24px;
-}
-
-.modal-close {
-  border: none;
-  background: #f8fafc;
-  color: #334155;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  font-size: 24px;
-  cursor: pointer;
-}
-
-.toeic-modal-body {
-  padding: 24px;
-}
-
-.modal-stat-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 14px;
-  margin-bottom: 18px;
-}
-
-.modal-stat {
-  background: #f8fbff;
-  border: 1px solid #e4edf9;
-  border-radius: 18px;
-  padding: 18px;
-}
-
-.modal-stat span {
-  display: block;
-  color: #64748b;
-  margin-bottom: 8px;
-  font-size: 13px;
-}
-
-.modal-stat b {
-  font-size: 26px;
-  color: #0f172a;
-}
-
-.modal-note {
-  background: #fff7ed;
-  color: #9a3412;
-  border: 1px solid #fed7aa;
-  border-radius: 18px;
-  padding: 14px 16px;
-  font-weight: 600;
-}
-
-.toeic-modal-foot {
-  padding: 20px 24px 24px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-@media (max-width: 768px) {
-  .toeic-toolbar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .toolbar-left {
-    width: 100%;
-  }
-
-  .toolbar-chip {
-    flex: 1;
-    text-align: center;
-  }
-
-  .toeic-modal-head h3 {
-    font-size: 20px;
-  }
-
-  .modal-stat b {
-    font-size: 22px;
-  }
-}
-
-
 /* =========================================================
-   TOEIC LUXURY TOP LEVEL UI
+   TOEIC TEST UI - CLEAN FULL VERSION
+   Gộp + tối ưu + tránh class đè nhau
 ========================================================= */
 
+/* =========================
+   BASE PAGE
+========================= */
+.toeic-page,
 .toeic-lux-page {
   position: relative;
-  max-width: 1580px;
+  max-width: 1560px;
   margin: 0 auto;
-  padding: 28px;
+  padding: 24px;
   color: #0f172a;
   overflow: hidden;
 }
 
-/* ===== Ambient background ===== */
+/* =========================
+   AMBIENT BACKGROUND
+========================= */
 .lux-orb {
   position: absolute;
   border-radius: 999px;
@@ -2543,35 +1716,38 @@ color: #fff;
 }
 
 .orb-1 {
-  width: 260px;
-  height: 260px;
+  width: 200px;
+  height: 200px;
   background: #93c5fd;
   top: 40px;
   left: -60px;
 }
 
 .orb-2 {
-  width: 320px;
-  height: 320px;
+  width: 200px;
+  height: 100px;
   background: #c4b5fd;
   top: 180px;
   right: -80px;
 }
 
 .orb-3 {
-  width: 260px;
-  height: 260px;
+  width: 200px;
+  height: 100px;
   background: #f9a8d4;
   bottom: 40px;
   left: 28%;
 }
 
+.toeic-page > *,
 .toeic-lux-page > * {
   position: relative;
   z-index: 2;
 }
 
-/* ===== Glass effect ===== */
+/* =========================
+   GLASS EFFECT
+========================= */
 .glass {
   background: rgba(255, 255, 255, 0.72);
   backdrop-filter: blur(18px);
@@ -2582,7 +1758,32 @@ color: #fff;
     inset 0 1px 0 rgba(255, 255, 255, 0.55);
 }
 
-/* ===== Topbar ===== */
+/* Candidate Name rộng hơn */
+.candidate-name-card {
+  grid-column: span 2;
+}
+
+#candidateName {
+  display: block;
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+@media (max-width: 768px) {
+  .candidate-name-card {
+    grid-column: span 2;
+  }
+
+  #candidateName {
+    font-size: 20px;
+  }
+}
+/* =========================
+   TOPBAR
+========================= */
+.toeic-topbar,
 .lux-topbar {
   display: flex;
   justify-content: space-between;
@@ -2592,10 +1793,22 @@ color: #fff;
   margin-bottom: 24px;
 }
 
+.toeic-brand,
 .lux-brand {
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+.toeic-badge {
+  background: linear-gradient(135deg, #0f3d8f, #1d5fd1);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 8px 12px;
+  border-radius: 999px;
+  letter-spacing: 1px;
+  box-shadow: 0 8px 20px rgba(15, 61, 143, 0.18);
 }
 
 .lux-logo {
@@ -2622,55 +1835,113 @@ color: #fff;
   margin-bottom: 8px;
 }
 
+.toeic-brand h1,
 .lux-brand h1 {
   margin: 0;
-  font-size: 34px;
+  font-size: 22px;
   font-weight: 900;
   letter-spacing: -0.02em;
+  color: #0f172a;
 }
 
+.toeic-brand p,
 .lux-brand p {
   margin: 6px 0 0;
   color: #64748b;
   font-size: 14px;
 }
 
+.toeic-top-actions,
 .lux-top-actions {
   display: flex;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
+/* =========================
+   BUTTONS
+========================= */
+.toeic-mini-btn,
+.toeic-primary-btn,
+.toeic-secondary-btn,
 .lux-mini-btn,
 .lux-primary-btn,
-.lux-secondary-btn {
+.lux-secondary-btn,
+.test-btn,
+.toolbar-chip,
+.lux-chip,
+.flag-btn,
+.q-nav-btn,
+.modal-close,
+.lux-modal-close {
   border: none;
   cursor: pointer;
   transition: all 0.22s ease;
   font-weight: 800;
 }
 
+.toeic-mini-btn,
 .lux-mini-btn {
-  padding: 12px 16px;
+  padding: 10px 14px;
   border-radius: 16px;
   color: white;
   background: linear-gradient(135deg, #0f3d8f, #2563eb);
   box-shadow: 0 12px 28px rgba(37, 99, 235, 0.18);
 }
 
+.toeic-mini-btn.ghost,
 .lux-mini-btn.ghost {
-  background: rgba(255, 255, 255, 0.78);
+  background: rgba(255, 255, 255, 0.82);
   color: #0f3d8f;
   border: 1px solid rgba(203, 213, 225, 0.9);
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
 }
 
-.lux-mini-btn:hover,
-.lux-primary-btn:hover,
-.lux-secondary-btn:hover {
-  transform: translateY(-2px) scale(1.01);
+.toeic-primary-btn,
+.lux-primary-btn {
+  padding: 14px 22px;
+  border-radius: 18px;
+  color: white;
+  background: linear-gradient(135deg, #0f3d8f, #2563eb, #8b5cf6);
+  box-shadow: 0 16px 32px rgba(37, 99, 235, 0.2);
 }
 
-/* ===== Hero ===== */
+.toeic-secondary-btn,
+.lux-secondary-btn {
+  padding: 14px 20px;
+  border-radius: 18px;
+  color: #0f3d8f;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(203, 213, 225, 0.95);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+}
+
+.toeic-primary-btn:hover,
+.toeic-secondary-btn:hover,
+.toeic-mini-btn:hover,
+.lux-primary-btn:hover,
+.lux-secondary-btn:hover,
+.lux-mini-btn:hover,
+.test-btn:hover,
+.toolbar-chip:hover,
+.lux-chip:hover,
+.flag-btn:hover,
+.q-nav-btn:hover,
+.modal-close:hover,
+.lux-modal-close:hover {
+  transform: translateY(-2px);
+}
+
+.toeic-primary-btn:disabled,
+.lux-primary-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* =========================
+   HERO / INTRO
+========================= */
 .lux-hero-card {
   display: flex;
   justify-content: space-between;
@@ -2704,16 +1975,18 @@ color: #fff;
   border: 1px solid rgba(191,219,254,0.8);
 }
 
-.lux-hero-left h2 {
+.lux-hero-left h2,
+.lux-intro h2 {
   margin: 0 0 10px;
-  font-size: 34px;
+  font-size: 30px;
   font-weight: 900;
   letter-spacing: -0.03em;
 }
 
-.lux-hero-left p {
+.lux-hero-left p,
+.lux-intro p,
+.intro-box p {
   margin: 0;
-  max-width: 720px;
   color: #475569;
   font-size: 15px;
   line-height: 1.75;
@@ -2725,8 +1998,8 @@ color: #fff;
 }
 
 .lux-timer-panel {
-  min-width: 220px;
-  padding: 22px 24px;
+  min-width: 120px;
+  padding: 12px 14px;
   border-radius: 24px;
   background: rgba(255,255,255,0.75);
   border: 1px solid rgba(226,232,240,0.9);
@@ -2750,52 +2023,93 @@ color: #fff;
   letter-spacing: -0.04em;
 }
 
-/* ===== Info Grid ===== */
+/* =========================
+   INFO CARDS
+========================= */
+.toeic-info-card,
+.lux-progress-card,
+.lux-intro,
+.lux-toolbar,
+.lux-question-shell,
+.toeic-side-card,
+.lux-side-card,
+.toeic-section,
+.toeic-result-box {
+  border-radius: 28px;
+  background: rgba(255,255,255,0.78);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.72);
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.07);
+}
+
+.toeic-info-card,
+.lux-intro,
+.lux-progress-card,
+.lux-toolbar,
+.lux-question-shell,
+.toeic-side-card,
+.lux-side-card,
+.toeic-section,
+.toeic-result-box {
+  padding: 22px;
+  margin-bottom: 20px;
+}
+
+.toeic-info-grid,
 .lux-info-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 18px;
-  margin-bottom: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
 }
 
+.info-box,
 .lux-stat-card {
-  border-radius: 24px;
-  padding: 22px;
+  background: rgba(255,255,255,0.85);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 22px;
+  padding: 18px;
 }
 
+.info-label,
 .lux-stat-label {
   display: block;
   font-size: 12px;
   text-transform: uppercase;
-  letter-spacing: 1px;
   color: #64748b;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
 }
 
+.info-value,
 .lux-stat-value {
-  display: block;
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 900;
-  letter-spacing: -0.02em;
   color: #0f172a;
 }
 
-/* ===== Progress ===== */
-.lux-progress-card {
-  border-radius: 26px;
-  padding: 20px 22px;
-  margin-bottom: 24px;
+.info-value.timer {
+  color: #0f3d8f;
 }
 
+/* =========================
+   PROGRESS
+========================= */
+.toeic-progress-wrap {
+  margin-top: 18px;
+}
+
+.toeic-progress-top,
 .lux-progress-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 14px;
-  font-weight: 800;
+  margin-bottom: 12px;
   color: #334155;
+  font-weight: 800;
+  font-size: 14px;
 }
 
+.toeic-progress-bar,
 .lux-progress-track {
   height: 16px;
   border-radius: 999px;
@@ -2804,6 +2118,7 @@ color: #fff;
   position: relative;
 }
 
+.toeic-progress-fill,
 .lux-progress-fill {
   height: 100%;
   width: 0%;
@@ -2820,17 +2135,22 @@ color: #fff;
   100% { background-position: 200% 0; }
 }
 
-/* ===== Layout ===== */
+/* =========================
+   LAYOUT
+========================= */
+.toeic-layout,
 .lux-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 360px;
+  grid-template-columns: 70% 30%;;
   gap: 26px;
   align-items: start;
 }
 
+.toeic-main,
 .lux-main {
   min-width: 0;
 }
+
 
 .lux-sidebar {
   position: sticky;
@@ -2838,98 +2158,70 @@ color: #fff;
   display: flex;
   flex-direction: column;
   gap: 18px;
+  min-width: 430px;
 }
-
-/* ===== Intro ===== */
-.lux-intro {
-  padding: 28px;
+.lux-side-card {
   border-radius: 28px;
-  margin-bottom: 20px;
+  padding: 22px;
+  width: 100%;
 }
 
-.lux-intro-badge {
-  display: inline-block;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 1.3px;
-  color: #7c3aed;
-  margin-bottom: 12px;
-}
-
-.lux-intro h2 {
-  margin: 0 0 10px;
-  font-size: 30px;
+/* =========================
+   SECTION HEADINGS
+========================= */
+.toeic-side-card h3,
+.toeic-section h2,
+.lux-side-head h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 18px;
   font-weight: 900;
 }
 
-.lux-intro p {
-  margin: 0;
-  color: #475569;
-  line-height: 1.75;
-}
-
-/* ===== Toolbar ===== */
-.lux-toolbar {
-  border-radius: 24px;
-  padding: 16px 18px;
-  margin-bottom: 18px;
-}
-
-.lux-toolbar-left {
+.lux-side-head {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
 }
 
-.lux-chip {
-  border: 1px solid rgba(203, 213, 225, 0.9);
-  background: rgba(255,255,255,0.78);
-  color: #334155;
-  border-radius: 999px;
-  padding: 10px 15px;
-  font-weight: 800;
-  cursor: pointer;
-  transition: all 0.22s ease;
+.lux-side-head span {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-.lux-chip:hover {
-  transform: translateY(-1px);
-  border-color: #bfdbfe;
-}
-
-.lux-chip.active {
-  background: linear-gradient(135deg, #0f3d8f, #2563eb);
-  color: white;
-  border-color: transparent;
-  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.22);
-}
-
-/* ===== Question Shell ===== */
-.lux-question-shell {
-  border-radius: 30px;
-  padding: 22px;
-}
-
+/* =========================
+   EMPTY STATE
+========================= */
+.toeic-question-wrap,
 .lux-question-wrap {
   min-height: 500px;
 }
 
+.toeic-empty,
 .lux-empty {
   min-height: 360px;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
   color: #94a3b8;
   text-align: center;
 }
 
+.toeic-empty-icon,
 .lux-empty-icon {
-  font-size: 48px;
+  font-size: 42px;
   margin-bottom: 12px;
 }
 
-/* ===== Make old JS-rendered cards look premium ===== */
+/* =========================
+   INTRO LINE
+========================= */
 .toeic-intro-line {
   background: rgba(248, 250, 252, 0.86);
   border: 1px solid rgba(226, 232, 240, 0.95);
@@ -2941,6 +2233,9 @@ color: #fff;
   line-height: 1.75;
 }
 
+/* =========================
+   QUESTION CARD
+========================= */
 .toeic-question-card {
   position: relative;
   background: rgba(255,255,255,0.88);
@@ -2966,6 +2261,11 @@ color: #fff;
   box-shadow: 0 24px 50px rgba(15, 23, 42, 0.08);
 }
 
+.flagged-card {
+  border-color: rgba(251, 146, 60, 0.8) !important;
+  box-shadow: 0 18px 38px rgba(251, 146, 60, 0.12) !important;
+}
+
 .question-top {
   display: flex;
   justify-content: space-between;
@@ -2982,22 +2282,43 @@ color: #fff;
   color: #0f3d8f;
   font-weight: 900;
   font-size: 12px;
-  padding: 10px 14px;
+  padding: 6px 8px;
   border-radius: 999px;
   letter-spacing: 0.8px;
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
 }
 
 .question-text {
-  font-size: 19px;
+  font-size: 18px;
   line-height: 1.85;
   color: #0f172a;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
+.question-subline {
+  margin-top: 8px;
+  color: #475569;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* =========================
+   OPTIONS / RADIO FIX
+========================= */
 .question-options {
   display: grid;
   gap: 14px;
+}
+
+.toeic-option-wrap {
+  position: relative;
+  margin-bottom: 14px;
+}
+
+.toeic-radio-real {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .toeic-option {
@@ -3005,10 +2326,12 @@ color: #fff;
   display: flex;
   align-items: center;
   gap: 14px;
-  background: rgba(248, 250, 252, 0.9);
-  border: 1.5px solid rgba(226, 232, 240, 0.95);
-  border-radius: 22px;
+  width: 100%;
+  min-height: 68px;
   padding: 16px 18px;
+  background: rgba(248, 250, 252, 0.92);
+  border: 2px solid rgba(37, 99, 235, 0.22);
+  border-radius: 22px;
   cursor: pointer;
   transition: all 0.2s ease;
   overflow: hidden;
@@ -3030,18 +2353,14 @@ color: #fff;
 
 .toeic-option:hover {
   transform: translateY(-1px);
-  border-color: #bfdbfe;
+  border-color: #93c5fd;
   box-shadow: 0 12px 24px rgba(59, 130, 246, 0.08);
 }
 
-.toeic-option input {
-  display: none;
-}
-
 .toeic-option.selected {
+  background: rgba(239, 246, 255, 0.96);
   border-color: #2563eb;
-  background: rgba(239, 246, 255, 0.95);
-  box-shadow: 0 14px 28px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
 }
 
 .option-letter {
@@ -3087,25 +2406,26 @@ color: #fff;
   z-index: 2;
 }
 
-.icon-dung { color: #16a34a; }
-.icon-sai { color: #dc2626; }
+.icon-dung {
+  color: #16a34a;
+}
 
-/* ===== Flag ===== */
+.icon-sai {
+  color: #dc2626;
+}
+
+/* =========================
+   FLAG BUTTON
+========================= */
 .flag-btn {
   border: 1px solid rgba(251, 146, 60, 0.25);
   background: rgba(255, 247, 237, 0.95);
   color: #ea580c;
   border-radius: 14px;
   padding: 9px 13px;
-  cursor: pointer;
   font-size: 16px;
-  transition: all 0.2s ease;
   position: relative;
   z-index: 2;
-}
-
-.flag-btn:hover {
-  transform: translateY(-1px);
 }
 
 .flag-btn.active {
@@ -3115,12 +2435,47 @@ color: #fff;
   box-shadow: 0 12px 24px rgba(249, 115, 22, 0.2);
 }
 
-.flagged-card {
-  border-color: rgba(251, 146, 60, 0.8) !important;
-  box-shadow: 0 18px 38px rgba(251, 146, 60, 0.12) !important;
+/* =========================
+   TOOLBAR / FILTER CHIP
+========================= */
+.toeic-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
 }
 
-/* ===== Buttons ===== */
+.toolbar-left,
+.lux-toolbar-left {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.toolbar-chip,
+.lux-chip {
+  border: 1px solid rgba(203, 213, 225, 0.9);
+  background: rgba(255,255,255,0.78);
+  color: #334155;
+  border-radius: 999px;
+  padding: 10px 15px;
+  font-weight: 800;
+}
+
+.toolbar-chip.active,
+.lux-chip.active {
+  background: linear-gradient(135deg, #0f3d8f, #2563eb);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.22);
+}
+
+/* =========================
+   BOTTOM ACTIONS
+========================= */
+.toeic-bottom-actions,
 .lux-bottom-actions {
   display: flex;
   gap: 14px;
@@ -3128,80 +2483,24 @@ color: #fff;
   margin-top: 22px;
 }
 
-.lux-primary-btn {
-  padding: 15px 24px;
-  border-radius: 18px;
-  color: white;
-  background: linear-gradient(135deg, #0f3d8f, #2563eb, #8b5cf6);
-  box-shadow: 0 16px 32px rgba(37, 99, 235, 0.2);
-}
-
-.lux-primary-btn:disabled {
-  opacity: 0.65;
-  cursor: not-allowed;
-  transform: none !important;
-}
-
-.lux-secondary-btn {
-  padding: 15px 22px;
-  border-radius: 18px;
-  color: #0f3d8f;
-  background: rgba(255,255,255,0.8);
-  border: 1px solid rgba(203, 213, 225, 0.95);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
-}
-
-/* ===== Sidebar ===== */
-.lux-side-card {
-  border-radius: 28px;
-  padding: 22px;
-}
-
-.lux-side-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.lux-side-head h3 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 900;
-  color: #0f172a;
-}
-
-.lux-side-head span {
-  font-size: 12px;
-  color: #64748b;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
+/* =========================
+   TEST GRID
+========================= */
+.test-grid,
 .lux-test-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 12px;
 }
 
 .test-btn {
-  border: none;
   border-radius: 18px;
   padding: 14px 10px;
   background: rgba(248,250,252,0.92);
   color: #0f3d8f;
   font-weight: 900;
-  cursor: pointer;
   border: 1px solid rgba(219, 234, 254, 0.9);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
-  transition: all 0.2s ease;
-}
-
-.test-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 22px rgba(15, 23, 42, 0.08);
 }
 
 .test-btn.active {
@@ -3216,7 +2515,10 @@ color: #fff;
   border-color: rgba(187, 247, 208, 0.9);
 }
 
-/* ===== Navigator ===== */
+/* =========================
+   QUESTION NAV
+========================= */
+.question-nav,
 .lux-question-nav {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -3224,19 +2526,12 @@ color: #fff;
 }
 
 .q-nav-btn {
-  border: none;
   border-radius: 16px;
   padding: 12px 0;
   font-weight: 900;
-  cursor: pointer;
-  transition: all 0.2s ease;
   background: rgba(241, 245, 249, 0.92);
   color: #334155;
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.75);
-}
-
-.q-nav-btn:hover {
-  transform: translateY(-2px);
 }
 
 .q-nav-btn.unanswered {
@@ -3267,12 +2562,16 @@ color: #fff;
   font-style: italic;
 }
 
-/* ===== Legend ===== */
+/* =========================
+   LEGEND
+========================= */
+.legend-wrap,
 .lux-legend-wrap {
   display: grid;
   gap: 12px;
 }
 
+.legend-item,
 .lux-legend-item {
   display: flex;
   align-items: center;
@@ -3282,6 +2581,7 @@ color: #fff;
   font-weight: 600;
 }
 
+.legend-dot,
 .lux-legend-dot {
   width: 16px;
   height: 16px;
@@ -3289,21 +2589,36 @@ color: #fff;
   display: inline-block;
 }
 
-.lux-legend-dot.current { background: #f59e0b; }
-.lux-legend-dot.answered { background: #93c5fd; }
-.lux-legend-dot.unanswered { background: #cbd5e1; }
-.lux-legend-dot.flagged { background: #fb923c; }
-.lux-legend-dot.wrong { background: #fca5a5; }
+.legend-dot.current,
+.lux-legend-dot.current {
+  background: #f59e0b;
+}
 
-/* ===== Result summary (upgrade old JS block) ===== */
+.legend-dot.answered,
+.lux-legend-dot.answered {
+  background: #93c5fd;
+}
+
+.legend-dot.unanswered,
+.lux-legend-dot.unanswered {
+  background: #cbd5e1;
+}
+
+.legend-dot.flagged,
+.lux-legend-dot.flagged {
+  background: #fb923c;
+}
+
+.legend-dot.wrong,
+.lux-legend-dot.wrong {
+  background: #fca5a5;
+}
+
+/* =========================
+   RESULT BOX
+========================= */
 .toeic-result-box {
   margin-bottom: 20px;
-  border-radius: 28px;
-  padding: 24px;
-  background: rgba(255,255,255,0.78);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255,255,255,0.72);
-  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.07);
 }
 
 .result-header {
@@ -3375,7 +2690,10 @@ color: #fff;
   font-weight: 800;
 }
 
-/* ===== Modal ===== */
+/* =========================
+   MODAL
+========================= */
+.toeic-modal,
 .lux-modal {
   position: fixed;
   inset: 0;
@@ -3388,10 +2706,12 @@ color: #fff;
   backdrop-filter: blur(8px);
 }
 
+.toeic-modal.show,
 .lux-modal.show {
   display: flex;
 }
 
+.toeic-modal-box,
 .lux-modal-box {
   width: 100%;
   max-width: 760px;
@@ -3415,6 +2735,7 @@ color: #fff;
   }
 }
 
+.toeic-modal-head,
 .lux-modal-head {
   display: flex;
   justify-content: space-between;
@@ -3422,6 +2743,14 @@ color: #fff;
   gap: 16px;
   padding: 24px 26px;
   border-bottom: 1px solid rgba(226,232,240,0.85);
+}
+
+.toeic-modal-head h3,
+.lux-modal-head h3 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 900;
+  color: #0f172a;
 }
 
 .lux-modal-badge {
@@ -3432,28 +2761,22 @@ color: #fff;
   margin-bottom: 8px;
 }
 
-.lux-modal-head h3 {
-  margin: 0;
-  font-size: 28px;
-  font-weight: 900;
-  color: #0f172a;
-}
-
+.modal-close,
 .lux-modal-close {
-  border: none;
   background: rgba(248,250,252,0.95);
   color: #334155;
   width: 46px;
   height: 46px;
   border-radius: 50%;
   font-size: 24px;
-  cursor: pointer;
 }
 
+.toeic-modal-body,
 .lux-modal-body {
   padding: 26px;
 }
 
+.modal-stat-grid,
 .lux-modal-stat-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -3461,6 +2784,7 @@ color: #fff;
   margin-bottom: 18px;
 }
 
+.modal-stat,
 .lux-modal-stat {
   background: rgba(255,255,255,0.76);
   border: 1px solid rgba(226,232,240,0.9);
@@ -3468,6 +2792,7 @@ color: #fff;
   padding: 20px;
 }
 
+.modal-stat span,
 .lux-modal-stat span {
   display: block;
   color: #64748b;
@@ -3475,12 +2800,14 @@ color: #fff;
   font-size: 13px;
 }
 
+.modal-stat b,
 .lux-modal-stat b {
   font-size: 28px;
   font-weight: 900;
   color: #0f172a;
 }
 
+.modal-note,
 .lux-modal-note {
   background: rgba(255, 247, 237, 0.95);
   color: #9a3412;
@@ -3490,6 +2817,7 @@ color: #fff;
   font-weight: 700;
 }
 
+.toeic-modal-foot,
 .lux-modal-foot {
   padding: 0 26px 26px;
   display: flex;
@@ -3498,69 +2826,83 @@ color: #fff;
   flex-wrap: wrap;
 }
 
-/* ===== Timer color states from existing JS ===== */
+/* =========================
+   TIMER STATES
+========================= */
+.info-value.timer.warning,
 #testTimer.warning {
   color: #d97706 !important;
-  animation: luxPulseWarn 1s infinite;
+  animation: pulseWarning 1s infinite;
 }
 
+.info-value.timer.danger,
 #testTimer.danger {
   color: #dc2626 !important;
-  animation: luxPulseDanger 0.8s infinite;
+  animation: pulseDanger 0.8s infinite;
 }
 
-@keyframes luxPulseWarn {
+@keyframes pulseWarning {
   0%, 100% { transform: scale(1); opacity: 1; }
   50% { transform: scale(1.03); opacity: 0.82; }
 }
 
-@keyframes luxPulseDanger {
+@keyframes pulseDanger {
   0%, 100% { transform: scale(1); opacity: 1; }
   50% { transform: scale(1.08); opacity: 0.72; }
 }
 
-/* ===== Responsive ===== */
+/* =========================
+   RESPONSIVE
+========================= */
 @media (max-width: 1180px) {
+  .toeic-layout,
   .lux-layout {
     grid-template-columns: 1fr;
   }
 
+  .toeic-sidebar,
   .lux-sidebar {
     position: static;
   }
 }
 
 @media (max-width: 768px) {
+  .toeic-page,
   .toeic-lux-page {
     padding: 16px;
   }
 
+  .toeic-brand h1,
   .lux-brand h1 {
     font-size: 28px;
   }
 
-  .lux-hero-left h2 {
-    font-size: 28px;
+  .lux-hero-left h2,
+  .lux-intro h2 {
+    font-size: 26px;
   }
 
   .lux-timer-panel b {
     font-size: 34px;
   }
 
+  .toeic-info-grid,
   .lux-info-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 
+  .question-nav,
   .lux-question-nav {
     grid-template-columns: repeat(4, 1fr);
   }
 
+  .test-grid,
   .lux-test-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 
   .question-text {
-    font-size: 17px;
+    font-size: 16px;
   }
 
   .toeic-question-card {
@@ -3573,20 +2915,489 @@ color: #fff;
     border-radius: 18px;
   }
 
+  .toolbar-left,
   .lux-toolbar-left {
     width: 100%;
   }
 
+  .toolbar-chip,
   .lux-chip {
     flex: 1;
     text-align: center;
   }
 
+  .toeic-modal-head h3,
   .lux-modal-head h3 {
     font-size: 22px;
   }
 
+  .modal-stat b,
   .lux-modal-stat b {
     font-size: 24px;
+  }
+}
+
+.lux-test-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+
+
+/* ===== Layout 75 / 25 ===== */
+
+.lux-main {
+  min-width: 0;
+  width: 100%;
+}
+
+.lux-sidebar {
+  position: sticky;
+  top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 0;
+  width: 100%;
+}
+
+.lux-side-card {
+  border-radius: 28px;
+  padding: 22px;
+  width: 100%;
+}
+
+.lux-test-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.test-btn {
+  border: none;
+  border-radius: 18px;
+  padding: 10px 10px;
+  min-height: 58px;
+  background: rgba(248,250,252,0.92);
+  color: #0f3d8f;
+  font-weight: 900;
+  cursor: pointer;
+  border: 1px solid rgba(219, 234, 254, 0.9);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+  transition: all 0.2s ease;
+  font-size: 15px;
+}
+
+/* =========================================
+   TOEIC COMPACT UI - SAVE SPACE
+========================================= */
+
+/* ===== Page tổng ===== */
+.toeic-lux-page {
+  padding: 18px;
+}
+
+/* ===== Top / Hero ===== */
+.lux-topbar {
+  margin-bottom: 14px;
+  gap: 12px;
+}
+
+.lux-hero-card {
+  padding: 20px 22px;
+  border-radius: 24px;
+  margin-bottom: 14px;
+  gap: 14px;
+}
+
+.lux-hero-left h2 {
+  font-size: 30px;
+  margin-bottom: 6px;
+}
+
+.lux-hero-left p {
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.lux-timer-panel {
+  min-width: 190px;
+  padding: 18px 20px;
+  border-radius: 20px;
+}
+
+.lux-timer-panel b {
+  font-size: 34px;
+}
+
+/* ===== Info Cards ===== */
+.lux-info-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.lux-stat-card {
+  border-radius: 20px;
+  padding: 16px 18px;
+}
+
+.lux-stat-card.candidate-name {
+  grid-column: span 2;
+}
+
+.lux-stat-label {
+  font-size: 11px;
+  margin-bottom: 6px;
+}
+
+.lux-stat-value {
+  font-size: 22px;
+  line-height: 1.35;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* ===== Progress ===== */
+.lux-progress-card {
+  border-radius: 22px;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+}
+
+.lux-progress-top {
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.lux-progress-track {
+  height: 12px;
+}
+
+/* ===== Layout ===== */
+.lux-layout {
+  display: grid;
+  grid-template-columns: 75% 25%;
+  gap: 18px;
+  align-items: start;
+}
+
+.lux-sidebar {
+  position: sticky;
+  top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  width: 100%;
+}
+
+/* ===== Intro ===== */
+.lux-intro {
+  padding: 20px 22px;
+  border-radius: 22px;
+  margin-bottom: 14px;
+}
+
+.lux-intro h2 {
+  font-size: 26px;
+  margin-bottom: 6px;
+}
+
+.lux-intro p {
+  line-height: 1.65;
+}
+
+/* ===== Toolbar ===== */
+.lux-toolbar {
+  border-radius: 20px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+
+.lux-toolbar-left {
+  gap: 8px;
+}
+
+.lux-chip {
+  padding: 8px 13px;
+  font-size: 13px;
+}
+
+/* ===== Question Shell ===== */
+.lux-question-shell {
+  border-radius: 24px;
+  padding: 16px;
+}
+
+.lux-question-wrap {
+  min-height: 420px;
+}
+
+/* ===== Question Card ===== */
+.toeic-question-card {
+  border-radius: 22px;
+  padding: 18px 20px;
+  margin-bottom: 14px;
+}
+
+.question-top {
+  margin-bottom: 10px;
+  gap: 10px;
+}
+
+.question-badge {
+  font-size: 11px;
+  padding: 8px 12px;
+}
+
+.question-text {
+  font-size: 17px;
+  line-height: 1.7;
+  margin-bottom: 14px;
+}
+
+.question-subline {
+  margin-top: 6px;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.question-options {
+  gap: 10px;
+}
+
+/* ===== Options ===== */
+.toeic-option-wrap {
+  margin-bottom: 10px;
+}
+
+.toeic-option {
+  min-height: 58px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  gap: 12px;
+}
+
+.option-letter {
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  font-size: 14px;
+}
+
+.option-text {
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.answer-icon {
+  right: 12px;
+  font-size: 16px;
+}
+
+/* ===== Flag ===== */
+.flag-btn {
+  border-radius: 12px;
+  padding: 7px 11px;
+  font-size: 14px;
+}
+
+/* ===== Bottom Actions ===== */
+.lux-bottom-actions {
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.lux-primary-btn,
+.lux-secondary-btn {
+  padding: 12px 18px;
+  border-radius: 15px;
+  font-size: 14px;
+}
+
+/* ===== Sidebar Cards ===== */
+.lux-side-card {
+  border-radius: 22px;
+  padding: 16px 18px;
+}
+
+.lux-side-head {
+  margin-bottom: 12px;
+}
+
+.lux-side-head h3 {
+  font-size: 16px;
+}
+
+.lux-side-head span {
+  font-size: 11px;
+}
+
+/* ===== Test Grid ===== */
+.lux-test-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.test-btn {
+  border-radius: 15px;
+  padding: 12px 8px;
+  min-height: 50px;
+  font-size: 14px;
+}
+
+/* ===== Question Navigator ===== */
+.lux-question-nav {
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.q-nav-btn {
+  border-radius: 13px;
+  padding: 10px 0;
+  font-size: 14px;
+}
+
+/* ===== Legend ===== */
+.lux-legend-wrap {
+  gap: 8px;
+}
+
+.lux-legend-item {
+  font-size: 13px;
+  gap: 8px;
+}
+
+.lux-legend-dot {
+  width: 14px;
+  height: 14px;
+}
+
+/* ===== Result ===== */
+.toeic-result-box {
+  margin-bottom: 14px;
+  border-radius: 22px;
+  padding: 18px 20px;
+}
+
+.result-header {
+  margin-bottom: 14px;
+}
+
+.result-header h3 {
+  font-size: 20px;
+}
+
+.result-score {
+  padding: 10px 14px;
+  border-radius: 14px;
+}
+
+.result-grid {
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.result-item {
+  border-radius: 16px;
+  padding: 14px 16px;
+}
+
+.result-item b {
+  font-size: 22px;
+}
+
+.wrong-list,
+.all-correct {
+  padding: 12px 14px;
+  border-radius: 14px;
+  font-size: 14px;
+}
+
+/* ===== Modal ===== */
+.lux-modal-head {
+  padding: 20px 22px;
+}
+
+.lux-modal-head h3 {
+  font-size: 24px;
+}
+
+.lux-modal-body {
+  padding: 22px;
+}
+
+.lux-modal-stat-grid {
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.lux-modal-stat {
+  border-radius: 18px;
+  padding: 16px;
+}
+
+.lux-modal-stat b {
+  font-size: 24px;
+}
+
+.lux-modal-note {
+  border-radius: 16px;
+  padding: 13px 15px;
+}
+
+.lux-modal-foot {
+  padding: 0 22px 22px;
+  gap: 10px;
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 1180px) {
+  .lux-layout {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .lux-sidebar {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .toeic-lux-page {
+    padding: 12px;
+  }
+
+  .lux-info-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .lux-stat-card.candidate-name {
+    grid-column: span 2;
+  }
+
+  .lux-test-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .lux-question-nav {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .toeic-question-card {
+    padding: 16px;
+  }
+
+  .toeic-option {
+    padding: 12px 14px;
+  }
+
+  .question-text {
+    font-size: 16px;
   }
 }
