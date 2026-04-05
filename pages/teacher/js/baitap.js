@@ -347,6 +347,9 @@ applyAIPushedExercise();
   btnSave.onclick = luuBaiTap;
 }
 
+/* =========================
+   AI PUSH → BÀI TẬP
+========================= */
 function applyAIPushedExercise() {
   const raw = localStorage.getItem("teacher_ai_push_baitap");
   if (!raw) return;
@@ -355,20 +358,26 @@ function applyAIPushedExercise() {
     const data = JSON.parse(raw);
     if (!data) return;
 
-    // ==== ĐỔI ID CHO KHỚP FILE BÀI TẬP CỦA ANH ====
-    const tenBai = document.getElementById("btTenBai");
-    const noiDung = document.getElementById("btNoiDung");
-    const monHoc = document.getElementById("btMonHoc");
-    const lop = document.getElementById("btLop");
+    const tenBai = document.getElementById("btTitle");
+    const noiDung = document.getElementById("btContent");
 
-    if (tenBai) tenBai.value = data.title || "";
-    if (noiDung) noiDung.value = data.content_text || "";
+    if (tenBai) {
+      tenBai.value = data.title || "";
+    }
 
-    selectOptionByText(monHoc, data.subjectText);
-    selectOptionByText(lop, data.classText);
+    if (noiDung) {
+      if (data.content_html && data.content_html.trim()) {
+        noiDung.innerHTML = data.content_html;
+      } else {
+        noiDung.innerHTML = (data.content_text || "").replace(/\n/g, "<br>");
+      }
+    }
 
     localStorage.removeItem("teacher_ai_push_baitap");
     showToast?.("🤖 Đã nhận nội dung AI cho Bài tập", "success");
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
   } catch (e) {
     console.error("Lỗi applyAIPushedExercise:", e);
   }
@@ -379,9 +388,39 @@ function selectOptionByText(selectEl, text = "") {
 
   const keyword = text.trim().toLowerCase();
 
-  [...selectEl.options].forEach(opt => {
-    if (opt.textContent.trim().toLowerCase() === keyword) {
-      selectEl.value = opt.value;
-    }
-  });
+  const matched = [...selectEl.options].find(opt =>
+    opt.textContent.trim().toLowerCase() === keyword
+  );
+
+  if (matched) {
+    selectEl.value = matched.value;
+    selectEl.dispatchEvent(new Event("change"));
+  }
+}
+
+function convertAITextToHtml(text = "") {
+  return text
+    .split("\n")
+    .map(line => {
+      const clean = line.trim();
+      if (!clean) return "<p><br></p>";
+
+      if (/^\d+\./.test(clean)) {
+        return `<h3>${escapeHtml(clean)}</h3>`;
+      }
+
+      if (clean.startsWith("- ")) {
+        return `<p>• ${escapeHtml(clean.slice(2))}</p>`;
+      }
+
+      return `<p>${escapeHtml(clean)}</p>`;
+    })
+    .join("");
+}
+
+function escapeHtml(str = "") {
+  return str
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
 }

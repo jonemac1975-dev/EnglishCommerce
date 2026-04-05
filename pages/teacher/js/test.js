@@ -659,17 +659,47 @@ function applyAIPushedToeic() {
     const data = JSON.parse(raw);
     if (!data) return;
 
-    const title = document.getElementById("toeicTitle");
-    const content = document.getElementById("toeicContent");
-    const part = document.getElementById("toeicPart");
+    const made = document.getElementById("test_made");
+    const content = document.getElementById("test_noidung");
 
-    if (title) title.value = data.title || "";
-    if (content) content.value = data.content_text || "";
-    if (part) part.value = data.toeicPart || "";
+    if (made) {
+      made.value = data.made || data.title || "";
+    }
+
+    if (content) {
+      if (data.content_html && data.content_html.trim()) {
+        content.innerHTML = data.content_html;
+      } else {
+        content.innerHTML = (data.content_text || "").replace(/\n/g, "<br>");
+      }
+    }
 
     localStorage.removeItem("teacher_ai_push_toeic");
     showToast?.("🤖 Đã nhận nội dung AI cho TOEIC", "success");
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
   } catch (e) {
     console.error("Lỗi applyAIPushedToeic:", e);
   }
+}
+
+function convertPlainTextToHtml(text = "") {
+  return text
+    .split("\n")
+    .map(line => {
+      const clean = line.trim();
+      if (!clean) return "<p><br></p>";
+
+      if (/^\d+\./.test(clean)) {
+        return `<h3>${escapeHtml(clean)}</h3>`;
+      }
+
+      if (clean.startsWith("- ")) {
+        return `<p>• ${escapeHtml(clean.slice(2))}</p>`;
+      }
+
+      return `<p>${escapeHtml(clean)}</p>`;
+    })
+    .join("");
 }

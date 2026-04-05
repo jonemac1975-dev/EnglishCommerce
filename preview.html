@@ -380,7 +380,8 @@ function isLikelyToeicTest(html) {
   return (
     /câu\s*\d+/i.test(text) ||
     /question\s*\d+/i.test(text) ||
-    /^[A-D][\.\)\-:]/im.test(text)
+    /^[A-D][\.\)\,\-:]/im.test(text) ||
+    /tự luận/i.test(text)
   );
 }
 
@@ -396,6 +397,19 @@ function stripHtml(html = "") {
   div.innerHTML = html;
   return div.innerText || div.textContent || "";
 }
+
+
+function getPreviewRawContent(data = {}) {
+  return (
+    data.content_html ||
+    data.content ||
+    data.html ||
+    data.content_text ||
+    data.text ||
+    ""
+  ).trim();
+}
+
 
 /* ===== WORD CLEAN ===== */
 function cleanWordHTML(html) {
@@ -435,8 +449,8 @@ function renderToeicPreview(html) {
       /^câu\s*\d+/i.test(text) ||
       /^question\s*\d+/i.test(text);
 
-    const isOption = /^[A-D][\.\)\-:]/i.test(text);
-
+  
+    const isOption = /^[A-D][\.\)\,\-:]/i.test(text);
     if (isQuestion) {
       if (currentQuestionOpen) out += `</div></div>`;
 
@@ -456,9 +470,9 @@ function renderToeicPreview(html) {
     if (isOption) {
       const letter = text.charAt(0).toUpperCase();
       const optionText = text
-        .replace(/^[A-D][\.\)\-:]\s*/i, "")
-        .replace(/\*/g, "")
-        .trim();
+  .replace(/^[A-D][\.\)\,\-:]\s*/i, "")
+  .replace(/\*/g, "")
+  .trim();
 
       const isCorrect = text.includes("*");
 
@@ -487,7 +501,7 @@ function renderToeicPreview(html) {
 
 /* ===== MAIN RENDER ===== */
 (function render() {
-  const raw = (data.content || "").trim();
+  const raw = getPreviewRawContent(data);
 
   if (!raw) {
     contentEl.innerHTML = "<i>Không có nội dung</i>";
@@ -515,13 +529,13 @@ function renderToeicPreview(html) {
     return;
   }
 
-  // CASE: TOEIC TEST
+  // CASE: TOEIC TEST / EXAM
   if (isLikelyToeicTest(raw)) {
     contentEl.innerHTML = renderToeicPreview(raw);
     return;
   }
 
-  // CASE: BÀI GIẢNG WORD / HTML THƯỜNG
+  // CASE: BÀI GIẢNG / WORD / HTML THƯỜNG
   contentEl.innerHTML = cleanWordHTML(raw);
 })();
 </script>

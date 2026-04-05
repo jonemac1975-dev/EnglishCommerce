@@ -529,33 +529,65 @@ function applyAIPushedExam() {
     const data = JSON.parse(raw);
     if (!data) return;
 
-    // ==== ĐỔI ID CHO KHỚP FILE KIỂM TRA CỦA ANH ====
-    const tenDe = document.getElementById("ktTenDe");
-    const noiDung = document.getElementById("ktNoiDung");
-    const monHoc = document.getElementById("ktMonHoc");
-    const thoiGian = document.getElementById("ktThoiGian");
+    // ===== CHỈ ĐỔ NỘI DUNG CẦN THIẾT =====
+    const tenDe = document.getElementById("kt_tieude");
+    const noiDung = document.getElementById("kt_noidung");
 
-    if (tenDe) tenDe.value = data.title || "";
-    if (noiDung) noiDung.value = data.content_text || "";
-    if (thoiGian) thoiGian.value = data.thoiGian || "";
+    if (tenDe) {
+      tenDe.value = data.title || "";
+    }
 
-    selectOptionByText(monHoc, data.subjectText);
+    if (noiDung) {
+      // nếu AI đã trả html thì ưu tiên html
+      if (data.content_html && data.content_html.trim()) {
+        noiDung.innerHTML = data.content_html;
+      } else {
+        noiDung.innerHTML = (data.content_text || "").replace(/\n/g, "<br>");
+      }
+    }
+
+    // ===== Nếu có tự luận thì đổ luôn =====
+    if (Array.isArray(data.essays) && data.essays.length > 0) {
+      essayBlocks = data.essays.map((html, i) => ({
+        id: "essay_ai_" + i + "_" + Date.now(),
+        content: html
+      }));
+
+      const examType = document.getElementById("kt_examType");
+      if (examType) examType.value = "mixed";
+
+      toggleExamTypeUI();
+      renderEssayBlocks();
+    }
 
     localStorage.removeItem("teacher_ai_push_kiemtra");
     showToast?.("🤖 Đã nhận nội dung AI cho Đề kiểm tra", "success");
+
+    // kéo lên đầu form cho giáo viên thấy ngay
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
   } catch (e) {
     console.error("Lỗi applyAIPushedExam:", e);
   }
 }
 
-function selectOptionByText(selectEl, text = "") {
-  if (!selectEl || !text) return;
 
-  const keyword = text.trim().toLowerCase();
+function convertPlainTextToHtml(text = "") {
+  return text
+    .split("\n")
+    .map(line => {
+      const clean = line.trim();
+      if (!clean) return "<p><br></p>";
 
-  [...selectEl.options].forEach(opt => {
-    if (opt.textContent.trim().toLowerCase() === keyword) {
-      selectEl.value = opt.value;
-    }
-  });
+      if (/^\d+\./.test(clean)) {
+        return `<h3>${escapeHtml(clean)}</h3>`;
+      }
+
+      if (clean.startsWith("- ")) {
+        return `<p>• ${escapeHtml(clean.slice(2))}</p>`;
+      }
+
+      return `<p>${escapeHtml(clean)}</p>`;
+    })
+    .join("");
 }

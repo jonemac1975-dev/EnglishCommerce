@@ -5,6 +5,12 @@ import { canUseAI } from "../../../scripts/ai/aiRateLimit.js";
 import { logAIRequest } from "../../../scripts/ai/aiLogger.js";
 import { AI_TYPES } from "../../../scripts/ai/aiTypes.js";
 import {
+  normalizeTeachingContent,
+  plainTextToHtmlParagraphs,
+  autoFixMissingAnswerStars
+} from "../../../scripts/utils/aiContentFormatter.js";
+
+import {
   showAILoading,
   showAIError,
   showAISuccess,
@@ -14,6 +20,8 @@ import {
 let CURRENT_AI_TEXT = "";
 let CURRENT_AI_TYPE = AI_TYPES.LESSON;
 let CURRENT_AI_PAYLOAD = {};
+let CURRENT_AI_PROVIDER = "standby";
+let CURRENT_AI_FAKE_MODE = true;
 
 /* =========================
    INIT
@@ -40,6 +48,140 @@ function initAITeacherPage() {
   initActionButtons();
   initPushButtons();
   loadSavedDraftIfAny();
+  renderPremiumPlaceholder();
+  setAIStatus("idle", "AI Ready");
+  setAIProvider("standby");
+}
+
+/* =========================
+   PREMIUM UI HELPERS
+========================= */
+function getAITypeMeta(type) {
+  const map = {
+    lesson: {
+      label: "AI Lesson Builder",
+      badge: "📘 Lesson",
+      cls: "lesson"
+    },
+    exercise: {
+      label: "AI Exercise Builder",
+      badge: "📝 Exercise",
+      cls: "exercise"
+    },
+    exam: {
+      label: "AI Exam Generator",
+      badge: "📋 Exam",
+      cls: "exam"
+    },
+    toeic: {
+      label: "AI TOEIC Generator",
+      badge: "🎧 TOEIC",
+      cls: "toeic"
+    }
+  };
+
+  return map[type] || map.lesson;
+}
+
+function getAIModeText(fakeMode = true) {
+  return fakeMode ? "AI Fake - Demo" : "AI Live";
+}
+
+function getAISubtitle(fakeMode = true, provider = "unknown") {
+  return fakeMode
+    ? `Fallback Demo • ${provider}`
+    : `Live AI Engine • ${provider}`;
+}
+
+function renderPremiumPlaceholder() {
+  const outputBox = document.getElementById("aiOutputBox");
+  if (!outputBox) return;
+
+  const meta = getAITypeMeta(CURRENT_AI_TYPE);
+
+  outputBox.className = `ai-output-box premium-output ${meta.cls}`;
+  outputBox.innerHTML = `
+    <div class="ai-output-shell">
+      <div class="ai-output-top">
+        <div class="ai-output-brand">
+          <div class="ai-output-avatar">🤖</div>
+          <div>
+            <div class="ai-output-title">${meta.label}</div>
+            <div class="ai-output-sub">${getAISubtitle(CURRENT_AI_FAKE_MODE, CURRENT_AI_PROVIDER)}</div>
+          </div>
+        </div>
+        <div class="ai-output-badge">${meta.badge}</div>
+      </div>
+
+      <div class="ai-output-content ai-output-placeholder">
+        <div class="ai-placeholder-hero">✨ AI sẵn sàng tạo nội dung cho bạn</div>
+        <p>Điền thông tin ở biểu mẫu bên trên và bấm <b>Tạo</b> để tạo bài giảng, bài tập, đề kiểm tra hoặc đề TOEIC.</p>
+
+        <div class="ai-placeholder-grid">
+          <div class="ai-mini-card">
+            <span>📘</span>
+            <b>Bài giảng</b>
+            <small>Giải thích + ví dụ + mini practice</small>
+          </div>
+          <div class="ai-mini-card">
+            <span>📝</span>
+            <b>Bài tập</b>
+            <small>Multiple choice, fill, rewrite...</small>
+          </div>
+          <div class="ai-mini-card">
+            <span>📋</span>
+            <b>Đề kiểm tra</b>
+            <small>Section rõ ràng, có đáp án</small>
+          </div>
+          <div class="ai-mini-card">
+            <span>🎧</span>
+            <b>TOEIC</b>
+            <small>Mini TOEIC style practice</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderPremiumAIOutput(type, htmlContent = "", status = "success", fakeMode = true, provider = "unknown") {
+  const outputBox = document.getElementById("aiOutputBox");
+  if (!outputBox) return;
+
+  const meta = getAITypeMeta(type);
+
+  outputBox.className = `ai-output-box premium-output ${meta.cls} ${status}`;
+  outputBox.innerHTML = `
+    <div class="ai-output-shell">
+      <div class="ai-output-top">
+        <div class="ai-output-brand">
+          <div class="ai-output-avatar">🤖</div>
+          <div>
+            <div class="ai-output-title">${meta.label}</div>
+            <div class="ai-output-sub">${getAISubtitle(fakeMode, provider)}</div>
+          </div>
+        </div>
+        <div class="ai-output-badge">${meta.badge}</div>
+      </div>
+
+      <div class="ai-output-toolbar">
+        <span class="ai-status-dot"></span>
+        <span>
+          ${
+            status === "loading"
+              ? "AI đang xử lý nội dung..."
+              : status === "error"
+              ? "AI phản hồi lỗi"
+              : `AI đã tạo nội dung thành công • ${getAIModeText(fakeMode)}`
+          }
+        </span>
+      </div>
+
+      <div class="ai-output-content ai-rendered-content">
+        ${htmlContent}
+      </div>
+    </div>
+  `;
 }
 
 /* =========================
@@ -59,6 +201,10 @@ function initTypeTabs() {
 
       const targetForm = document.getElementById(`form-${CURRENT_AI_TYPE}`);
       if (targetForm) targetForm.classList.add("active");
+
+      if (!CURRENT_AI_TEXT.trim()) {
+        renderPremiumPlaceholder();
+      }
     };
   });
 }
@@ -101,14 +247,43 @@ function initGenerateButtons() {
    ACTION BUTTONS
 ========================= */
 function initActionButtons() {
+  const btnNormalize = document.getElementById("btnNormalizeAI");
   const btnCopy = document.getElementById("btnCopyAI");
   const btnSaveDraft = document.getElementById("btnSaveDraftAI");
+
+  if (btnNormalize) {
+    btnNormalize.onclick = function () {
+      if (!CURRENT_AI_TEXT.trim()) {
+        return window.showToast?.("Chưa có nội dung AI để chuẩn hóa", "warning");
+      }
+
+      const normalized = normalizeTeachingContent(CURRENT_AI_TEXT, CURRENT_AI_TYPE);
+      CURRENT_AI_TEXT = normalized;
+
+      const renderHtml =
+        ["exam", "toeic", "exercise"].includes(CURRENT_AI_TYPE)
+          ? plainTextToHtmlParagraphs(normalized)
+          : wrapAiContent(normalized);
+
+      renderPremiumAIOutput(
+        CURRENT_AI_TYPE,
+        renderHtml,
+        "success",
+        CURRENT_AI_FAKE_MODE,
+        CURRENT_AI_PROVIDER
+      );
+
+      window.showToast?.("✨ Đã chuẩn hóa nội dung AI", "success");
+    };
+  }
 
   if (btnCopy) {
     btnCopy.onclick = function () {
       if (!CURRENT_AI_TEXT) {
         return window.showToast?.("Chưa có nội dung AI để copy", "warning");
       }
+ console.log("=== COPY CURRENT_AI_TEXT ===");
+    console.log(CURRENT_AI_TEXT);
       copyTextToClipboard(CURRENT_AI_TEXT);
     };
   }
@@ -121,6 +296,8 @@ function initActionButtons() {
         type: CURRENT_AI_TYPE,
         text: CURRENT_AI_TEXT,
         payload,
+        provider: CURRENT_AI_PROVIDER,
+        fakeMode: CURRENT_AI_FAKE_MODE,
         created_at: Date.now()
       }));
 
@@ -145,14 +322,18 @@ function pushToLesson() {
   }
 
   const p = getLessonPayload();
+  const normalized = normalizeTeachingContent(CURRENT_AI_TEXT, "lesson");
+  CURRENT_AI_TEXT = normalized;
 
   localStorage.setItem("teacher_ai_push_baigiang", JSON.stringify({
     title: p.chuDe || "Bài giảng AI",
     subjectText: p.monHoc || "",
     classText: p.trinhDo || "",
     ngay: getToday(),
-    content_html: convertAITextToHtml(CURRENT_AI_TEXT),
-    ai_meta: p
+    content_html: convertAITextToHtml(normalized),
+    ai_meta: p,
+    ai_provider: CURRENT_AI_PROVIDER,
+    ai_fakeMode: CURRENT_AI_FAKE_MODE
   }));
 
   openTeacherTab("baigiang");
@@ -165,16 +346,12 @@ function pushToExercise() {
   }
 
   const p = getExercisePayload();
+  const normalized = normalizeTeachingContent(CURRENT_AI_TEXT, "exercise");
 
   localStorage.setItem("teacher_ai_push_baitap", JSON.stringify({
     title: p.chuDe || "Bài tập AI",
-    subjectText: p.monHoc || "",
-    classText: "",
-    dangBai: p.dangBai || "",
-    doKho: p.doKho || "",
-    dapAn: p.dapAn || "",
-    content_text: CURRENT_AI_TEXT,
-    ai_meta: p
+    content_text: normalized,
+    content_html: plainTextToHtmlParagraphs(normalized)
   }));
 
   openTeacherTab("baitap");
@@ -187,17 +364,12 @@ function pushToExam() {
   }
 
   const p = getExamPayload();
+  const normalized = normalizeTeachingContent(CURRENT_AI_TEXT, "exam");
 
   localStorage.setItem("teacher_ai_push_kiemtra", JSON.stringify({
     title: p.chuDe || "Đề kiểm tra AI",
-    subjectText: p.monHoc || "",
-    thoiGian: p.thoiGian || "",
-    soCau: p.soCau || "",
-    doKho: p.doKho || "",
-    loaiDe: p.loaiDe || "",
-    dapAn: p.dapAn || "",
-    content_text: CURRENT_AI_TEXT,
-    ai_meta: p
+    content_text: normalized,
+    content_html: plainTextToHtmlParagraphs(normalized)
   }));
 
   openTeacherTab("kiemtra");
@@ -210,20 +382,15 @@ function pushToToeic() {
   }
 
   const p = getToeicPayload();
+  const normalized = normalizeTeachingContent(CURRENT_AI_TEXT, "toeic");
 
   localStorage.setItem("teacher_ai_push_toeic", JSON.stringify({
     title: p.chuDe || "TOEIC AI",
-    toeicPart: p.toeicPart || "",
-    soCau: p.soCau || "",
-    doKho: p.doKho || "",
-    style: p.style || "",
-    vocab: p.vocab || "",
-    target: p.target || "",
-    content_text: CURRENT_AI_TEXT,
-    ai_meta: p
+    content_text: normalized,
+    content_html: plainTextToHtmlParagraphs(normalized)
   }));
 
-  openTeacherTab("toeic");
+  openTeacherTab("test");
   window.showToast?.("🎧 Đã chuyển sang tab TOEIC", "success");
 }
 
@@ -246,7 +413,22 @@ async function generateAIContent(type, payload) {
 
   const prompt = buildAIPrompt(type, payload);
 
-  showAILoading(outputBox, "🤖 AI đang tạo nội dung...");
+  setAIStatus("loading", "Thinking...");
+  setAIProvider("processing");
+
+  renderPremiumAIOutput(
+    type,
+    `<div class="ai-loading-fancy">
+      <div class="ai-loader-ring"></div>
+      <div class="ai-loading-text">
+        <h3>Đang tạo nội dung AI...</h3>
+        <p>Hệ thống đang xử lý nội dung cho giáo viên.</p>
+      </div>
+    </div>`,
+    "loading",
+    CURRENT_AI_FAKE_MODE,
+    CURRENT_AI_PROVIDER
+  );
 
   const result = await askAI({
     type,
@@ -254,26 +436,89 @@ async function generateAIContent(type, payload) {
     payload
   });
 
+console.log("=== AI RESULT DEBUG ===");
+console.log("success:", result?.success);
+console.log("provider:", result?.provider);
+console.log("fakeMode:", result?.fakeMode);
+console.log("text:", result?.text);
+
+
   if (!result || !result.success) {
-    showAIError(outputBox, result?.text || "Không thể tạo nội dung AI.");
+    CURRENT_AI_PROVIDER = result?.provider || "error";
+    CURRENT_AI_FAKE_MODE = true;
+
+    setAIStatus("error", "Error");
+    setAIProvider(CURRENT_AI_PROVIDER);
+
+    renderPremiumAIOutput(
+      type,
+      `
+      <div class="ai-error-fancy">
+        <div class="ai-error-icon">⚠️</div>
+        <h3>Không thể tạo nội dung AI</h3>
+        <p>${result?.text || "Hệ thống đang bận hoặc có lỗi kết nối."}</p>
+      </div>
+      `,
+      "error",
+      true,
+      CURRENT_AI_PROVIDER
+    );
+
     return;
   }
 
   CURRENT_AI_TEXT = result.text || "";
-  CURRENT_AI_TYPE = type;
-  CURRENT_AI_PAYLOAD = payload;
+CURRENT_AI_TYPE = type;
+CURRENT_AI_PAYLOAD = payload;
+CURRENT_AI_PROVIDER = result.provider || "unknown";
+CURRENT_AI_FAKE_MODE = !!result.fakeMode;
 
-  showAISuccess(outputBox, wrapAiContent(CURRENT_AI_TEXT));
+// ✅ cứu nếu AI quên không gắn *
+CURRENT_AI_TEXT = autoFixMissingAnswerStars(CURRENT_AI_TEXT, CURRENT_AI_TYPE);
+
+// ✅ luôn chuẩn hóa ngay sau khi AI trả về
+CURRENT_AI_TEXT = normalizeTeachingContent(CURRENT_AI_TEXT, CURRENT_AI_TYPE);
+
+console.log("=== AI RAW AFTER NORMALIZE ===");
+console.log(CURRENT_AI_TEXT);
+
+  if (CURRENT_AI_FAKE_MODE) {
+    setAIStatus("fake", "AI Fake - Demo");
+  } else {
+    setAIStatus("live", "AI Live");
+  }
+
+  setAIProvider(CURRENT_AI_PROVIDER);
+
+  const renderHtml =
+    ["exam", "toeic", "exercise"].includes(CURRENT_AI_TYPE)
+      ? plainTextToHtmlParagraphs(CURRENT_AI_TEXT)
+      : wrapAiContent(CURRENT_AI_TEXT);
+
+  renderPremiumAIOutput(
+    type,
+    renderHtml,
+    "success",
+    CURRENT_AI_FAKE_MODE,
+    CURRENT_AI_PROVIDER
+  );
 
   await logAIRequest({
     userId: getCurrentTeacherId(),
     type,
     input: payload,
     prompt,
-    output: CURRENT_AI_TEXT
+    output: CURRENT_AI_TEXT,
+    provider: CURRENT_AI_PROVIDER,
+    fakeMode: CURRENT_AI_FAKE_MODE
   });
 
-  window.showToast?.("🤖 AI đã tạo xong", "success");
+  window.showToast?.(
+    CURRENT_AI_FAKE_MODE
+      ? "🤖 AI tạo xong (Fake Demo)"
+      : "🟢 AI Live tạo xong",
+    "success"
+  );
 }
 
 /* =========================
@@ -370,11 +615,11 @@ function convertAITextToHtml(text = "") {
       if (!clean) return "<p><br></p>";
 
       if (/^\d+\./.test(clean)) {
-        return `<h3>${clean}</h3>`;
+        return `<h3>${escapeHtml(clean)}</h3>`;
       }
 
       if (clean.startsWith("- ")) {
-        return `<p>• ${clean.slice(2)}</p>`;
+        return `<p>• ${escapeHtml(clean.slice(2))}</p>`;
       }
 
       return `<p>${escapeHtml(clean)}</p>`;
@@ -383,7 +628,7 @@ function convertAITextToHtml(text = "") {
 }
 
 function escapeHtml(str = "") {
-  return str
+  return String(str)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;");
@@ -403,13 +648,35 @@ function loadSavedDraftIfAny() {
     CURRENT_AI_TYPE = parsed.type || AI_TYPES.LESSON;
     CURRENT_AI_TEXT = parsed.text || "";
     CURRENT_AI_PAYLOAD = parsed.payload || {};
+    CURRENT_AI_PROVIDER = parsed.provider || "saved_draft";
+    CURRENT_AI_FAKE_MODE = parsed.fakeMode ?? true;
 
     restoreFormData(parsed.payload || {});
     restoreActiveTab(CURRENT_AI_TYPE);
 
-    const outputBox = document.getElementById("aiOutputBox");
-    if (outputBox && CURRENT_AI_TEXT) {
-      outputBox.innerHTML = wrapAiContent(CURRENT_AI_TEXT);
+    if (CURRENT_AI_TEXT) {
+      setAIStatus("idle", "AI Ready");
+      setAIProvider(CURRENT_AI_PROVIDER || "saved_draft");
+
+      // ✅ chuẩn hóa lại để chắc chắn giữ *
+      CURRENT_AI_TEXT = normalizeTeachingContent(CURRENT_AI_TEXT, CURRENT_AI_TYPE);
+
+      const renderHtml =
+        ["exam", "toeic", "exercise"].includes(CURRENT_AI_TYPE)
+          ? plainTextToHtmlParagraphs(CURRENT_AI_TEXT)
+          : wrapAiContent(CURRENT_AI_TEXT);
+
+      renderPremiumAIOutput(
+        CURRENT_AI_TYPE,
+        renderHtml,
+        "success",
+        CURRENT_AI_FAKE_MODE,
+        CURRENT_AI_PROVIDER
+      );
+    } else {
+      setAIStatus("idle", "AI Ready");
+      setAIProvider("standby");
+      renderPremiumPlaceholder();
     }
   } catch (e) {
     console.warn("Không đọc được AI draft:", e);
@@ -456,4 +723,21 @@ function restoreFormData(payload = {}) {
     const el = document.getElementById(id);
     if (el) el.value = value || "";
   });
+}
+
+/* =========================
+   AI STATUS BADGE
+========================= */
+function setAIStatus(type = "idle", text = "AI READY") {
+  const badge = document.getElementById("aiStatusBadge");
+  if (!badge) return;
+
+  badge.className = `ai-status-badge ${type}`;
+  const label = badge.querySelector(".label");
+  if (label) label.textContent = text;
+}
+
+function setAIProvider(provider = "standby") {
+  const el = document.getElementById("aiProviderText");
+  if (el) el.textContent = `Provider: ${provider}`;
 }

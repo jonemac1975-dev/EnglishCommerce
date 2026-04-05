@@ -1,3 +1,7 @@
-// /scripts/config/aiConfig.js
+// /config/aiConfig.js
 
-export const AI_WORKER_URL = "https://ai-teacher-worker.jonemac1975.workers.dev/";
+export const AI_CONFIG = {
+  WORKER_URL: "https://englishcommerce.jonemac1975.workers.dev/",
+  DEFAULT_MODE: "lesson",
+  TIMEOUT_MS: 60000
+};
