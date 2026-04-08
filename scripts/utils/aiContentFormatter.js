@@ -1,182 +1,340 @@
+function escapeHtml(str = "") {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
 
-export function normalizeAIContent(raw = "", type = "lesson") {
-  if (!raw) return "";
+/* =========================
+   LESSON NORMALIZE
+========================= */
+export function normalizeTeachingContent(text = "", type = "lesson") {
+  if (!text) return "";
+  return String(text)
+    .replace(/\r/g, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
 
-  let text = String(raw)
+/* =========================
+   EXAM / TOEIC / EXERCISE CLEAN
+========================= */
+function normalizeQuestionLine(line = "") {
+  let s = line.trim();
+
+  // sửa lỗi kiểu "C. âu 1", "C âu 1", "Câu1", "Question 1"
+  s = s.replace(/^C[\.\s]*âu\s*/i, "Câu ");
+  s = s.replace(/^Câu\s*(\d+)\s*[\.\:\-]?\s*/i, (_, n) => `Câu ${n}. `);
+  s = s.replace(/^Question\s*(\d+)\s*[\.\:\-]?\s*/i, (_, n) => `Câu ${n}. `);
+
+  // nếu AI đẻ ra "1." thì ép thành Câu 1.
+  s = s.replace(/^(\d+)\s*[\.\:\-]\s*/i, (_, n) => `Câu ${n}. `);
+
+  // fix trường hợp "Câu 1. ."
+  s = s.replace(/^Câu\s+(\d+)\.\s*\.\s*/i, (_, n) => `Câu ${n}. `);
+
+  return s.trim();
+}
+
+function normalizeOptionLine(line = "") {
+  let s = line.trim();
+
+  // A) A: A- A, => A.
+  s = s.replace(/^([A-D])[\)\:\,\-]\s*/i, "$1. ");
+  s = s.replace(/^([A-D])\.\s*/i, "$1. ");
+
+  // nếu AI viết "A . abc"
+  s = s.replace(/^([A-D])\s+\.\s*/i, "$1. ");
+
+  return s.trim();
+}
+
+export function autoFixMissingAnswerStars(text = "") {
+  if (!text) return "";
+
+  const lines = text.split("\n");
+  const out = [];
+  let buffer = [];
+
+  const flushQuestion = () => {
+    if (!buffer.length) return;
+
+    const optionIndexes = [];
+    buffer.forEach((line, idx) => {
+      if (/^[A-D]\.\s+/i.test(line)) optionIndexes.push(idx);
+    });
+
+    if (optionIndexes.length) {
+      const hasStar = optionIndexes.some(i => /\*\s*$/.test(buffer[i]));
+      if (!hasStar) {
+        // mặc định gắn sao vào đáp án A nếu AI quên hoàn toàn
+        const firstOpt = optionIndexes[0];
+        buffer[firstOpt] = buffer[firstOpt].replace(/\s*\*+\s*$/, "").trim() + "*";
+      }
+    }
+
+    out.push(...buffer);
+    buffer = [];
+  };
+
+  for (const raw of lines) {
+    const line = raw.trim();
+
+    if (/^Câu\s+\d+\./i.test(line)) {
+      flushQuestion();
+      buffer.push(line);
+    } else {
+      buffer.push(line);
+    }
+  }
+
+  flushQuestion();
+  return out.join("\n");
+}
+
+export function ensureSingleCorrectAnswer(text = "") {
+  if (!text) return "";
+
+  const lines = text.split("\n");
+  const out = [];
+  let buffer = [];
+
+  const flushQuestion = () => {
+    if (!buffer.length) return;
+
+    const optionIndexes = [];
+    buffer.forEach((line, idx) => {
+      if (/^[A-D]\.\s+/i.test(line)) optionIndexes.push(idx);
+    });
+
+    if (optionIndexes.length) {
+      let starred = optionIndexes.filter(i => /\*\s*$/.test(buffer[i]));
+
+      // nếu nhiều hơn 1 đáp án đúng => giữ đáp án đầu tiên
+      if (starred.length > 1) {
+        const keep = starred[0];
+        optionIndexes.forEach(i => {
+          buffer[i] = buffer[i].replace(/\s*\*+\s*$/, "").trim();
+        });
+        buffer[keep] += "*";
+      }
+
+      // nếu không có sao nào => cho A đúng tạm
+      if (starred.length === 0) {
+        const firstOpt = optionIndexes[0];
+        buffer[firstOpt] = buffer[firstOpt].replace(/\s*\*+\s*$/, "").trim() + "*";
+      }
+    }
+
+    out.push(...buffer);
+    buffer = [];
+  };
+
+  for (const raw of lines) {
+    const line = raw.trim();
+
+    if (/^Câu\s+\d+\./i.test(line)) {
+      flushQuestion();
+      buffer.push(line);
+    } else {
+      buffer.push(line);
+    }
+  }
+
+  flushQuestion();
+  return out.join("\n");
+}
+
+/* =========================
+   FINAL CLEAN MAIN
+========================= */
+export function finalizeAIContent(text = "", type = "lesson") {
+  if (!text) return "";
+
+  let cleaned = String(text)
     .replace(/\r/g, "")
     .replace(/\t/g, " ")
     .replace(/[“”]/g, '"')
     .replace(/[‘’]/g, "'")
     .replace(/\u00A0/g, " ")
+
+    // 🔥 FIX dính dòng (rất quan trọng)
+    .replace(/([^\n])\s*(Câu\s*\d+)/gi, "$1\n$2")
+    .replace(/([^\n])\s*(Question\s*\d+)/gi, "$1\n$2")
+    .replace(/([^\n])\s*([A-D][\.\)\:\-])/g, "$1\n$2")
+
+    .replace(/\n{3,}/g, "\n\n")
     .trim();
 
-  // =========================
-  // LESSON
-  // =========================
-  if (type === "lesson") {
-    return text;
+  if (!["exam", "toeic", "exercise"].includes(type)) {
+    return normalizeTeachingContent(cleaned, type);
   }
 
-  // =========================
-  // EXERCISE / EXAM / TOEIC
-  // =========================
-  if (type === "exam" || type === "toeic" || type === "exercise") {
-    const lines = text
-      .split("\n")
-      .map(x => x.trim())
-      .filter(Boolean);
-
-    const out = [];
-
-    for (let i = 0; i < lines.length; i++) {
-      let line = lines[i];
-
-      // bỏ markdown heading
-      line = line.replace(/^#{1,6}\s*/, "");
-
-      // ===== tiêu đề =====
+  const lines = cleaned
+    .split("\n")
+    .map(line => line.trim())
+    .filter(Boolean)
+    .map(line => {
       if (
-        i === 0 &&
-        !/^câu\s*\d+/i.test(line) &&
-        !/^tự luận/i.test(line) &&
-        !/^[A-D]\s*[\.\,\)\-:]/i.test(line)
+        /^C[\.\s]*âu/i.test(line) ||
+        /^Question\s*\d+/i.test(line) ||
+        /^\d+\s*[\.\:\-]/i.test(line)
       ) {
-        out.push(line);
-        continue;
+        return normalizeQuestionLine(line);
       }
 
-      // ===== câu hỏi =====
-      if (/^câu\s*\d+/i.test(line) || /^\d+\./.test(line)) {
-        line = line
-          .replace(/^\d+\.\s*/, match => {
-            const num = match.replace(".", "").trim();
-            return `Câu ${num}. `;
-          })
-          .replace(/^câu\s*/i, "Câu ");
-
-        out.push(line);
-        continue;
+      if (/^[A-D][\.\)\:\,\-]/i.test(line) || /^[A-D]\s+\./i.test(line)) {
+        return normalizeOptionLine(line);
       }
 
-      // ===== đáp án A/B/C/D => GIỮ DẤU * =====
-      if (/^[A-D]\s*[\.\,\)\-:]/i.test(line)) {
-        const hasStar = /\*\s*$/.test(line);
+      return line;
+    });
 
-        line = line
-          .replace(/^([A-D])\s*[\.\,\)\-:]\s*/i, "$1. ")
-          .replace(/\s*\*\s*$/, "")
-          .trim();
+  cleaned = lines.join("\n");
 
-        if (hasStar) line += "*";
+  cleaned = autoFixMissingAnswerStars(cleaned);
+  cleaned = ensureSingleCorrectAnswer(cleaned);
 
-        out.push(line);
-        continue;
-      }
+  cleaned = cleaned.replace(/^C\.\s*âu/igm, "Câu");
+  cleaned = cleaned.replace(/^C\s+âu/igm, "Câu");
 
-      // ===== tự luận =====
-      if (/^tự luận/i.test(line)) {
-        out.push("Tự luận");
-        continue;
-      }
-
-      // ===== dòng thường =====
-      out.push(line);
-    }
-
-    return out.join("\n");
-  }
-
-  return text;
+  return cleaned.trim();
 }
 
-/* =====================================================
-   HTML render phụ trợ
-===================================================== */
-export function plainTextToHtmlParagraphs(text = "") {
-  if (!text) return "";
+/* =========================
+   OUTPUT FOR STORAGE / PREVIEW
+========================= */
+export function normalizeAIOutputForPreview(text = "", type = "lesson") {
+  return finalizeAIContent(text, type);
+}
 
-  return String(text)
+/* =========================
+   RENDER HTML FOR AI BOX
+========================= */
+export function renderStructuredAIHtml(text = "", type = "exercise") {
+  if (!text) return `<div class="tb-empty-preview">Không có nội dung</div>`;
+
+  const cleaned = finalizeAIContent(text, type);
+  const lines = cleaned.split("\n").map(x => x.trim()).filter(Boolean);
+
+  let html = "";
+  let inQuestion = false;
+  let qIndex = 0;
+
+  for (const line of lines) {
+    if (/^Câu\s+\d+\./i.test(line)) {
+      if (inQuestion) html += `</div></div>`;
+
+      qIndex++;
+
+      html += `
+        <div class="tb-preview-question">
+          <div class="tb-preview-qtop">
+            <span class="tb-qbadge">Question ${qIndex}</span>
+          </div>
+          <div class="tb-preview-qtext">${escapeHtml(line)}</div>
+          <div class="tb-preview-options">
+      `;
+      inQuestion = true;
+      continue;
+    }
+
+    if (/^[A-D]\.\s+/i.test(line)) {
+      const letter = line.charAt(0).toUpperCase();
+      const isCorrect = /\*\s*$/.test(line);
+
+      const optionText = line
+        .replace(/^[A-D]\.\s+/i, "")
+        .replace(/\s*\*+\s*$/, "")
+        .trim();
+
+      html += `
+        <div class="tb-preview-option ${isCorrect ? "correct" : ""}">
+          <div class="tb-preview-letter">${letter}</div>
+          <div class="tb-preview-optext">${escapeHtml(optionText)}</div>
+          ${isCorrect ? `<div class="tb-preview-ok">✔</div>` : ""}
+        </div>
+      `;
+      continue;
+    }
+
+    html += `<div class="tb-preview-passage">${escapeHtml(line)}</div>`;
+  }
+
+  if (inQuestion) html += `</div></div>`;
+
+  return html || `<div class="tb-empty-preview">Không parse được nội dung</div>`;
+}
+
+/* =========================
+   OPTIONAL EXPORT (GIỮ CHO FILE CŨ KHỎI VỠ)
+========================= */
+export function plainTextToHtmlParagraphs(text = "") {
+  return String(text || "")
     .split("\n")
-    .map(line => {
-      const clean = line.trim();
-      if (!clean) return "<p><br></p>";
-      return `<p>${escapeHtml(clean)}</p>`;
-    })
+    .map(line => `<p>${escapeHtml(line)}</p>`)
     .join("");
 }
 
-/* =====================================================
-   Alias cũ để không lỗi import
-===================================================== */
-export function normalizeTeachingContent(raw = "", type = "lesson") {
-  return normalizeAIContent(raw, type);
-}
 
-/* =====================================================
-   Escape HTML
-===================================================== */
-export function escapeHtml(str = "") {
-  return String(str)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;");
-}
+export function validateAndFixMCQ(text = "") {
+  const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
 
-export function autoFixMissingAnswerStars(text = "", type = "lesson") {
-  if (!text) return text;
+  let output = [];
+  let currentQ = null;
 
-  // Chỉ áp dụng cho dạng có đáp án trắc nghiệm
-  if (!["exercise", "exam", "toeic"].includes(type)) {
-    return text;
-  }
+  for (let line of lines) {
 
-  const lines = String(text).split("\n");
-
-  let hasAnyStar = lines.some(line => /\*\s*$/.test(line.trim()));
-  if (hasAnyStar) return text; // đã có * rồi thì thôi
-
-  let currentQuestionAnswers = [];
-  let result = [];
-
-  function flushQuestionAnswers() {
-    if (!currentQuestionAnswers.length) return;
-
-    // Nếu không có dấu *, mặc định gắn vào đáp án B để hệ thống không bị mất key
-    let hasStar = currentQuestionAnswers.some(x => /\*\s*$/.test(x.trim()));
-
-    if (!hasStar && currentQuestionAnswers.length >= 2) {
-      currentQuestionAnswers = currentQuestionAnswers.map((line, idx) => {
-        if (idx === 1) return line.replace(/\s*\*?\s*$/, "") + "*"; // mặc định B đúng
-        return line.replace(/\s*\*?\s*$/, "");
-      });
-    }
-
-    result.push(...currentQuestionAnswers);
-    currentQuestionAnswers = [];
-  }
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-
-    // gặp câu mới => flush đáp án câu trước
-    if (/^câu\s*\d+/i.test(line.trim()) || /^\d+\./.test(line.trim())) {
-      flushQuestionAnswers();
-      result.push(line);
+    // ===== QUESTION =====
+    if (/^câu\s*\d+/i.test(line)) {
+      if (currentQ) output.push(currentQ);
+      currentQ = { q: line, options: [] };
       continue;
     }
 
-    // gom đáp án A/B/C/D
-    if (/^[A-D]\s*[\.\,\)\-:]/i.test(line.trim())) {
-      currentQuestionAnswers.push(line.trim());
+    // ===== OPTION =====
+    if (/^[A-D][\.\)\-:]/i.test(line) && currentQ) {
+      currentQ.options.push(line);
       continue;
     }
-
-    // dòng khác
-    flushQuestionAnswers();
-    result.push(line);
   }
 
-  flushQuestionAnswers();
+  if (currentQ) output.push(currentQ);
 
-  return result.join("\n");
+  // ===== FIX =====
+  const fixed = output.map((q, index) => {
+
+    let options = q.options.slice(0, 4);
+
+    // Nếu thiếu option → thêm dummy
+    while (options.length < 4) {
+      const letter = ["A", "B", "C", "D"][options.length];
+      options.push(`${letter}. ...`);
+    }
+
+    // Fix format A/B/C/D
+    options = options.map((op, i) => {
+      const letter = ["A", "B", "C", "D"][i];
+      return `${letter}. ` + op.replace(/^[A-D][^ ]*\s*/i, "").replace(/\*/g, "").trim();
+    });
+
+    // Fix đáp án đúng
+    let correctCount = q.options.filter(o => o.includes("*")).length;
+
+    if (correctCount !== 1) {
+      // random 1 đáp án đúng
+      const rand = Math.floor(Math.random() * 4);
+      options[rand] += "*";
+    } else {
+      // giữ đúng cái có *
+      options = options.map(op => op.includes("*") ? op : op);
+    }
+
+    return `Câu ${index + 1}. ${q.q.replace(/^câu\s*\d+\.\s*/i, "")}\n` +
+      options.join("\n");
+  });
+
+  return fixed.join("\n\n");
 }

@@ -332,6 +332,10 @@
     }
   }
 </style>
+<script type="module">
+  import { finalizeAIContent } from "../scripts/utils/aiContentFormatter.js";
+  window.finalizeAIContent = finalizeAIContent;
+</script>
 </head>
 
 <body>
@@ -381,7 +385,7 @@ function isLikelyToeicTest(html) {
     /câu\s*\d+/i.test(text) ||
     /question\s*\d+/i.test(text) ||
     /^[A-D][\.\)\,\-:]/im.test(text) ||
-    /tự luận/i.test(text)
+    /\*/.test(text)
   );
 }
 
@@ -398,9 +402,15 @@ function stripHtml(html = "") {
   return div.innerText || div.textContent || "";
 }
 
+function isHTML(str = "") {
+  return /<\/?[a-z][\s\S]*>/i.test(str);
+}
+
 
 function getPreviewRawContent(data = {}) {
+  // 🔥 Ưu tiên TEXT trước (fix AI)
   return (
+    data.content_text ||
     data.content_html ||
     data.content ||
     data.html ||
@@ -423,58 +433,69 @@ function cleanWordHTML(html) {
     .replace(/<!--\[if[^>]*>.*?<!\[endif\]-->/g, "");
 }
 
-/* ===== TOEIC RENDER ===== */
-function renderToeicPreview(html) {
-  const tempDiv = document.createElement("div");
-  tempDiv.innerHTML = html;
 
-  const blocks = tempDiv.querySelectorAll("p, div, img, audio, video, iframe");
+
+/* ===== TOEIC RENDER ===== */
+function renderToeicPreview(input) {
+  let lines = [];
+
+  // ✅ CASE 1: HTML (Word hoặc AI có <br>)
+  if (isHTML(input)) {
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = input;
+
+    // 🔥 FIX QUAN TRỌNG NHẤT
+    lines = tempDiv.innerText
+      .split("\n")
+      .map(x => x.trim())
+      .filter(Boolean);
+  } 
+  // ✅ CASE 2: TEXT thuần
+  else {
+    lines = String(input)
+      .split("\n")
+      .map(x => x.trim())
+      .filter(Boolean);
+  }
+
   let out = "";
   let qIndex = 0;
   let currentQuestionOpen = false;
 
-  blocks.forEach(el => {
-    const tag = el.tagName.toLowerCase();
-
-    /* ========= MEDIA ========= */
-    if (["img", "audio", "video", "iframe"].includes(tag)) {
-      out += `<div class="tb-preview-media">${el.outerHTML}</div>`;
-      return;
-    }
-
-    const text = (el.innerText || "").trim();
-    if (!text) return;
+  for (const line of lines) {
 
     const isQuestion =
-      /^câu\s*\d+/i.test(text) ||
-      /^question\s*\d+/i.test(text);
+      /^câu\s*\d+/i.test(line) ||
+      /^question\s*\d+/i.test(line);
 
-  
-    const isOption = /^[A-D][\.\)\,\-:]/i.test(text);
+    const isOption = /^[A-D][\.\)\,\-:]/i.test(line);
+
     if (isQuestion) {
       if (currentQuestionOpen) out += `</div></div>`;
 
       qIndex++;
+
       out += `
         <div class="tb-preview-question">
           <div class="tb-preview-qtop">
             <span class="tb-qbadge">Question ${qIndex}</span>
           </div>
-          <div class="tb-preview-qtext">${escapeHtml(text)}</div>
+          <div class="tb-preview-qtext">${escapeHtml(line)}</div>
           <div class="tb-preview-options">
       `;
+
       currentQuestionOpen = true;
-      return;
+      continue;
     }
 
     if (isOption) {
-      const letter = text.charAt(0).toUpperCase();
-      const optionText = text
-  .replace(/^[A-D][\.\)\,\-:]\s*/i, "")
-  .replace(/\*/g, "")
-  .trim();
+      const letter = line.charAt(0).toUpperCase();
+      const isCorrect = /\*\s*$/.test(line);
 
-      const isCorrect = text.includes("*");
+      const optionText = line
+        .replace(/^[A-D][\.\)\,\-:]\s*/i, "")
+        .replace(/\s*\*+\s*$/, "")
+        .trim();
 
       out += `
         <div class="tb-preview-option ${isCorrect ? "correct" : ""}">
@@ -483,60 +504,58 @@ function renderToeicPreview(html) {
           ${isCorrect ? `<div class="tb-preview-ok">✔</div>` : ""}
         </div>
       `;
-      return;
+      continue;
     }
 
-    out += `<div class="tb-preview-passage">${escapeHtml(text)}</div>`;
-  });
+    out += `<div class="tb-preview-passage">${escapeHtml(line)}</div>`;
+  }
 
   if (currentQuestionOpen) out += `</div></div>`;
 
-  return out || `
-    <div class="tb-empty-preview">
-      <div class="tb-empty-icon">📝</div>
-      <p>Không parse được nội dung</p>
-    </div>
-  `;
+  return out;
 }
 
 /* ===== MAIN RENDER ===== */
 (function render() {
-  const raw = getPreviewRawContent(data);
+  let raw = getPreviewRawContent(data);
 
-  if (!raw) {
+  let rawText = raw;
+
+  if (isHTML(rawText)) {
+    rawText = rawText
+      .replace(/<br\s*\/?>/gi, "\n")
+      .replace(/<\/p>/gi, "\n")
+      .replace(/<[^>]+>/g, "")
+      .trim();
+  }
+
+  rawText = rawText.replace(/^TIÊU ĐỀ.*\n/i, "").trim();
+
+  if (!rawText) {
     contentEl.innerHTML = "<i>Không có nội dung</i>";
     return;
   }
 
-  // CASE: LINK THUẦN
-  if (isURL(raw)) {
-    let label = "📄 Tài liệu";
-
-    if (isFlipbook(raw)) label = "📕 Sách lật";
-    else if (isPDF(raw)) label = "📄 PDF / PPT";
-
-    contentEl.innerHTML = `
-      <div style="text-align:center;font-weight:700;margin-bottom:10px;">
-        ${label}
-      </div>
-      <iframe 
-        src="${raw}"
-        class="doc-frame"
-        loading="lazy"
-        allowfullscreen>
-      </iframe>
-    `;
+  // 👉 LINK
+  if (isURL(rawText)) {
+    contentEl.innerHTML = `<iframe src="${rawText}" class="doc-frame"></iframe>`;
     return;
   }
 
-  // CASE: TOEIC TEST / EXAM
-  if (isLikelyToeicTest(raw)) {
-    contentEl.innerHTML = renderToeicPreview(raw);
+  // 👉 TOEIC / AI EXERCISE
+  if (isLikelyToeicTest(rawText)) {
+    const fixed = window.finalizeAIContent
+      ? window.finalizeAIContent(rawText, "exercise")
+      : rawText;
+
+    console.log("AI FIXED:", fixed);
+
+    contentEl.innerHTML = renderToeicPreview(fixed);
     return;
   }
 
-  // CASE: BÀI GIẢNG / WORD / HTML THƯỜNG
-  contentEl.innerHTML = cleanWordHTML(raw);
+  // 👉 TEXT thường
+  contentEl.innerHTML = `<div class="word-text">${escapeHtml(rawText)}</div>`;
 })();
 </script>
 
