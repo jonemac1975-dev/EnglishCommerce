@@ -1,0 +1,483 @@
+/* ===== RESET ===== */
+* {
+  box-sizing: border-box;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ===== PAGE ===== */
+.ai-pptx-page {
+  padding: 20px;
+  background: #f5f7fb;
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== HEADER ===== */
+.ai-pptx-header h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.ai-pptx-header p {
+  margin: 5px 0 20px;
+  color: #666;
+}
+
+/* ===== GRID LAYOUT ===== */
+.ai-pptx-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ===== ROW 1: 2 CỘT ===== */
+.ai-pptx-left {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* ===== CARD ===== */
+.pptx-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+/* ===== INPUT ===== */
+.pptx-label {
+  display: block;
+  margin: 10px 0 5px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.pptx-input,
+.pptx-textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.pptx-textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.pptx-textarea.small {
+  min-height: 70px;
+}
+
+/* ===== 2 COL INNER ===== */
+.pptx-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* ===== CHECKBOX ===== */
+.pptx-checkboxes label {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+}
+
+/* ===== ROW 2: FULL WIDTH ===== */
+.pptx-source-preview-wrap {
+  margin-top: 10px;
+}
+
+/* ===== ACTION BUTTON ROW ===== */
+.ai-pptx-actions-top {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.pptx-status-box {
+  margin-left: auto;
+  font-size: 13px;
+  color: #555;
+}
+
+/* ===== BUTTON ===== */
+.btn {
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.btn-primary { background: #4f46e5; color: #fff; }
+.btn-secondary { background: #e5e7eb; }
+.btn-success { background: #16a34a; color: #fff; }
+.btn-danger { background: #dc2626; color: #fff; }
+
+.btn-sm {
+  padding: 5px 8px;
+  font-size: 12px;
+}
+
+/* ===== ROW 4: PREVIEW FULL ===== */
+.ai-pptx-right {
+  width: 100%;
+}
+
+/* ===== PREVIEW ===== */
+.pptx-preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pptx-preview-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.pptx-preview-container {
+  margin-top: 10px;
+  display: grid;
+  gap: 12px;
+}
+
+/* ===== SLIDE CARD ===== */
+.pptx-slide {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  position: relative;
+}
+
+.pptx-slide h4 {
+  margin: 0 0 8px;
+}
+
+.pptx-slide ul {
+  padding-left: 18px;
+  margin: 0;
+}
+
+.pptx-slide-actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 6px;
+}
+
+/* ===== EMPTY ===== */
+.pptx-empty {
+  text-align: center;
+  color: #888;
+  padding: 30px;
+}
+
+/* ===== JSON ===== */
+.pptx-json-output {
+  width: 100%;
+  min-height: 200px;
+  font-family: monospace;
+}
+
+/* ===== SLIDE EDITOR (FIX BUG CHÍNH) ===== */
+.pptx-slide-editor {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: flex-end;
+  z-index: 99999; /* 🔥 QUAN TRỌNG */
+}
+
+/* panel */
+.pptx-slide-editor-panel {
+  width: 400px;
+  height: 100%;
+  background: #fff;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* header */
+.pptx-slide-editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* body */
+.pptx-slide-editor-body {
+  margin-top: 10px;
+  flex: 1;
+}
+
+/* footer */
+.pptx-slide-editor-footer {
+  margin-top: 10px;
+}
+
+/* ===== CHẶN CLICK XUYÊN ===== */
+.pptx-slide-editor-panel {
+  pointer-events: auto;
+}
+
+.pptx-slide-editor {
+  pointer-events: auto;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .ai-pptx-left {
+    grid-template-columns: 1fr;
+  }
+
+  .pptx-two-col {
+    grid-template-columns: 1fr;
+  }
+
+  .pptx-slide-editor-panel {
+    width: 100%;
+  }
+}
+
+/* ===== ANIMATION ===== */
+.pptx-slide {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pptx-slide:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+/* fade in */
+.pptx-slide {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* ===== DRAG STATE ===== */
+.pptx-slide.dragging {
+  opacity: 0.5;
+  transform: rotate(2deg);
+}
+
+/* ===== THEME ===== */
+.pptx-slide.theme-modern {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+}
+
+.pptx-slide.theme-minimal {
+  background: #111;
+}
+
+.pptx-slide.theme-kids {
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+}
+
+.pptx-slide.theme-academic {
+  background: linear-gradient(135deg, #0f172a, #334155);
+}
+
+/* ===== DRAG ZONE ===== */
+.pptx-preview-container.drag-over {
+  border: 2px dashed #6366f1;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+/* ===== LABEL (NÂNG CẤP CHÍNH) ===== */
+.pptx-label {
+  display: block;
+  margin: 12px 0 6px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: Brown; /* 🔥 xanh rõ */
+  letter-spacing: 0.2px;
+}
+
+/* ===== INPUT ===== */
+.pptx-input,
+.pptx-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  background: #fff;
+}
+
+/* focus đẹp hơn */
+.pptx-input:focus,
+.pptx-textarea:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99,102,241,0.2);
+}
+
+/* ===== CARD ===== */
+.pptx-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  border: 1px solid #f1f5f9;
+  transition: all 0.2s ease;
+}
+
+.pptx-card:hover {
+  box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+}
+
+/* ===== BUTTON (UPGRADE) ===== */
+.btn {
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+/* màu đẹp hơn */
+.btn-primary { 
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: #fff; 
+}
+
+.btn-secondary { 
+  background: #e5e7eb; 
+}
+
+.btn-success { 
+  background: #16a34a; 
+  color: #fff; 
+}
+
+.btn-danger { 
+  background: #dc2626; 
+  color: #fff; 
+}
+
+/* hover effect */
+.btn:hover {
+  transform: translateY(-1px);
+  opacity: 0.95;
+}
+
+.btn:active {
+  transform: scale(0.96);
+}
+
+/* ===== STATUS BOX ===== */
+.pptx-status-box {
+  margin-left: auto;
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  font-weight: 500;
+}
+
+/* ===== CHECKBOX ===== */
+.pptx-checkboxes label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.pptx-checkboxes input {
+  accent-color: #6366f1;
+}
+
+/* ===== SLIDE CARD ===== */
+.pptx-slide {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  border-radius: 14px;
+  padding: 16px;
+  position: relative;
+  transition: all 0.25s ease;
+}
+
+/* hover nâng cấp */
+.pptx-slide:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.18);
+}
+
+/* ===== SLIDE TITLE ===== */
+.pptx-slide h4 {
+  margin: 0 0 10px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* ===== PREVIEW TITLE ===== */
+.pptx-preview-deck-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 10px;
+}
+
+/* ===== TOOLBAR ===== */
+.pptx-slide-toolbar {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 6px;
+}
+
+/* ===== JSON BOX ===== */
+.pptx-json-output {
+  width: 100%;
+  min-height: 200px;
+  font-family: monospace;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  padding: 10px;
+  background: #0f172a;
+  color: #22c55e;
+}
+
+/* ===== SCROLL BAR (NHẸ NHÀNG) ===== */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5f5;
+  border-radius: 6px;
+}
+
+.pptx-label::after {
+  content: " *";
+  color: #ef4444;
+  display: none;
+}
+
+
+

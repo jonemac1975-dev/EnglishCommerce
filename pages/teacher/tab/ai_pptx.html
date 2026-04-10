@@ -1,0 +1,193 @@
+<link rel="stylesheet" href="/pages/teacher/css/ai_pptx.css">
+<div class="ai-pptx-page">
+  <div class="ai-pptx-header">
+    <div>
+      <h2>🎞 AI Slide Studio</h2>
+      <p>Tạo slide bài giảng, thuyết trình và lesson deck từ giáo án, SGK, Word, PDF hoặc nội dung tự nhập.</p>
+    </div>
+    </div> 
+
+
+  <div class="ai-pptx-grid">
+    <!-- LEFT -->
+    <div class="ai-pptx-left">
+      <div class="pptx-card">
+        <h3> 1- Nguồn nội dung</h3>
+
+        <label  class="pptx-label">Loại nguồn </label>
+        <select id="pptxSourceType" class="pptx-input">
+          <option value="textbook">Sách giáo khoa</option>
+          <option value="curriculum">Chương trình giảng dạy</option>
+          <option value="lesson_plan">Giáo án</option>
+          <option value="toeic">TOEIC</option>
+          <option value="custom">Tự do</option>
+        </select>
+
+        <label class="pptx-label">Dán nội dung trực tiếp</label>
+        <textarea id="pptxSourceText" class="pptx-textarea" placeholder="Dán nội dung bài học, SGK, giáo án, outline bài giảng..."></textarea>
+
+        <label class="pptx-label">Link Google Drive (Word/PDF)</label>
+        <input id="pptxDriveLink" class="pptx-input" type="text" placeholder="Dán link Google Drive nếu có..." />
+
+        <label class="pptx-label">Hoặc tải file lên (.docx, .txt, .pdf)</label>
+        <input id="pptxSourceFile" class="pptx-input" type="file" accept=".docx,.txt,.pdf" />
+
+        <div class="pptx-source-preview-wrap">
+          <label class="pptx-label">Nội dung đã đọc (preview text)</label>
+          <textarea id="pptxParsedText" class="pptx-textarea small" placeholder="Nội dung sau khi đọc file / link sẽ hiện ở đây..."></textarea>
+        </div>
+      </div>
+
+      <div class="pptx-card">
+        <h3>2 -  Cấu hình tạo slide</h3>
+
+        <div class="pptx-two-col">
+          <div>
+            <label class="pptx-label">Loại trình chiếu</label>
+            <select id="pptxMode" class="pptx-input">
+              <option value="teaching">Bài giảng</option>
+              <option value="presentation">Thuyết trình</option>
+              <option value="toeic">TOEIC</option>
+              <option value="training">Training nội bộ</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="pptx-label">Đối tượng học viên</label>
+            <select id="pptxAudience" class="pptx-input">
+              <option value="kids">Kids</option>
+              <option value="primary">Tiểu học</option>
+              <option value="secondary">THCS</option>
+              <option value="highschool">THPT</option>
+              <option value="adult">Người lớn</option>
+              <option value="toeic">TOEIC</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="pptx-two-col">
+          <div>
+            <label class="pptx-label">Ngôn ngữ</label>
+            <select id="pptxLanguage" class="pptx-input">
+              <option value="vi">Tiếng Việt</option>
+              <option value="en">English</option>
+              <option value="bilingual">Song ngữ</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="pptx-label">Phong cách</label>
+            <select id="pptxStyle" class="pptx-input">
+              <option value="modern">Hiện đại</option>
+              <option value="academic">Học thuật</option>
+              <option value="kids">Thiếu nhi</option>
+              <option value="minimal">Tối giản</option>
+              <option value="toeic">TOEIC</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="pptx-two-col">
+          <div>
+            <label class="pptx-label">Số slide</label>
+            <input id="pptxSlideCount" class="pptx-input" type="number" min="5" max="30" value="12" />
+          </div>
+
+          <div>
+            <label class="pptx-label">Tên file xuất</label>
+            <input id="pptxFileName" class="pptx-input" type="text" placeholder="VD: Unit_5_Food_and_Drink" />
+          </div>
+        </div>
+
+        <div class="pptx-checkboxes">
+          <label><input type="checkbox" id="pptxIncludeActivities" checked /> Có hoạt động lớp học</label>
+          <label><input type="checkbox" id="pptxIncludeQuestions" checked /> Có câu hỏi tương tác</label>
+          <label><input type="checkbox" id="pptxIncludeHomework" checked /> Có bài tập cuối</label>
+          <label><input type="checkbox" id="pptxIncludeNotes" checked /> Có ghi chú cho giáo viên</label>
+        </div>
+      </div>
+
+      <div class="ai-pptx-actions-top">
+      <button id="pptxReadSourceBtn" class="btn btn-secondary">📄 Đọc nội dung</button>
+      <button id="pptxGenerateBtn" class="btn btn-primary">🧠 Tạo Slide AI</button>
+      <button id="pptxExportBtn" class="btn btn-success">⬇ Xuất PPTX</button>
+<div id="pptxStatusBox" class="pptx-status-box">Sẵn sàng.</div>
+    </div>
+  </div>
+
+    <!-- RIGHT -->
+    <div class="ai-pptx-right">
+      <div class="pptx-card">
+        <div class="pptx-preview-header">
+          <h3>3 - Preview Slide</h3>
+          <div class="pptx-preview-actions">
+            <button id="btnRestore">🔄 Khôi phục 5 slide gần nhất</button>
+            <button id="pptxAddSlideBtn" class="btn btn-secondary btn-sm">➕ Thêm Slide</button>
+            <button id="pptxToggleJsonBtn" class="btn btn-secondary btn-sm">🧾 Hiện JSON</button>
+            <button id="pptxClearBtn" class="btn btn-danger btn-sm">🗑 Xóa</button>
+          </div>
+        </div>
+
+        <div id="pptxPreviewContainer" class="pptx-preview-container">
+          <div class="pptx-empty">Chưa có slide nào ✨<br>Hãy đọc nguồn nội dung rồi nhấn <b>Tạo Slide AI</b>.</div>
+        </div>
+      </div>
+
+      <div class="pptx-card hidden" id="pptxJsonPanel">
+        <h3> 5 - JSON AI</h3>
+        <textarea id="pptxJsonOutput" class="pptx-json-output" placeholder="JSON AI sẽ hiện ở đây..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide Editor Drawer -->
+  <div id="pptxSlideEditor" class="pptx-slide-editor hidden">
+    <div class="pptx-slide-editor-panel">
+      <div class="pptx-slide-editor-header">
+        <h3>✏️ Chỉnh sửa slide</h3>
+        <button id="pptxCloseEditorBtn" class="btn btn-danger btn-sm">Đóng</button>
+      </div>
+
+      <div class="pptx-slide-editor-body">
+        <label class="pptx-label">Loại slide</label>
+        <select id="pptxEditType" class="pptx-input">
+          <option value="cover">Cover</option>
+          <option value="overview">Overview</option>
+          <option value="content">Content</option>
+          <option value="activity">Activity</option>
+          <option value="practice">Practice</option>
+          <option value="homework">Homework</option>
+          <option value="summary">Summary</option>
+        </select>
+
+        <label class="pptx-label">Tiêu đề</label>
+        <input id="pptxEditTitle" class="pptx-input" type="text" />
+
+        <label class="pptx-label">Phụ đề</label>
+        <input id="pptxEditSubtitle" class="pptx-input" type="text" />
+
+        <label class="pptx-label">Bullets (mỗi dòng 1 ý)</label>
+        <textarea id="pptxEditBullets" class="pptx-textarea small"></textarea>
+
+        <label class="pptx-label">Questions (mỗi dòng 1 câu)</label>
+        <textarea id="pptxEditQuestions" class="pptx-textarea small"></textarea>
+
+        <label class="pptx-label">Teacher Note</label>
+        <textarea id="pptxEditNote" class="pptx-textarea small"></textarea>
+      </div>
+
+      <div class="pptx-slide-editor-footer">
+        <button id="pptxSaveSlideBtn" class="btn btn-primary">💾 Lưu Slide</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Libraries -->
+
+<script src="https://unpkg.com/pptxgenjs/dist/pptxgen.bundle.js"></script>
+<script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs" type="module"></script>
+
+
+

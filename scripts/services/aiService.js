@@ -129,12 +129,13 @@ function normalizePayload(type = "lesson", payload = {}) {
 
     mode,
 
-    chuDe: payload?.chuDe || payload?.topic || "",
+    chuDe: payload?.chuDe || payload?.topic || payload?.title || "",
     monHoc: payload?.monHoc || payload?.subject || "Tiếng Anh",
     trinhDo: payload?.trinhDo || payload?.level || "A2",
 
-    soLuong: parseInt(payload?.soLuong || payload?.soCau || 5) || 5,
-    soCau: parseInt(payload?.soCau || payload?.soLuong || 5) || 5,
+    soLuong: parseInt(payload?.soLuong || payload?.soCau || payload?.slideCount || 5) || 5,
+    soCau: parseInt(payload?.soCau || payload?.soLuong || payload?.slideCount || 5) || 5,
+    slideCount: parseInt(payload?.slideCount || payload?.soLuong || payload?.soCau || 12) || 12,
 
     questionType: normalizeQuestionType(
       payload?.questionType ||
@@ -147,14 +148,24 @@ function normalizePayload(type = "lesson", payload = {}) {
 
     inferredTask,
     outputStyle: inferOutputStyle(payload, mode),
-    sourceLength: getTextLength(payload?.duLieuGoc || ""),
+    sourceLength: getTextLength(payload?.duLieuGoc || payload?.sourceText || ""),
 
     extra:
       payload?.extra ||
       payload?.yeuCauThem ||
       payload?.ghiChu ||
       payload?.note ||
-      ""
+      "",
+
+    // PPTX-specific
+    sourceType: payload?.sourceType || "custom",
+    audience: payload?.audience || "secondary",
+    language: payload?.language || "vi",
+    style: payload?.style || "modern",
+    includeActivities: !!payload?.includeActivities,
+    includeQuestions: !!payload?.includeQuestions,
+    includeHomework: !!payload?.includeHomework,
+    includeNotes: !!payload?.includeNotes
   };
 }
 
@@ -216,13 +227,15 @@ function inferTaskIntent(payload = {}, mode = "lesson") {
     payload?.ghiChu,
     payload?.extra,
     payload?.loaiDe,
-    payload?.chuDe
+    payload?.chuDe,
+    payload?.mode
   ]
     .filter(Boolean)
     .join(" | ")
     .toLowerCase();
 
   if (mode === "lesson") return "lesson_builder";
+  if (mode === "pptx") return "pptx_slide_generation";
 
   if (raw.includes("hội thoại") || raw.includes("dialogue")) return "dialogue_generation";
   if (raw.includes("đọc hiểu") || raw.includes("reading")) return "reading_comprehension";
@@ -250,6 +263,7 @@ function inferOutputStyle(payload = {}, mode = "lesson") {
     .toLowerCase();
 
   if (mode === "lesson") return "structured_lesson";
+  if (mode === "pptx") return "structured_slide_json";
   if (raw.includes("hội thoại")) return "dialogue_blocks";
   if (raw.includes("đọc hiểu")) return "passage_with_questions";
   if (raw.includes("điền từ")) return "gap_fill";
@@ -289,11 +303,31 @@ function buildSmartFallback(type, payload, reason = "", provider = "smart_fake_v
 
 function generateSmartFakeAI(type = "lesson", payload = {}) {
   const mode = normalizeMode(type);
-  const topic = payload?.chuDe || "Chủ đề bài học";
-  const count = parseInt(payload?.soLuong || payload?.soCau || 5) || 5;
+  const topic = payload?.chuDe || payload?.title || "Chủ đề bài học";
+  const count = parseInt(payload?.soLuong || payload?.soCau || payload?.slideCount || 5) || 5;
   const inferredTask = payload?.inferredTask || "generic";
   const questionType = String(payload?.questionType || "multiple_choice").toLowerCase();
-  const source = String(payload?.duLieuGoc || "").trim();
+  const source = String(payload?.duLieuGoc || payload?.sourceText || "").trim();
+
+  // ✅ PPTX FALLBACK
+  if (mode === "pptx") {
+    return JSON.stringify({
+      title: topic || "AI Presentation",
+      mode: payload?.mode || "teaching",
+      theme: payload?.style || "modern",
+      language: payload?.language || "vi",
+      audience: payload?.audience || "secondary",
+      slides: buildFakePptxSlides({
+        topic,
+        count,
+        source,
+        includeActivities: payload?.includeActivities,
+        includeQuestions: payload?.includeQuestions,
+        includeHomework: payload?.includeHomework,
+        includeNotes: payload?.includeNotes
+      })
+    }, null, 2);
+  }
 
   if (mode === "lesson") {
     return `
@@ -401,6 +435,118 @@ BÀI GIẢNG: ${topic}
   return out.trim();
 }
 
+function buildFakePptxSlides({
+  topic = "Chủ đề bài học",
+  count = 8,
+  source = "",
+  includeActivities = true,
+  includeQuestions = true,
+  includeHomework = true,
+  includeNotes = true
+} = {}) {
+  const slides = [];
+
+  slides.push({
+    type: "cover",
+    title: topic,
+    subtitle: "AI Generated Presentation",
+    speakerNotes: includeNotes ? "Giới thiệu nhanh nội dung bài trình chiếu." : ""
+  });
+
+  slides.push({
+    type: "objectives",
+    title: "Mục tiêu",
+    bullets: [
+      `Hiểu nội dung chính của ${topic}`,
+      `Nắm được các ý trọng tâm`,
+      `Có thể áp dụng vào thực hành hoặc thảo luận`
+    ],
+    speakerNotes: includeNotes ? "Nhấn mạnh mục tiêu trước khi vào nội dung chính." : ""
+  });
+
+  slides.push({
+    type: "agenda",
+    title: "Nội dung chính",
+    bullets: [
+      "Khái niệm / giới thiệu",
+      "Phân tích nội dung",
+      "Ví dụ minh họa",
+      "Thực hành / tương tác",
+      "Tổng kết"
+    ],
+    speakerNotes: includeNotes ? "Cho học viên biết cấu trúc buổi học." : ""
+  });
+
+  slides.push({
+    type: "example",
+    title: "Ví dụ minh họa",
+    bullets: [
+      `Ví dụ thực tế liên quan đến ${topic}`,
+      "Tình huống áp dụng dễ hiểu",
+      "Mở rộng theo trình độ người học"
+    ],
+    speakerNotes: includeNotes ? "Dùng ví dụ để làm mềm nội dung." : ""
+  });
+
+  if (includeActivities) {
+    slides.push({
+      type: "activity",
+      title: "Hoạt động lớp học",
+      questions: [
+        `Thảo luận nhanh: bạn hiểu gì về ${topic}?`,
+        `Làm việc nhóm: tìm 2 ví dụ liên quan đến ${topic}.`
+      ],
+      speakerNotes: includeNotes ? "Cho học viên trao đổi nhóm nhỏ." : ""
+    });
+  }
+
+  if (includeQuestions) {
+    slides.push({
+      type: "practice",
+      title: "Câu hỏi tương tác",
+      questions: [
+        `Câu hỏi 1: Ý chính của ${topic} là gì?`,
+        `Câu hỏi 2: Bạn có thể nêu một ví dụ không?`,
+        `Câu hỏi 3: Nội dung này áp dụng khi nào?`
+      ],
+      speakerNotes: includeNotes ? "Dùng để kiểm tra mức độ hiểu bài." : ""
+    });
+  }
+
+  slides.push({
+    type: "summary",
+    title: "Tổng kết",
+    bullets: [
+      `Tóm tắt lại nội dung chính của ${topic}`,
+      "Nhớ các ý quan trọng",
+      "Sẵn sàng chuyển sang luyện tập / áp dụng"
+    ],
+    speakerNotes: includeNotes ? "Chốt bài ngắn gọn, rõ ý." : ""
+  });
+
+  if (includeHomework) {
+    slides.push({
+      type: "homework",
+      title: "Bài tập / nhiệm vụ về nhà",
+      bullets: [
+        `Ôn lại nội dung về ${topic}`,
+        "Viết 3-5 ý hoặc ví dụ liên quan",
+        "Chuẩn bị cho buổi học tiếp theo"
+      ],
+      speakerNotes: includeNotes ? "Giao nhiệm vụ ngắn, dễ làm." : ""
+    });
+  }
+
+  slides.push({
+    type: "thankyou",
+    title: "Thank You!",
+    subtitle: "Cảm ơn đã theo dõi",
+    speakerNotes: includeNotes ? "Kết thúc buổi dạy / trình bày." : ""
+  });
+
+  return slides.slice(0, Math.max(5, count));
+}
+
 /* =========================================
    NORMALIZE MODE
 ========================================= */
@@ -411,6 +557,7 @@ function normalizeMode(type = "") {
   if (t === "exercise" || t === "bai_tap" || t === "baitap") return "exercise";
   if (t === "exam" || t === "test" || t === "kiem_tra" || t === "kiemtra") return "exam";
   if (t === "toeic") return "toeic";
+  if (t === "pptx" || t === "slide" || t === "presentation") return "pptx";
 
   return "lesson";
 }
