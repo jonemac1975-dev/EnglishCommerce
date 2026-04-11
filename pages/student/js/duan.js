@@ -543,11 +543,11 @@ window.previewContent = function () {
         `Môn: ${daMonHoc.options[daMonHoc.selectedIndex]?.text || ""} | ` +
         `Lớp: ${daLop.options[daLop.selectedIndex]?.text || ""} | ` +
         `Ngày: ${daNgay.value || ""}`,
-      content: daNoiDung.innerHTML
+      content_html: daNoiDung.innerHTML
     })
   );
 
-  window.open("/preview.html", "_blank");
+  window.open("/preview2.html", "_blank");
 };
 
 /* =========================

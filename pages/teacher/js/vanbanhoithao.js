@@ -397,11 +397,11 @@ window.previewContent = function () {
       name: bgVanBan.value || "Văn bản - Hội thảo",
       meta:
         `Ngày: ${bgNgay.value || ""}`,
-      content: bgNoiDung.innerHTML
+      content_html: bgNoiDung.innerHTML
     })
   );
 
-  window.open("/preview.html", "_blank");
+  window.open("/preview2.html", "_blank");
 };
 
 window.chooseImage = function () {

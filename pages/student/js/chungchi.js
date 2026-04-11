@@ -36,11 +36,7 @@ async function init() {
 
   document.getElementById("ccThang").innerText =
     item.thang;
-setTimeout(() => {
-  const avatar = document.getElementById("ccAvatar");
-  if (avatar && item.img) {
-    avatar.src = item.img;
-  }
-}, 0);
+const avatar = document.getElementById("ccAvatar");
+if (avatar && item.img) avatar.src = item.img;
 
 }

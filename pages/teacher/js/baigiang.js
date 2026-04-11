@@ -435,11 +435,11 @@ window.previewContent = function () {
         `Môn: ${bgMonHoc.value || ""} | ` +
         `Lớp: ${bgLop.value || ""} | ` +
         `Ngày: ${bgNgay.value || ""}`,
-      content: bgNoiDung.innerHTML
+      content_html: bgNoiDung.innerHTML
     })
   );
 
-  window.open("/preview.html", "_blank");
+  window.open("/preview2.html", "_blank");
 };
 
 window.chooseImage = function () {

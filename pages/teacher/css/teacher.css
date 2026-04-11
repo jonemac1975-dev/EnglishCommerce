@@ -2348,3 +2348,199 @@ body > .change-pass-card {
     width: 100%;
   }
 }
+
+
+/=====Mobi=========/
+@media (max-width: 768px) {
+
+  .gv-layout {
+    flex-direction: column;
+  }
+
+  .gv-menu {
+    position: fixed;
+    top: 64px;
+    left: -100%;
+    width: 260px;
+    height: calc(100vh - 64px);
+    z-index: 9999;
+    transition: 0.3s;
+  }
+
+  .gv-menu.open {
+    left: 0;
+  }
+
+  .gv-content {
+    padding: 14px;
+  }
+
+}
+
+.menu-toggle {
+  display: none;
+  font-size: 20px;
+  background: white;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .gv-header {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .header-actions button {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+}
+
+
+
+@media (max-width: 768px) {
+  .gv-info {
+    grid-template-columns: 1fr;
+  }
+
+  .kt-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .kt-row label {
+    width: 100%;
+  }
+
+  .ld-filter {
+    flex-direction: column;
+  }
+}
+
+
+@media (max-width: 768px) {
+
+  .table-list,
+  .bg-table,
+  .kt-table,
+  .cb-table,
+  .lich-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+}
+
+
+@media (max-width: 768px) {
+
+  #bgNoiDung,
+  #test_noidung,
+  .editor-box,
+  .html-editor {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+}
+
+@media (max-width: 768px) {
+
+  button,
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+}
+
+
+@media (max-width: 768px) {
+
+  .gv-menu {
+    position: fixed;
+    top: 64px;
+    left: -100%; /* 👈 ẨN mặc định */
+    width: 260px;
+    height: calc(100vh - 64px);
+    z-index: 9999;
+    transition: all 0.3s ease;
+  }
+
+  .gv-menu.open {
+    left: 0; /* 👈 HIỆN ra */
+  }
+
+}
+
+@media (max-width: 768px) {
+  .menu-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 9998;
+    display: none;
+  }
+
+  .menu-overlay.show {
+    display: block;
+  }
+}
+
+@media (max-width: 768px) {
+
+  .gv-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    padding: 8px;
+  }
+
+  .header-actions {
+    display: flex;
+    flex: 1;
+    gap: 4px;
+  }
+
+  .header-actions button,
+  .menu-toggle {
+    flex: 1;              /* 👈 chia đều */
+    font-size: 11px;      /* 👈 nhỏ lại */
+    padding: 6px 4px;     /* 👈 giảm padding */
+    border-radius: 6px;
+    white-space: nowrap;  /* 👈 không xuống dòng */
+  }
+
+}
+
+@media (max-width: 768px) {
+
+  .btn-profile::after { content: "Hồ sơ"; }
+  .btn-pass::after { content: "Pass"; }
+  .btn-home::after { content: "Home"; }
+
+}

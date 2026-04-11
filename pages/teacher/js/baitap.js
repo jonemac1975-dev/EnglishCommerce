@@ -316,11 +316,11 @@ window.previewContent = function () {
         `Môn: ${btMon.value || ""} | ` +
         `Lớp: ${btLop.value || ""} | ` +
         `Ngày: ${btDate?.value || ""}`,
-      content: btContent.innerHTML
+      content_html: btContent.innerHTML
     })
   );
 
-  window.open("/preview.html", "_blank");
+  window.open("/preview2.html", "_blank");
 };
 
 

@@ -2,9 +2,10 @@ const teacherId = localStorage.getItem("teacher_id");
 if (!teacherId) location.href = "gvdangnhap.html";
 
 const content = document.getElementById("content");
-const menuItems = document.querySelectorAll(".menu-item");
 
-/* ===== LOAD TAB ===== */
+/* =========================
+   LOAD TAB
+========================= */
 async function loadTab(tab) {
   try {
     const res = await fetch(`./tab/${tab}.html`);
@@ -13,13 +14,12 @@ async function loadTab(tab) {
     content.innerHTML = await res.text();
 
     import(`./${tab}.js`)
-  .then(module => {
+      .then(module => {
         if (module.init) module.init();
-  })
-  .catch(e => {
-    console.error("❌ Lỗi thật sự khi load tab:", e);
-  });
-
+      })
+      .catch(e => {
+        console.error("❌ Lỗi import tab JS:", e);
+      });
 
   } catch (e) {
     console.error("❌ Load tab lỗi:", tab, e);
@@ -27,23 +27,42 @@ async function loadTab(tab) {
   }
 }
 
-/* ===== MENU CLICK ===== */
-menuItems.forEach(item => {
-  item.onclick = () => {
-  menuItems.forEach(i => i.classList.remove("active"));
-  item.classList.add("active");
+/* =========================
+   MENU CLICK
+========================= */
+function bindMenu() {
+  const menuItems = document.querySelectorAll(".menu-item");
 
-  const parent = item.closest(".menu-children");
-  if (parent) {
-    document.querySelectorAll(".menu-children").forEach(el => el.classList.remove("open"));
-    parent.classList.add("open");
-  }
+  menuItems.forEach(item => {
+    item.onclick = () => {
 
-  loadTab(item.dataset.tab);
-};
-});
+      // active
+      menuItems.forEach(i => i.classList.remove("active"));
+      item.classList.add("active");
 
-/* ===== HEADER ACTION ===== */
+      // open group
+      const parent = item.closest(".menu-children");
+      if (parent) {
+        document.querySelectorAll(".menu-children")
+          .forEach(el => el.classList.remove("open"));
+        parent.classList.add("open");
+      }
+
+      // load tab
+      loadTab(item.dataset.tab);
+
+      // 🔥 AUTO CLOSE MENU MOBILE
+      const menu = document.querySelector(".gv-menu");
+      if (window.innerWidth <= 768) {
+        menu?.classList.remove("open");
+      }
+    };
+  });
+}
+
+/* =========================
+   HEADER ACTION
+========================= */
 window.openProfile = () => {
   location.href = "hosogiaovien.html";
 };
@@ -53,14 +72,11 @@ window.openChangePass = () => {
 };
 
 window.goHome = () => location.href = "../../index.html";
-/* ===== INIT ===== */
-loadTab("giaovienview");
-// mở group đầu tiên
-document.querySelector(".menu-children")?.classList.add("open");
 
-
-
-window.showToast = function(message, type = "info", time = 2500) {
+/* =========================
+   TOAST
+========================= */
+window.showToast = function (message, type = "info", time = 2500) {
   const toast = document.getElementById("toast");
   if (!toast) return;
 
@@ -77,30 +93,44 @@ window.showToast = function(message, type = "info", time = 2500) {
   }, time);
 };
 
+/* =========================
+   INIT
+========================= */
+document.addEventListener("DOMContentLoaded", () => {
 
-window.addEventListener("DOMContentLoaded", () => {
+  // menu toggle mobile
+  const menu = document.querySelector(".gv-menu");
+  const btn = document.querySelector(".menu-toggle");
 
-  const menuItems = document.querySelectorAll(".menu-item");
+  btn?.addEventListener("click", () => {
+    menu?.classList.toggle("open");
+  });
+
+  // group toggle
   const groups = document.querySelectorAll(".menu-group");
   const childrenList = document.querySelectorAll(".menu-children");
 
-  // ===== CLICK GROUP =====
   groups.forEach(group => {
     group.onclick = () => {
-
       const children = group.nextElementSibling;
       if (!children) return;
 
       const isOpen = children.classList.contains("open");
 
-      // đóng tất cả
       childrenList.forEach(c => c.classList.remove("open"));
 
-      // mở lại nếu đang đóng
       if (!isOpen) {
         children.classList.add("open");
       }
     };
   });
 
+  // bind menu items
+  bindMenu();
+
+  // mở group đầu tiên
+  document.querySelector(".menu-children")?.classList.add("open");
+
+  // load default tab
+  loadTab("giaovienview");
 });
