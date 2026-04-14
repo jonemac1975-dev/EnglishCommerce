@@ -25,6 +25,15 @@ import {
   removeAIDraftById
 } from "../../../scripts/utils/aiDraftStorage.js";
 
+
+import { cleanLesson } from "../../../scripts/ai/cleanLesson.js";
+import { formatLesson } from "../../../scripts/ai/formatLesson.js";
+
+
+
+// ✅ đảm bảo DOM load xong
+window.addEventListener("DOMContentLoaded", runClean);
+
 let CURRENT_AI_TEXT = "";
 let CURRENT_AI_TYPE = AI_TYPES.LESSON;
 let CURRENT_AI_PAYLOAD = {};
@@ -63,9 +72,26 @@ async function initAITeacherPage() {
   setAIProvider("standby");
   bindDraftButtons();
   bindAILifecycleCleanup();
+  initSplitContent();
 
   // luôn dọn logs cloud khi vào AI page
   await clearAllMyAILogs(getCurrentTeacherId());
+}
+
+
+async function runClean() {
+  try {
+    const rawText = `...`;
+
+    const cleanText = await cleanLesson(rawText); // ✅ PHẢI await
+    const html = formatLesson(cleanText);
+
+    const el = document.getElementById("preview");
+    if (el) el.innerHTML = html;
+
+  } catch (err) {
+    console.error("❌ Lỗi xử lý:", err);
+  }
 }
 
 /* =========================
@@ -76,7 +102,8 @@ function getAITypeMeta(type) {
     lesson: { label: "AI Lesson Builder", badge: "📘 Lesson", cls: "lesson" },
     exercise: { label: "AI Exercise Builder", badge: "📝 Exercise", cls: "exercise" },
     exam: { label: "AI Exam Generator", badge: "📋 Exam", cls: "exam" },
-    toeic: { label: "AI TOEIC Generator", badge: "🎧 TOEIC", cls: "toeic" }
+    toeic: { label: "AI TOEIC Generator", badge: "🎧 TOEIC", cls: "toeic" },
+    fivee: { label: "AI 5E Lesson", badge: "🔥 5E", cls: "fivee" }
   };
   return map[type] || map.lesson;
 }
@@ -119,6 +146,78 @@ function renderPremiumPlaceholder() {
   `;
 }
 
+
+
+
+
+
+
+
+function formatLessonOutput(text = "") {
+  if (!text) return "";
+
+  let out = text;
+
+  // ===== UNIT (an toàn hơn) =====
+  if (/TIÊU ĐỀ/i.test(out)) {
+    out = out.replace(
+      /TIÊU ĐỀ:?\s*([^\n]+)/i,
+      (_, title) => `\n\n=== UNIT 1: ${title.trim()} ===\n`
+    );
+  } else if (!out.includes("UNIT")) {
+    out = `\n\n=== UNIT 1 ===\n` + out;
+  }
+
+  // ===== OBJECTIVES =====
+  out = out.replace(/OBJECTIVES:?/i, "\n\n--- OBJECTIVES ---\n");
+
+  // ===== VOCAB =====
+  out = out.replace(/PHẦN\s*1:\s*VOCABULARY/i, "\n\n--- VOCABULARY ---\n");
+
+// fix VOCAB bị AI viết sai
+out = out.replace(/Từ:\s*VOCABULARY/i, "\n\n--- VOCABULARY ---\n");
+
+
+  // ===== GRAMMAR =====
+  out = out.replace(/PHẦN\s*2:\s*GRAMMAR/i, "\n\n--- GRAMMAR ---\n");
+
+  // ===== READING =====
+  out = out.replace(/PHẦN\s*3:\s*READING/i, "\n\n--- READING ---\n");
+
+  // ===== GOM EXERCISE (không replace nhiều lần) =====
+  // replace tất cả PHẦN 4-7 thành marker tạm
+out = out.replace(/PHẦN\s*[4-7]:/gi, "\n@@EX@@\n");
+
+// sau đó gom lại 1 lần
+if (out.includes("@@EX@@")) {
+  out = out.replace(/(@@EX@@\s*)+/g, "\n\n--- EXERCISE ---\n");
+}
+
+  // ===== SUMMARY =====
+  out = out.replace(/PHẦN\s*8:\s*SUMMARY/i, "\n\n--- SUMMARY ---\n");
+
+  // ===== FIX IPA lỗi xuống dòng =====
+  out = out.replace(/IP\s*A:/gi, "IPA:");
+
+  // ===== CLEAN nhẹ =====
+  out = out.replace(/\n{3,}/g, "\n\n").trim();
+
+  return out;
+}
+
+
+function isValidLessonStructure(text = "") {
+  return (
+    text.includes("=== UNIT") &&
+    text.includes("--- OBJECTIVES ---") &&
+    text.includes("--- VOCABULARY ---") &&
+    text.includes("--- READING ---") &&
+    text.includes("--- EXERCISE ---")
+  );
+}
+
+
+
 function renderPremiumAIOutput(type, htmlContent = "", status = "success", fakeMode = true, provider = "unknown") {
   const outputBox = document.getElementById("aiOutputBox");
   if (!outputBox) return;
@@ -152,12 +251,13 @@ function renderPremiumAIOutput(type, htmlContent = "", status = "success", fakeM
         </span>
       </div>
 
-      <div class="ai-output-content ai-rendered-content">
+      <div class="ai-output-content ai-rendered-content ai-fancy-box">
         ${htmlContent}
       </div>
     </div>
   `;
 }
+
 
 /* =========================
    TAB SWITCH
@@ -221,7 +321,7 @@ function initActionButtons() {
         return window.showToast?.("Chưa có nội dung AI để chuẩn hóa", "warning");
       }
 
-      CURRENT_AI_TEXT = finalizeAIContent(CURRENT_AI_TEXT, CURRENT_AI_TYPE);
+CURRENT_AI_TEXT = finalizeAIContent(CURRENT_AI_TEXT, CURRENT_AI_TYPE);
 
       const renderHtml =
         ["exam", "toeic", "exercise"].includes(CURRENT_AI_TYPE)
@@ -236,6 +336,7 @@ function initActionButtons() {
         CURRENT_AI_PROVIDER
       );
 
+console.log("SAVE TEXT LENGTH =", CURRENT_AI_TEXT?.length);
       saveCurrentDraft();
       window.showToast?.("✨ Đã chuẩn hóa nội dung AI", "success");
     };
@@ -252,10 +353,19 @@ function initActionButtons() {
 
   if (btnSaveDraft) {
     btnSaveDraft.onclick = function () {
+
+console.log("SAVE TEXT LENGTH =", CURRENT_AI_TEXT?.length);
       saveCurrentDraft();
       window.showToast?.("✅ Đã lưu nháp AI", "success");
     };
   }
+const btnHistory = document.getElementById("btnHistoryAI");
+
+if (btnHistory) {
+  btnHistory.onclick = function () {
+    openDraftHistoryModal();
+  };
+}
 }
 
 /* =========================
@@ -276,6 +386,7 @@ function pushToLesson() {
   const p = getLessonPayload();
   const normalized = normalizeTeachingContent(CURRENT_AI_TEXT, "lesson");
   CURRENT_AI_TEXT = normalized;
+console.log("SAVE TEXT LENGTH =", CURRENT_AI_TEXT?.length);
   saveCurrentDraft();
 
   localStorage.setItem("teacher_ai_push_baigiang", JSON.stringify({
@@ -363,8 +474,16 @@ function openTeacherTab(tabName) {
   if (btn) btn.click();
 }
 
+
+function cleanInputForStrictMode(text = "") {
+  return text
+    .replace(/\r/g, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 /* =========================
-   GENERATE AI
+   GENERATE AI (CLEAN VERSION)
 ========================= */
 async function generateAIContent(type, payload) {
   const outputBox = document.getElementById("aiOutputBox");
@@ -376,6 +495,18 @@ async function generateAIContent(type, payload) {
     return window.showToast?.("⏳ Bạn thao tác quá nhanh, thử lại sau 2-3 giây", "warning");
   }
 
+  // 🔥 Clean input
+  if (payload.duLieuGoc) {
+    payload.duLieuGoc = cleanInputForStrictMode(payload.duLieuGoc);
+  }
+
+  const originalInput = payload.duLieuGoc || "";
+
+  if (!originalInput.trim()) {
+    return window.showToast?.("⚠️ Chưa có nội dung giáo trình", "warning");
+  }
+
+  // 🔥 SINGLE PROMPT SOURCE (NO 5E, NO OVERRIDE)
   const prompt = buildAIPrompt(type, payload);
 
   setAIStatus("loading", "Thinking...");
@@ -387,7 +518,7 @@ async function generateAIContent(type, payload) {
       <div class="ai-loader-ring"></div>
       <div class="ai-loading-text">
         <h3>Đang tạo nội dung AI...</h3>
-        <p>Hệ thống đang xử lý nội dung cho giáo viên.</p>
+        <p>Đang xử lý...</p>
       </div>
     </div>`,
     "loading",
@@ -405,47 +536,68 @@ async function generateAIContent(type, payload) {
     });
 
     if (!result || !result.success) {
-      CURRENT_AI_PROVIDER = result?.provider || "error";
-      CURRENT_AI_FAKE_MODE = true;
-
-      setAIStatus("error", "Error");
-      setAIProvider(CURRENT_AI_PROVIDER);
-
-      renderPremiumAIOutput(
-        type,
-        `
-        <div class="ai-error-fancy">
-          <div class="ai-error-icon">⚠️</div>
-          <h3>Không thể tạo nội dung AI</h3>
-          <p>${result?.text || "Hệ thống đang bận hoặc có lỗi kết nối."}</p>
-        </div>
-        `,
-        "error",
-        true,
-        CURRENT_AI_PROVIDER
-      );
-      return;
+      throw new Error(result?.text || "AI fail");
     }
 
-    CURRENT_AI_TEXT = result.text || result.raw || result.content || "";
+    // 🔥 RAW TEXT
+    // 🔥 RAW TEXT
+let text = result.text || result.raw || "";
+
+if (!text) throw new Error("AI empty");
+
+// 🔥 CLEAN NHẸ DUY NHẤT
+text = text
+  .replace(/\r/g, "")
+  .replace(/\n{3,}/g, "\n\n")
+  .trim();
+
+// 🔥 FORMAT nếu là lesson
+if (type === AI_TYPES.LESSON) {
+
+  // 🔥 CLEAN CORE
+  text = text
+    .replace(/\r/g, "")
+    .replace(/\n{3,}/g, "\n\n")
+
+    // IPA lỗi
+    .replace(/IP\s*\n\s*A:/gi, "IPA:")
+    .replace(/IP\s*A:/gi, "IPA:")
+
+    // markdown
+    .replace(/\*\*/g, "")
+    .replace(/^\*\s+/gm, "")
+
+    // key vocab
+    .replace(/Word:/gi, "Từ:")
+
+    .trim();
+
+  // 🔥 CHẶN AI BỊA
+  text = enforceStrictContent(payload.duLieuGoc, text);
+
+  // 🔥 FORMAT STRUCTURE
+  text = formatLessonOutput(text);
+}
+
+if (!isValidLessonStructure(text)) {
+  console.warn("⚠️ AI sai structure → auto cleaned");
+}
+
+CURRENT_AI_TEXT = text;
+
+
+
+    // 🔥 FINALIZE (GIỮ LẠI)
+    CURRENT_AI_TEXT = finalizeAIContent(text, type);
     CURRENT_AI_TYPE = type;
     CURRENT_AI_PAYLOAD = payload;
     CURRENT_AI_PROVIDER = result.provider || "unknown";
     CURRENT_AI_FAKE_MODE = !!result.fakeMode;
 
-    CURRENT_AI_TEXT = finalizeAIContent(CURRENT_AI_TEXT, CURRENT_AI_TYPE);
-
-    if (CURRENT_AI_FAKE_MODE) {
-      setAIStatus("fake", "AI Fake - Demo");
-    } else {
-      setAIStatus("live", "AI Live");
-    }
-
-    setAIProvider(CURRENT_AI_PROVIDER);
-
+    // 🔥 RENDER
     const renderHtml =
-      ["exam", "toeic", "exercise"].includes(CURRENT_AI_TYPE)
-        ? renderStructuredAIHtml(CURRENT_AI_TEXT, CURRENT_AI_TYPE)
+      ["exam", "toeic", "exercise"].includes(type)
+        ? renderStructuredAIHtml(CURRENT_AI_TEXT, type)
         : wrapAiContent(CURRENT_AI_TEXT);
 
     renderPremiumAIOutput(
@@ -455,39 +607,19 @@ async function generateAIContent(type, payload) {
       CURRENT_AI_FAKE_MODE,
       CURRENT_AI_PROVIDER
     );
+saveCurrentDraft();
+    window.showToast?.("✅ AI OK", "success");
 
-    saveAIDraft({
-      type,
-      title: makeDraftTitle(type, prompt),
-      prompt,
-      raw: CURRENT_AI_TEXT,
-      html: normalizeAIOutputForPreview(CURRENT_AI_TEXT, CURRENT_AI_TYPE),
-      plainText: CURRENT_AI_TEXT
-    });
-
-    await logAIRequest({
-      userId: getCurrentTeacherId(),
-      type,
-      input: payload,
-      prompt,
-      output: CURRENT_AI_TEXT,
-      provider: CURRENT_AI_PROVIDER,
-      fakeMode: CURRENT_AI_FAKE_MODE
-    });
-
-    window.showToast?.(
-      CURRENT_AI_FAKE_MODE
-        ? "🤖 AI tạo xong (Fake Demo)"
-        : "🟢 AI Live tạo xong",
-      "success"
-    );
   } catch (err) {
-    console.error("❌ generateAIContent error:", err);
-    setAIStatus("error", "Error");
-    setAIProvider("exception");
+    console.error(err);
+
     renderPremiumAIOutput(
       type,
-      `<div class="ai-error-fancy"><div class="ai-error-icon">⚠️</div><h3>Lỗi hệ thống</h3><p>${err.message || "Không xác định"}</p></div>`,
+      `<div class="ai-error-fancy">
+        <div class="ai-error-icon">⚠️</div>
+        <h3>Lỗi AI</h3>
+        <p>${err.message}</p>
+      </div>`,
       "error",
       true,
       "exception"
@@ -499,6 +631,7 @@ async function generateAIContent(type, payload) {
    DRAFT HELPERS
 ========================= */
 function saveCurrentDraft() {
+console.log("TEXT SAVE =", CURRENT_AI_TEXT); // ✅ thêm dòng này
   saveAIDraft({
     type: CURRENT_AI_TYPE,
     title: makeDraftTitle(CURRENT_AI_TYPE, getCurrentMainTopic()),
@@ -548,7 +681,8 @@ function loadSavedDraftIfAny() {
       setAIStatus("idle", "AI Ready");
       setAIProvider(CURRENT_AI_PROVIDER || "saved_draft");
 
-      CURRENT_AI_TEXT = finalizeAIContent(CURRENT_AI_TEXT, CURRENT_AI_TYPE);
+
+CURRENT_AI_TEXT = finalizeAIContent(CURRENT_AI_TEXT, CURRENT_AI_TYPE);
 
       const renderHtml =
         ["exam", "toeic", "exercise"].includes(CURRENT_AI_TYPE)
@@ -593,7 +727,9 @@ function rehydrateAIPreviewIfNeeded() {
       CURRENT_AI_TEXT = draft.raw;
       CURRENT_AI_TYPE = draft.type || CURRENT_AI_TYPE;
 
-      CURRENT_AI_TEXT = finalizeAIContent(CURRENT_AI_TEXT, CURRENT_AI_TYPE);
+      
+
+CURRENT_AI_TEXT = finalizeAIContent(CURRENT_AI_TEXT, CURRENT_AI_TYPE);
 
       const renderHtml =
         ["exam", "toeic", "exercise"].includes(CURRENT_AI_TYPE)
@@ -637,6 +773,37 @@ function getCurrentMainTopic() {
   }
 }
 
+function enforceStrictContent(original = "", ai = "") {
+  if (!original.trim()) return ai; // 🔥 không có data → không filter
+
+  const originalWords = new Set(
+    original.toLowerCase().split(/\W+/).filter(w => w.length > 2)
+  );
+
+  return ai
+    .split("\n")
+    .filter(line => {
+      const l = line.trim();
+
+      // 🔥 LUÔN GIỮ SECTION
+      if (/^===|^---/i.test(l)) return true;
+
+      // 🔥 LUÔN GIỮ SPEAKING / EXERCISE / WRITING
+      if (/SPEAKING|EXERCISE|WRITING|SUMMARY/i.test(l)) return true;
+
+      const words = l.toLowerCase().split(/\W+/).filter(Boolean);
+      if (words.length === 0) return true;
+
+      let match = words.filter(w => originalWords.has(w)).length;
+      let ratio = match / words.length;
+
+      return ratio > 0.02 || words.length < 6; // 🔥 nới lỏng
+    })
+    .join("\n");
+}
+
+
+
 /* =========================
    PAYLOADS
 ========================= */
@@ -645,12 +812,14 @@ function getLessonPayload() {
     monHoc: val("lesson_monHoc"),
     chuDe: val("lesson_chuDe"),
     trinhDo: val("lesson_trinhDo"),
-    mucTieu: val("lesson_mucTieu"),
-    soPhan: val("lesson_soPhan"),
     phongCach: val("lesson_phongCach"),
-    mucChiTiet: val("lesson_mucChiTiet"),
-    ghiChu: val("lesson_ghiChu"),
-    duLieuGoc: val("lesson_duLieuGoc")
+    instruction: val("lesson_instruction"),
+
+    duLieuGoc: val("lesson_duLieuGoc"),
+
+    // 🔥 QUAN TRỌNG: phải có dấu phẩy trước mode
+    strictMode: document.getElementById("lesson_strict")?.value || "strict",
+    mode: document.getElementById("lesson_mode")?.value || "core"
   };
 }
 
@@ -723,6 +892,145 @@ function getCurrentTeacherId() {
 function getToday() {
   return new Date().toISOString().split("T")[0];
 }
+
+
+function initSplitContent() {
+  const btn = document.getElementById("btnAutoSplit");
+  if (!btn) return;
+
+  btn.addEventListener("click", () => {
+    const raw = val("lesson_duLieuGoc");
+
+    if (!raw) {
+      return window.showToast?.("Chưa có nội dung để tách", "warning");
+    }
+
+    const result = splitTeachingContent(raw);
+
+    // 🔥 NEW
+    renderSplitPreview(result);
+
+    autoFillInstructionFromSplit(result);
+
+    window.showToast?.("🧩 Đã tách & hiển thị nội dung", "success");
+  });
+}
+
+
+/* =========================
+   SPLIT CONTENT (CORE)
+========================= */
+
+function splitTeachingContent(text = "") {
+  const lines = text.split("\n").map(x => x.trim()).filter(Boolean);
+
+  const sections = {
+    vocab: [],
+    grammar: [],
+    example: [],
+    exercise: [],
+    other: []
+  };
+
+  let current = "other";
+
+  lines.forEach(line => {
+    const lower = line.toLowerCase();
+
+    if (lower.includes("vocab") || lower.includes("từ vựng")) {
+      current = "vocab";
+      return;
+    }
+    if (lower.includes("grammar") || lower.includes("ngữ pháp")) {
+      current = "grammar";
+      return;
+    }
+    if (lower.includes("example") || lower.includes("ví dụ")) {
+      current = "example";
+      return;
+    }
+    if (lower.includes("exercise") || lower.includes("bài tập")) {
+      current = "exercise";
+      return;
+    }
+
+    sections[current].push(line);
+  });
+
+  return sections;
+}
+
+
+/* =========================
+   RENDER SPLIT PREVIEW UI
+========================= */
+
+function renderSplitPreview(split) {
+  const box = document.getElementById("splitPreviewBox");
+  if (!box) return;
+
+  function block(title, arr) {
+    if (!arr.length) return "";
+    return `
+      <div class="split-block">
+        <div class="split-title">${title}</div>
+        <div class="split-content">
+          ${arr.map(line => `<div class="split-line">${escapeHtml(line)}</div>`).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  const html = `
+    ${block("📘 VOCAB", split.vocab)}
+    ${block("📗 GRAMMAR", split.grammar)}
+    ${block("📙 EXAMPLE", split.example)}
+    ${block("📕 EXERCISE", split.exercise)}
+    ${block("📦 OTHER", split.other)}
+  `;
+
+  box.innerHTML = html || `<i>Không nhận diện được nội dung</i>`;
+}
+
+
+/* =========================
+   AUTO BUILD INSTRUCTION
+========================= */
+
+function autoFillInstructionFromSplit(split) {
+  let instruction = `⚠️ QUY TẮC BẮT BUỘC:
+- CHỈ dùng nội dung đã cung cấp
+- KHÔNG thêm kiến thức ngoài
+- KHÔNG suy diễn
+- GIỮ format gốc
+- KHÔNG markdown
+`;
+
+  if (split.vocab.length) {
+    instruction += `\n[VOCAB]\n${split.vocab.join("\n")}\n`;
+  }
+
+  if (split.grammar.length) {
+    instruction += `\n[GRAMMAR]\n${split.grammar.join("\n")}\n`;
+  }
+
+  if (split.example.length) {
+    instruction += `\n[EXAMPLE]\n${split.example.join("\n")}\n`;
+  }
+
+  if (split.exercise.length) {
+    instruction += `\n[EXERCISE]\n${split.exercise.join("\n")}\n`;
+  }
+
+  const box = document.getElementById("lesson_instruction");
+  if (box) box.value = instruction;
+}
+
+
+
+
+
+
 
 /* =========================
    AI CLEAN FOR OLD PREVIEW
@@ -1053,6 +1361,26 @@ function openDraftHistoryModal() {
   });
 }
 
+
+function handleSplitContent() {
+  const raw = val("lesson_duLieuGoc");
+
+  if (!raw) {
+    return window.showToast?.("Chưa có nội dung để tách", "warning");
+  }
+
+  const result = splitTeachingContent(raw);
+
+  // preview bằng alert tạm (sau nâng cấp UI riêng)
+  console.log("📦 Split result:", result);
+
+  window.showToast?.("🧩 Đã tách nội dung (xem console)", "success");
+
+  // BONUS: tự fill lại instruction cho AI
+  autoFillInstructionFromSplit(result);
+}
+
+
 function restoreDraftById(id = "") {
   const list = loadAIDraftHistory();
   const draft = list.find(x => x.id === id);
@@ -1065,7 +1393,8 @@ function restoreDraftById(id = "") {
 
   restoreActiveTab(CURRENT_AI_TYPE);
 
-  CURRENT_AI_TEXT = finalizeAIContent(CURRENT_AI_TEXT, CURRENT_AI_TYPE);
+ 
+CURRENT_AI_TEXT = finalizeAIContent(CURRENT_AI_TEXT, CURRENT_AI_TYPE);
 
   const renderHtml =
     ["exam", "toeic", "exercise"].includes(CURRENT_AI_TYPE)
@@ -1082,3 +1411,156 @@ function restoreDraftById(id = "") {
 
   window.showToast?.("♻️ Đã khôi phục nội dung AI", "success");
 }
+
+
+function strictStructureFilter(original = "", ai = "") {
+  const sections = {
+    UNIT: "",
+    OBJECTIVES: "",
+    VOCABULARY: "",
+    READING: "",
+    EXERCISE: ""
+  };
+
+  let current = "";
+
+  ai.split("\n").forEach(line => {
+    const l = line.trim();
+
+    if (/^unit/i.test(l)) current = "UNIT";
+    else if (/objectives/i.test(l)) current = "OBJECTIVES";
+    else if (/vocabulary/i.test(l)) current = "VOCABULARY";
+    else if (/reading/i.test(l)) current = "READING";
+    else if (/exercise/i.test(l)) current = "EXERCISE";
+
+    if (current) {
+      sections[current] += l + "\n";
+    }
+  });
+
+  // 🔒 FILTER THEO DATA GỐC
+  const originalWords = new Set(
+    original.toLowerCase().split(/\W+/).filter(w => w.length > 2)
+  );
+
+  function cleanBlock(text) {
+    return text
+      .split("\n")
+      .filter(line => {
+        const words = line.toLowerCase().split(/\W+/);
+        const match = words.filter(w => originalWords.has(w)).length;
+        return match / (words.length || 1) > 0.75;
+      })
+      .join("\n");
+  }
+
+  return `
+=== ${cleanBlock(sections.UNIT)} ===
+
+--- OBJECTIVES ---
+${cleanBlock(sections.OBJECTIVES)}
+
+--- VOCABULARY ---
+${cleanBlock(sections.VOCABULARY)}
+
+--- READING ---
+${cleanBlock(sections.READING)}
+
+--- EXERCISE ---
+${cleanBlock(sections.EXERCISE)}
+`.trim();
+}
+
+
+
+
+
+
+function cleanAIOutput(text = "") {
+  if (!text) return "";
+
+  return text
+    .replace(/IP\s*\n\s*A:/gi, "IPA:")
+    .replace(/IP\s*A:/gi, "IPA:")
+    .replace(/\n\s*IPA:/g, "\nIPA:")
+    .replace(/IPA:\s*\n\s*/g, "IPA: ")
+
+    .replace(/Answer\s*:\s*.*/gi, "")
+    .replace(/Đáp án\s*:\s*.*/gi, "")
+
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+
+function ensureVietnameseMeaning(text) {
+  return text.replace(
+    /(Meaning \(EN\):[^\n]+)(?!\nMeaning \(VI\):)/g,
+    "$1\nMeaning (VI): "
+  );
+}
+
+
+function normalizeVocabularyBlock(text) {
+  return text.replace(
+    /([A-Z][A-Za-z\s]+):\s*(\/[^\/]+\/)/g,
+    (match, word, ipa) => {
+      return `Từ: ${word.trim()}\nIPA: ${ipa.trim()}`;
+    }
+  );
+}
+
+function fixSectionBreak(text) {
+  return text.replace(
+    /(PHẦN 3: READING)([^\n])/g,
+    "$1\n\n$2"
+  );
+}
+
+
+function removeDuplicateMeaningVI(text) {
+  return text.replace(
+    /(Meaning \(VI\):[^\n]*\n)+/g,
+    (match) => {
+      const lines = match.trim().split("\n");
+      return lines[lines.length - 1] + "\n";
+    }
+  );
+}
+
+
+function normalizeIPA(text) {
+  return text.replace(
+    /IPA:\s*(\/[^\/]+\/)\s*-\s*([^\n]+)/g,
+    "Từ: $2\nIPA: $1"
+  );
+}
+
+function removeVietnameseNoise(text = "") {
+  return text
+    .replace(/Mục tiêu:/gi, "")
+    .replace(/Từ vựng:/gi, "")
+    .replace(/Câu hỏi:/gi, "")
+    .replace(/Tóm tắt bài giảng:/gi, "")
+    .replace(/Viết đoạn văn.*:/gi, "")
+    .replace(/Nghe đoạn băng.*:/gi, "")
+    .replace(/Trắc nghiệm:/gi, "")
+    .replace(/\n{3,}/g, "\n\n");
+}
+
+
+function forceEnglishOnly(text = "") {
+  return text
+    .replace(/Mục tiêu:?/gi, "")
+    .replace(/Từ vựng:?/gi, "")
+    .replace(/Câu hỏi:?/gi, "")
+    .replace(/Tóm tắt.*:/gi, "")
+    .replace(/Viết đoạn văn.*:/gi, "")
+    .replace(/Đọc đoạn văn.*:/gi, "")
+    .replace(/Nghe đoạn.*:/gi, "")
+    .replace(/Không có thông tin/gi, "")
+    .replace(/\n{3,}/g, "\n\n");
+}
+
+
+console.log("AI Teacher JS Loaded OK");

@@ -1,6 +1,16 @@
 import { readData, writeData } 
 from "../../../scripts/services/firebaseService.js";
 
+function convertDriveToPreview(url) {
+  if (!url) return "";
+
+  const match = url.match(/\/file\/d\/([^/]+)/);
+  if (match) {
+    return `https://drive.google.com/file/d/${match[1]}/preview`;
+  }
+
+  return url;
+}
 const teacherId = localStorage.getItem("teacher_id");
 
 if (!teacherId) {

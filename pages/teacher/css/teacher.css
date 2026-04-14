@@ -2544,3 +2544,161 @@ body > .change-pass-card {
   .btn-home::after { content: "Home"; }
 
 }
+
+
+
+/==== Chỉnh các nút chèn========/
+
+/* =========================================
+   EDITOR TOOLBAR - COLOR BUTTONS
+========================================= */
+
+.editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 14px;
+  background: #f8fafc;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+/* base button */
+.editor-toolbar button {
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #fff;
+}
+
+/* 🎨 từng nút riêng */
+.editor-toolbar button:nth-child(1) {
+  background: linear-gradient(135deg, #f59e0b, #fbbf24); /* ảnh */
+}
+
+.editor-toolbar button:nth-child(3) {
+  background: linear-gradient(135deg, #ef4444, #f87171); /* PDF */
+}
+
+.editor-toolbar button:nth-child(4) {
+  background: linear-gradient(135deg, #7c3aed, #a78bfa); /* PPT */
+}
+
+.editor-toolbar button:nth-child(5) {
+  background: linear-gradient(135deg, #2563eb, #60a5fa); /* preview */
+}
+
+/* hover effect */
+.editor-toolbar button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.15);
+}
+
+/* active */
+.editor-toolbar button:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* =========================================
+   KT TOOLBAR - COLOR SYSTEM
+========================================= */
+
+.kt-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 14px;
+  background: #f8fafc;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+/* base */
+.kt-toolbar button {
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #fff;
+}
+
+/* ======================
+   COLOR PER BUTTON
+====================== */
+
+/* 🖼️ Ảnh */
+#btnChooseFile {
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+}
+
+/* 🔊 Audio */
+#btnAudio {
+  background: linear-gradient(135deg, #10b981, #34d399);
+}
+
+/* 🎬 MP4 */
+#btnMp4 {
+  background: linear-gradient(135deg, #f97316, #fb923c);
+}
+
+/* ▶️ YouTube */
+#btnYoutube {
+  background: linear-gradient(135deg, #ef4444, #f87171);
+}
+
+/* 📄 PDF */
+#btnPdf {
+  background: linear-gradient(135deg, #dc2626, #f87171);
+}
+
+/* 📊 PPT */
+#btnPptx {
+  background: linear-gradient(135deg, #7c3aed, #a78bfa);
+}
+
+/* 👁️ Preview */
+#btnPreview {
+  background: linear-gradient(135deg, #2563eb, #60a5fa);
+}
+
+/* ======================
+   HOVER + CLICK
+====================== */
+
+.kt-toolbar button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.15);
+}
+
+.kt-toolbar button:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* nút PDF riêng lẻ */
+#btnPdf {
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+  cursor: pointer;
+  background: linear-gradient(135deg, #dc2626, #f87171);
+  transition: all 0.2s ease;
+}
+
+#btnPdf:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.15);
+}

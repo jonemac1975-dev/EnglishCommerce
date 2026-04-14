@@ -481,3 +481,76 @@
 
 
 
+/* ===== OVERLAY ===== */
+.pptx-slide-editor {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 9999;
+}
+
+/* ẩn */
+.pptx-slide-editor.hidden {
+  display: none;
+}
+
+/* ===== PANEL (KHUNG CHÍNH) ===== */
+.pptx-slide-editor-panel {
+  width: 80%;
+  max-width: 900px;   /* 👉 rộng hơn */
+  max-height: 90vh;
+
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ===== HEADER ===== */
+.pptx-slide-editor-header {
+  padding: 12px 16px;
+  background: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ===== BODY ===== */
+.pptx-slide-editor-body {
+  padding: 16px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* ===== FOOTER ===== */
+.pptx-slide-editor-footer {
+  padding: 12px 16px;
+  border-top: 1px solid #ddd;
+  background: #fafafa;
+
+  text-align: right;
+}
+
+/* ===== INPUT đẹp hơn chút ===== */
+.pptx-input,
+.pptx-textarea {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.pptx-textarea.small {
+  min-height: 80px;
+}

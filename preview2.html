@@ -6,112 +6,86 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-  body {
-    margin: 0;
-    font-family: system-ui;
-    background: #e5e7eb;
-  }
+body {
+  margin: 0;
+  font-family: system-ui;
+  background: #e5e7eb;
+}
 
-  .wrapper {
-    max-width: 1100px;
-    margin: 20px auto;
-    background: #fff;
-    border-radius: 16px;
-    padding: 20px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.08);
-  }
+.wrapper {
+  max-width: 1100px;
+  margin: 20px auto;
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+}
 
-  .title {
-    font-size: 24px;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 10px;
-  }
+.title {
+  font-size: 22px;
+  font-weight: bold;
+  text-align: center;
+}
 
-  .content {
-    margin-top: 20px;
-    text-align: center;
-  }
+.content {
+  margin-top: 20px;
+}
 
-  iframe {
-    width: 100%;
-    height: 80vh;
-    border: none;
-    border-radius: 12px;
-  }
+iframe {
+  width: 100%;
+  height: 75vh;
+  border: none;
+  border-radius: 12px;
+}
 
-  img {
-    max-width: 100%;
-    border-radius: 12px;
-    margin: 10px 0;
-    cursor: zoom-in;
-    transition: 0.3s;
-  }
+img {
+  max-width: 100%;
+  border-radius: 12px;
+  display: block;
+  margin: auto;
+}
 
-  img:hover {
-    transform: scale(1.02);
-  }
+video {
+  width: 100%;
+  border-radius: 12px;
+}
 
-  .word-content img {
-    display: block;
-    margin: 14px auto;
-  }
+audio {
+  width: 100%;
+}
 
-  .toolbar {
-    position: fixed;
-    top: 10px;
-    left: 10px;
-    z-index: 999;
-  }
+.fallback {
+  margin-top: 10px;
+  text-align: center;
+}
 
-  .btn {
-    background: #111827;
-    color: #fff;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-right: 6px;
-  }
+.toolbar {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+}
 
-  .btn:hover {
-    opacity: 0.9;
-  }
-
-  /* zoom overlay */
-  .zoom-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.85);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-  }
-
-  .zoom-overlay img {
-    max-width: 90%;
-    max-height: 90%;
-    border-radius: 12px;
-  }
-
+.btn {
+  background: #111827;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-right: 5px;
+  cursor: pointer;
+}
 </style>
 </head>
 
 <body>
 
 <div class="toolbar">
-  <button class="btn" onclick="goHome()">←</button>
-  <button class="btn" onclick="toggleFullscreen()">⛶</button>
+  <button class="btn" onclick="history.back()">←</button>
 </div>
 
 <div class="wrapper">
   <div class="title" id="title"></div>
   <div class="content" id="content"></div>
-</div>
-
-<div class="zoom-overlay" id="zoomBox" onclick="closeZoom()">
-  <img id="zoomImg">
 </div>
 
 <script>
@@ -122,38 +96,147 @@ const contentEl = document.getElementById("content");
 
 titleEl.innerText = data.title || "Tài liệu";
 
-/* ===== DETECT ===== */
-function isPDF(url) {
-  return url && url.toLowerCase().includes(".pdf");
-}
+/* ================= NORMALIZE ================= */
+function normalizeUrl(url) {
+  if (!url) return "";
 
-function isDrive(url) {
-  return url && url.includes("drive.google.com");
-}
-
-function isHTML(url) {
-  return url && url.endsWith(".html");
-}
-
-/* ===== RENDER ===== */
-function render() {
-
-  // 👉 URL (PDF / Drive / FlipHTML)
-  if (data.url) {
-    contentEl.innerHTML = `<iframe src="${data.url}"></iframe>`;
-    return;
+  // FlipHTML5
+  if (url.includes("fliphtml5.com")) {
+    if (!url.endsWith("index.html")) {
+      if (!url.endsWith("/")) url += "/";
+      url += "index.html";
+    }
   }
 
-  // 👉 WORD HTML
-  if (data.content_html) {
-    contentEl.innerHTML = `<div class="word-content">${data.content_html}</div>`;
-    attachZoom();
-    return;
+  // Google Drive file
+  if (url.includes("drive.google.com/file/d/")) {
+    const id = url.split("/d/")[1].split("/")[0];
+    return `https://drive.google.com/file/d/${id}/preview`;
+  }
+
+  return url;
+}
+
+/* ================= BUILD EMBED ================= */
+function buildEmbed(url) {
+  if (!url) return "<i>Không có nội dung</i>";
+
+  // 🔥 FlipHTML5
+  if (url.includes("fliphtml5.com")) {
+  const parts = url.split("/").filter(Boolean);
+  const bookId = parts[parts.length - 2];
+  const bookName = parts[parts.length - 1];
+
+  const embedUrl = `https://online.fliphtml5.com/${bookId}/${bookName}/index.html`;
+
+  return `
+    <iframe 
+      src="${embedUrl}" 
+      style="width:100%;height:80vh;border:none"
+      allow="fullscreen"
+      referrerpolicy="no-referrer">
+    </iframe>
+  `;
+}
+  // 👉 VIDEO
+  if (url.match(/\.(mp4|webm|ogg)$/i)) {
+    return `
+      <video controls style="width:100%">
+        <source src="${url}">
+      </video>
+    `;
+  }
+
+  // 👉 AUDIO
+  if (url.match(/\.(mp3|wav|ogg)$/i)) {
+    return `
+      <audio controls style="width:100%">
+        <source src="${url}">
+      </audio>
+    `;
   }
 
   // 👉 IMAGE
+  if (url.match(/\.(jpg|jpeg|png|webp|gif)$/i)) {
+    return `<img src="${url}" style="max-width:100%;border-radius:12px">`;
+  }
+
+  // 👉 PDF
+  if (url.endsWith(".pdf")) {
+    return iframe(url);
+  }
+
+  // 👉 PPTX
+  if (url.endsWith(".pptx")) {
+    return iframe(
+      "https://view.officeapps.live.com/op/embed.aspx?src=" + encodeURIComponent(url)
+    );
+  }
+
+  // 👉 WORD
+  if (url.match(/\.(doc|docx)$/i)) {
+    return iframe(
+      "https://view.officeapps.live.com/op/embed.aspx?src=" + encodeURIComponent(url)
+    );
+  }
+
+  // 👉 Google Docs
+  if (url.includes("docs.google.com/document")) {
+    const id = url.match(/\/d\/([^/]+)/)?.[1];
+    if (id) return iframe(`https://docs.google.com/document/d/${id}/preview`);
+  }
+
+  // 👉 Google Slides
+  if (url.includes("docs.google.com/presentation")) {
+    const id = url.match(/\/d\/([^/]+)/)?.[1];
+    if (id) return iframe(`https://docs.google.com/presentation/d/${id}/embed`);
+  }
+
+  // 👉 YouTube
+  if (url.includes("youtube.com/watch") || url.includes("youtu.be")) {
+    let videoId = "";
+
+    if (url.includes("youtu.be")) {
+      videoId = url.split("/").pop();
+    } else {
+      videoId = new URL(url).searchParams.get("v");
+    }
+
+    return iframe(`https://www.youtube.com/embed/${videoId}`);
+  }
+
+  // 👉 DEFAULT
+  return iframe(url);
+}
+
+/* ================= IFRAME HELPER ================= */
+function iframe(src, label = "Mở link") {
+  return `
+    <iframe src="${src}" allowfullscreen></iframe>
+    <div class="fallback">
+      <a href="${src}" target="_blank">🔗 ${label}</a>
+    </div>
+  `;
+}
+
+/* ================= RENDER ================= */
+function render() {
+
+  // URL
+  if (data.url) {
+    contentEl.innerHTML = buildEmbed(data.url);
+    return;
+  }
+
+  // HTML Word (đã convert)
+  if (data.content_html) {
+    contentEl.innerHTML = `<div class="word-content">${data.content_html}</div>`;
+    return;
+  }
+
+  // IMAGE fallback
   if (data.image) {
-    contentEl.innerHTML = `<img src="${data.image}" onclick="zoomImg(this.src)">`;
+    contentEl.innerHTML = `<img src="${data.image}">`;
     return;
   }
 
@@ -161,97 +244,6 @@ function render() {
 }
 
 render();
-renderEmbeds();
-
-function renderEmbeds() {
-  const blocks = document.querySelectorAll(".embed-block");
-
-  blocks.forEach(el => {
-    const url = el.dataset.url;
-    if (!url) return;
-
-    let html = "";
-
-    // 👉 Google Slides
-    if (url.includes("docs.google.com/presentation")) {
-      const m = url.match(/\/d\/([^/]+)/);
-      if (m) {
-        html = `
-          <iframe 
-            src="https://docs.google.com/presentation/d/${m[1]}/embed"
-            style="width:100%;height:600px;border:none;border-radius:12px">
-          </iframe>
-        `;
-      }
-    }
-
-    // 👉 PPTX
-    else if (url.endsWith(".pptx")) {
-      html = `
-        <iframe 
-          src="https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}"
-          style="width:100%;height:600px;border:none;border-radius:12px">
-        </iframe>
-      `;
-    }
-
-    // 👉 PDF
-    else if (url.endsWith(".pdf")) {
-      html = `
-        <iframe 
-          src="${url}"
-          style="width:100%;height:600px;border:none;border-radius:12px">
-        </iframe>
-      `;
-    }
-
-    // 👉 fallback
-    else {
-      html = `
-        <a href="${url}" target="_blank">
-          🔗 Mở nội dung
-        </a>
-      `;
-    }
-
-    el.innerHTML = html;
-  });
-}
-
-/* ===== ZOOM ===== */
-function attachZoom() {
-  const imgs = document.querySelectorAll(".word-content img");
-
-  imgs.forEach(img => {
-    img.onclick = () => zoomImg(img.src);
-  });
-}
-
-function zoomImg(src) {
-  const box = document.getElementById("zoomBox");
-  const img = document.getElementById("zoomImg");
-
-  img.src = src;
-  box.style.display = "flex";
-}
-
-function closeZoom() {
-  document.getElementById("zoomBox").style.display = "none";
-}
-
-/* ===== NAV ===== */
-function goHome() {
-  window.location.href = "../index.html";
-}
-
-/* ===== FULLSCREEN ===== */
-async function toggleFullscreen() {
-  if (!document.fullscreenElement) {
-    await document.documentElement.requestFullscreen();
-  } else {
-    await document.exitFullscreen();
-  }
-}
 </script>
 
 </body>

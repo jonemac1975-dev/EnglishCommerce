@@ -243,7 +243,7 @@ const contentType = detectContentType(sourceText);
 if (contentType === "narrative") {
   console.log("🔄 Converting narrative → dialogue...");
 
-  const shortText = sourceText.slice(0, 3000); // tránh quá dài
+  const shortText = sourceText.slice(0, 30000); // tránh quá dài
   const converted = await convertToDialogue(shortText);
 
   if (converted && converted.length > 20) {
@@ -260,7 +260,7 @@ if (contentType === "narrative") {
     const audience = getValue("pptxAudience") || "secondary";
     const language = getValue("pptxLanguage") || "vi";
     const style = getValue("pptxStyle") || "modern";
-    const slideCount = parseInt(getValue("pptxSlideCount") || "12", 10) || 12;
+    const slideCount = parseInt(getValue("pptxSlideCount") || "50", 30) || 12;
     const fileName = getValue("pptxFileName") || guessTitleFromText(sourceText) || "AI_Presentation";
 
     const includeActivities = isChecked("pptxIncludeActivities");
@@ -894,7 +894,7 @@ function buildLocalSlidesFromText({
 
   const maxMainSlides = Math.max(2, slideCount - 6);
 
-  sections.slice(0, maxMainSlides).forEach((sec, idx) => {
+  sections.slice(0, slideCount).forEach((sec, idx) => {
 
     const secTitle = sec.title || `Nội dung ${idx + 1}`;
     const points = clean(sec.points, 5);
@@ -1070,7 +1070,7 @@ function buildOverviewBullets(sourceText = "", sections = []) {
   if (sourceText.length > 1000) bullets.push("Nội dung tương đối đầy đủ, phù hợp triển khai nhiều slide");
   bullets.push("Tập trung vào ý chính, ví dụ và ứng dụng");
   bullets.push("Học viên cần nắm được nội dung cốt lõi của bài");
-  return bullets.slice(0, 6);
+  return bullets.slice(0, 10);
 }
 
 function generateActivitiesFromText(text = "") {
@@ -1129,7 +1129,7 @@ function generateSummaryFromSections(sections = []) {
     return ["Nắm được nội dung chính", "Hiểu trọng tâm bài học", "Sẵn sàng luyện tập thêm"];
   }
 
-  return bullets.slice(0, 6);
+  return bullets.slice(0, 10);
 }
 
 function guessTitleFromText(text = "") {
@@ -1291,9 +1291,9 @@ function normalizeSourceText(text = "") {
     .replace(/\n{3,}/g, "\n\n")
     .trim();
 
-  if (clean.length > 12000) {
-    clean = clean.slice(0, 12000) + "\n\n[Nội dung đã được cắt bớt]";
-  }
+//  if (clean.length > 12000) {
+//    clean = clean.slice(0, 12000) + "\n\n[Nội dung đã được cắt bớt]";
+ // }
 
   return clean;
 }
