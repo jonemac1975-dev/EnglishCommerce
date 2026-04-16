@@ -129,10 +129,11 @@ document.addEventListener("DOMContentLoaded", () => {
   bindMenu();
 
   // mở group đầu tiên
-  document.querySelector(".menu-children")?.classList.add("open");
+//  document.querySelector(".menu-children")?.classList.add("open");
 
   // load default tab
-  loadTab("giaovienview");
+//  loadTab("giaovienview");
+    loadTab("loadtabgv");
 });
 
 

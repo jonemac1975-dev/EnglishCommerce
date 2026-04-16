@@ -216,8 +216,8 @@ body {
 }
 
 .pv-avatar {
-  width: 120px;
-  height: 120px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   object-fit: cover;
 
@@ -226,7 +226,7 @@ body {
 }
 
 .pv-name {
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 700;
   color: #111827;
   margin-top: 5px;

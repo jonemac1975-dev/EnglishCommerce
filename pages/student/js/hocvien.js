@@ -60,8 +60,8 @@ window.goHome = () => {
 };
 
 /* ===== INIT ===== */
-loadTab("hocvienpreview");
-
+//loadTab("hocvienpreview");
+loadTab("loadtabhv");
 import { initChat } from "../../chat/chat.js";
 
 initChat(student.id, "student");
