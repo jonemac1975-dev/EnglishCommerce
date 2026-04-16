@@ -90,5 +90,50 @@
   <script type="module" src="./js/giaovien.js"></script>
 <div id="toast"></div>
 
+
+<!-- ===== CHAT FLOAT BUTTON ===== -->
+
+<div id="chat-toggle">
+  💬
+  <span id="chat-badge" class="hidden">0</span>
+</div>
+
+<!-- ===== CHAT CONTAINER ===== -->
+
+<div id="chat-container" class="hidden">
+
+  <!-- SEARCH -->
+  <div class="chat-search">
+    <input id="chat-search" placeholder="🔍 Tìm người..." />
+    <button onclick="toggleDarkMode()">🌙</button>
+  </div>
+
+  <!-- USER LIST -->
+  <div id="chat-list"></div>
+
+  <!-- CHAT BOX -->
+  <div id="chat-box" class="hidden">
+
+    <div class="chat-header">
+      <span id="chat-name"></span>
+      <div>
+        <button id="back-chat">←</button>
+        <button id="close-chat">✕</button>
+      </div>
+    </div>
+
+    <div id="chat-messages"></div>
+
+    <div class="chat-input">
+      <input id="chat-text" placeholder="Nhập tin nhắn..." />
+      <button id="send-btn">Gửi</button>
+    </div>
+
+  </div>
+</div>
+
+
+
+
 </body>
 </html>

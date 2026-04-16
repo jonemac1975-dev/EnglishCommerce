@@ -61,8 +61,3 @@ window.goHome = () => {
 
 /* ===== INIT ===== */
 loadTab("hocvienpreview");
-
-import { initChat } from "../../chat/chat.js";
-
-initChat(student.id, "student");
-//});

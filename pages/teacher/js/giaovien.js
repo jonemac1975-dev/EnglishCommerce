@@ -134,3 +134,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // load default tab
   loadTab("giaovienview");
 });
+
+
+import { initChat } from "../../chat/chat.js";
+
+document.addEventListener("DOMContentLoaded", () => {
+  initChat(teacherId, "teacher");
+});
