@@ -108,9 +108,6 @@ function insertHTMLAtCursor(html) {
 }
 
 
-
-
-
 /* =========================
    COLLECT
 ========================= */

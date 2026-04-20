@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Bình chọn giáo viên</title>
+
+<link rel="stylesheet" href="css/teacher.css">
+<button onclick="parent.goHome()" class="btn-back">
+  ← Quay lại
+</button>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f5f6fa;
+      padding: 20px;
+    }
+
+    h2 {
+      color: #2d89ef;
+      margin-bottom: 10px;
+    }
+
+    #avg {
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+
+    canvas {
+      background: #fff;
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th {
+      background: #2d89ef;
+      color: #fff;
+      padding: 10px;
+    }
+
+    td {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+      text-align: center;
+    }
+
+    tr:hover {
+      background: #f1f7ff;
+    }
+
+    td:nth-child(2) {
+      color: #f5b301;
+      font-size: 18px;
+    }
+
+    td:nth-child(3) {
+      text-align: left;
+    }
+  </style>
+</head>
+
+<body>
+
+ 
+<div class="dashboard">
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <h2>📊 SINH VIÊN BÌNH CHỌN</h2>
+  </div>
+
+  <!-- KPI -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-title">Điểm trung bình</div>
+      <div id="avg" class="kpi-value">Đang tải...</div>
+    </div>
+  </div>
+
+  <!-- CHART + SUMMARY -->
+  <div class="content-grid">
+
+    <div class="chart-card">
+      <canvas id="chart" height="200"></canvas>
+    </div>
+
+    <div id="summary" class="summary-card"></div>
+
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>Tuần</th>
+          <th>Sinh viên</th>
+          <th>Sao</th>
+          <th>Comment</th>
+        </tr>
+      </thead>
+      <tbody id="list"></tbody>
+    </table>
+  </div>
+
+</div>
+
+  <script type="module" src="../js/binhchongv.js"></script>
+</body>
+</html>

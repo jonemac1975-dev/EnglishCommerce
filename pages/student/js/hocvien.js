@@ -59,6 +59,44 @@ window.goHome = () => {
   location.href = "../../index.html";
 };
 
+
+
+document.querySelectorAll(".menu-group").forEach(group => {
+
+  // tạo icon 1 lần
+  if (!group.querySelector(".icon")) {
+    const icon = document.createElement("span");
+    icon.className = "icon";
+    icon.textContent = "▼";
+    group.appendChild(icon);
+  }
+
+  group.addEventListener("click", () => {
+    const children = group.nextElementSibling;
+    const icon = group.querySelector(".icon");
+
+    if (!children) return;
+
+    const isOpen = children.classList.contains("show");
+
+    // đóng tất cả
+    document.querySelectorAll(".menu-children").forEach(el => {
+      el.classList.remove("show");
+    });
+
+    document.querySelectorAll(".menu-group .icon").forEach(i => {
+      i.textContent = "▼";
+    });
+
+    // mở cái được click
+    if (!isOpen) {
+      children.classList.add("show");
+      icon.textContent = "▲";
+    }
+  });
+
+});
+
 /* ===== INIT ===== */
 //loadTab("hocvienpreview");
 loadTab("loadtabhv");

@@ -8,7 +8,7 @@
 </head>
 
 <body>
-
+<div id="overlay"></div>
 <!-- ===== HEADER ===== -->
 <header class="header" id="header">
 
@@ -17,6 +17,10 @@
     <img class="logo big">
     <img class="logo small">
     <div id="userName" class="user-name"></div>
+     <div id="userRating" class="user-rating"></div>
+<div class="top-menu">
+  <button onclick="toggleSidebar('teacher')">👨‍🏫 Giáo viên</button>
+</div>
   </div>
 
   
@@ -39,14 +43,20 @@
   <div class="header-right">
   <div class="translate-panel">
     <div class="search-box">
-      <input id="searchInput" placeholder="< 500 word..." />
-      <div id="searchResults" class="search-dropdown"></div>
-    </div>
-    <button id="searchBtn">Dịch</button>
-  </div>
+
+      <input id="searchInput" placeholder="Translate < 500 word..." />
+
+      
+    
+<div class="top-menu">
+  
+  <button onclick="toggleSidebar('student')">🎓 Sinh viên</button>
+</div>
 </div>
 
 </header>
+
+<div id="searchResults"></div>
 
 
 
@@ -61,10 +71,7 @@
     <button onclick="goGVRegister()">Đăng ký</button>
     <button onclick="goGVLogin()">Đăng nhập</button>
 
-    <!-- Tên GV -->
-    <div class="name" id="teacherName"></div>
-
-   
+    <!-- Tên GV -->   
 
 <!-- ===== TRỰC TIẾP / ONLINE ===== -->
 <div class="teacher-mode">
@@ -106,20 +113,14 @@
 </div>
 
 <div id="teacherPlayer"></div>
-
 <button class="page-btn" onclick="goTeacherPage()">Teacher page</button>
+
   </aside>
-
-
-
   
   <!-- ===== MAIN CENTER ===== -->
 <section id="main">
   <div id="mainBg"></div>
-
   <div id="mainContent"></div>
-
-  
 </section>
 
   <!-- ===== CỘT SINH VIÊN ===== -->
@@ -155,11 +156,11 @@
 <div id="studentLinks"></div>
 
 
-  <div class="menu-title" onclick="toggleMenu('hv-baigiang')">Bài giảng</div>
-  <ul id="hv-baigiang" class="submenu"></ul>
+<!-- =====  <div class="menu-title" onclick="toggleMenu('hv-baigiang')">Bài giảng</div>===== -->
+<!-- =====  <ul id="hv-baigiang" class="submenu"></ul>===== -->
 
-  <div class="menu-title" onclick="toggleMenu('hv-baitap')">Bài tập</div>
-  <ul id="hv-baitap" class="submenu"></ul>
+<!-- =====  <div class="menu-title" onclick="toggleMenu('hv-baitap')">Bài tập</div>===== -->
+<!-- =====  <ul id="hv-baitap" class="submenu"></ul>===== -->
 
 <div class="menu-title" onclick="toggleMenu('hv-duan')">Project</div>
 <ul id="hv-duan" class="submenu"></ul>
@@ -189,12 +190,17 @@
 </div>
 <button class="page-btn" onclick="goStudentPage()">Student page</button>
   </aside>
-
 </div>
-
-
+<select class="teacherSelect select-teacher">
+  <option value="">-- Chọn giáo viên --</option>
+</select>
+<button class="btn-rating btn-rating-style" onclick="openRatingGV()">
+  ⭐ Xem bình chọn giáo viên
+</button>
+  
 
 <!-- ===== FOOTER ===== -->
+
 <footer class="footer">
 
   <div class="footer-box">
@@ -203,7 +209,7 @@
   </div>
 
   <div class="footer-box">
-    <h4>World News</h4>
+    <h4>Sự kiện</h4>
     <ul id="ftHoatDong"></ul>
   </div>
 
@@ -261,9 +267,10 @@ function googleTranslateElementInit() {
   );
 }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="../scripts/libs/qrcode.min.js"></script>
-
 <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
 </body>
 <!-- ===== VIDEO MODAL ===== -->
 <div id="videoModal" class="video-modal">

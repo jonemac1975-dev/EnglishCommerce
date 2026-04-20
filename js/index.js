@@ -8,6 +8,8 @@ import "./index.teacher.js";
 import "./sessionService.js";
 import { loadTeacherHeaderTheme } from "./index.head.dynamic.js";
 import { initSearch } from "./searchController.js";
+import { readData } from "../scripts/services/firebaseService.js";
+
 
 /* =========================
    APP STATE
@@ -184,6 +186,7 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   loadTeacherHeaderTheme(); // 🔥 load head theo giáo viên nếu có
+  
 
   window.addEventListener("load", () => {
     document.body.classList.add("ready");
@@ -305,3 +308,144 @@ window.exitWorkingMode = function () {
   const main = document.getElementById("main");
   if (main) main.classList.remove("working-mode");
 };
+
+
+window.toggleSidebar = function(type) {
+  const teacher = document.querySelector(".sidebar.teacher");
+  const student = document.querySelector(".sidebar.student");
+  const overlay = document.getElementById("overlay");
+
+  if (type === "teacher") {
+    teacher.classList.toggle("active");
+    student.classList.remove("active");
+  }
+
+  if (type === "student") {
+    student.classList.toggle("active");
+    teacher.classList.remove("active");
+  }
+
+  if (teacher.classList.contains("active") || student.classList.contains("active")) {
+    overlay.classList.add("show");
+  } else {
+    overlay.classList.remove("show");
+  }
+};
+
+// click ngoài để đóng
+document.addEventListener("click", function(e) {
+  const teacher = document.querySelector(".sidebar.teacher");
+  const student = document.querySelector(".sidebar.student");
+  const overlay = document.getElementById("overlay");
+
+  const isClickInsideSidebar = e.target.closest(".sidebar");
+  const isClickButton = e.target.closest(".top-menu button");
+
+  if (!isClickInsideSidebar && !isClickButton) {
+    teacher.classList.remove("active");
+    student.classList.remove("active");
+    overlay.classList.remove("show");
+  }
+});
+
+
+//====BÌNH CHỌN GIÁO VIÊN=====//
+
+async function loadTab(tabName, role = "teacher") {
+  const mainContent = document.getElementById("mainContent");
+  const mainBg = document.getElementById("mainBg");
+  try {
+    if (mainBg) mainBg.style.display = "none";
+
+    const html = await fetch(`/pages/${role}/tab/${tabName}.html`)
+      .then(res => res.text());
+
+    mainContent.innerHTML = html;
+
+    await new Promise(r => setTimeout(r, 0));
+
+    const module = await import(`/pages/${role}/js/${tabName}.js`);
+
+    module?.init?.();
+
+    // 🔥 TEST FOR SURE
+        setTimeout(() => {
+        if (typeof loadTeachersToSelect === "function") {
+        loadTeachersToSelect();
+      } else {
+        
+      }
+    }, 0);
+
+  } catch (err) {
+    
+  }
+}
+
+
+// ===== MỞ TRANG BÌNH CHỌN =====
+
+function openRatingGV() {
+  const select = document.querySelector(".teacherSelect");
+  if (!select) {
+    alert("Không tìm thấy dropdown giáo viên");
+    return;
+  }
+
+  const teacherId = select.value;
+
+  if (!teacherId) {
+    alert("Vui lòng chọn giáo viên");
+    return;
+  }
+ 
+  localStorage.setItem("view_teacher_id", teacherId);
+
+  loadTab("binhchongv", "teacher");
+}
+
+function goHome() {
+  const mainContent = document.getElementById("mainContent");
+  const mainBg = document.getElementById("mainBg");
+  mainContent.innerHTML = "";
+  if (mainBg) mainBg.style.display = "block";
+localStorage.removeItem("view_teacher_id");
+}
+
+// ✅ FIX GLOBAL
+window.openRatingGV = openRatingGV;
+window.goHome = goHome;
+
+
+
+
+
+async function loadTeachersToSelect() {
+  
+  const select = document.querySelector(".teacherSelect");
+
+  if (!select) {
+    
+    return;
+  }
+
+  const data = await readData("users/teachers");
+  if (!data) return;
+
+  select.innerHTML = `
+    <option value="">-- Chọn giáo viên --</option>
+    ${Object.entries(data).map(([id, t]) => {
+      const name = t?.profile?.ho_ten || "(Chưa có tên)";
+      return `<option value="${id}">${name}</option>`;
+    }).join("")}
+  `;
+  
+}
+
+// 🔥 AUTO RUN KHI VÀO TRANG
+document.addEventListener("DOMContentLoaded", () => {
+  loadTeachersToSelect();
+});
+
+// expose nếu cần dùng nút
+window.loadTeachersToSelect = loadTeachersToSelect;

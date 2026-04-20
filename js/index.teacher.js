@@ -1,6 +1,11 @@
 import { readData } from "../scripts/services/firebaseService.js";
 import { loadTeacherHeaderTheme } from "./index.head.dynamic.js";
 
+async function getTeacherAvg(teacherId) {
+  const data = await readData(`ratings/${teacherId}`);
+  return data?.avg || 0;
+}
+
 let GLOBAL_CLASS_MAP = {};
 let offlineStarted = false;
 let MAIN_HISTORY = [];
@@ -84,14 +89,27 @@ async function initTeacherSidebar() {
     MAIN_HOME_HTML = main.innerHTML;
   }
 
-  const teacherId = localStorage.getItem("teacher_id");
-  if (!teacherId) return;
+ const teacherId = localStorage.getItem("teacher_id");
 
-  await loadTeacherHeaderTheme(); // 🔥 đổi head theo giáo viên
+await loadTeacherHeaderTheme();
 
-  const teacherData = await readData("teacher/" + teacherId);
-  if (!teacherData) return;
+const ratingData = await readData(`ratings/${teacherId}`);
+const avg = Number(ratingData?.avg || 0);
 
+const ratingEl = document.getElementById("userRating");
+
+if (ratingEl) {
+  const full = Math.floor(avg);
+  const empty = 5 - full;
+
+  const stars = "★".repeat(full) + "☆".repeat(empty);
+
+  ratingEl.innerHTML = stars;
+}
+
+  // =========================
+  // CONFIG
+  // =========================
   const config = await readData("config");
   GLOBAL_CLASS_MAP = config?.danh_muc?.lop || {};
 
@@ -529,3 +547,7 @@ function loadItemList(list, className, type) {
 
   render();
 }
+
+initTeacherSidebar();
+loadTeacherHeaderTheme();
+window.loadTeacherHeaderTheme = loadTeacherHeaderTheme;

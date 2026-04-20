@@ -13,6 +13,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   const studentData = JSON.parse(localStorage.getItem("studentLogin"));
   const isLogged = studentData?.logged === true;
 
+// Thêm phần login để đánh giá giáo viên
+if (isLogged) {
+  window.currentUser = {
+    uid: studentData.id,
+    role: "student"
+  };
+
+  // (bonus) cho rating dùng luôn localStorage chuẩn
+  localStorage.setItem("user", JSON.stringify(window.currentUser));
+}
+
+
   /* ===== DOM ===== */
   const avatarBox = document.getElementById("studentAvatar");
   const nameBox   = document.getElementById("studentName");
@@ -654,7 +666,8 @@ window.loadStudentProject = function(item) {
 /* ==============================
    LOAD TAB STUDENT
 ============================== */
-async function loadStudentTab(htmlPath, jsPath) {
+//async function loadStudentTab(htmlPath, jsPath) {
+window.loadStudentTab = async function (htmlPath, jsPath) {
  resetStudentMediaPanel();
 
   if (window.enterWorkingMode) {
@@ -698,9 +711,6 @@ async function loadStudentTab(htmlPath, jsPath) {
     }
   }
 }
-
-
-
 
 document.addEventListener("click", async function (e) {
 
@@ -783,3 +793,5 @@ document.addEventListener("click", function(e) {
       : `<p>Link MP3 không hợp lệ</p>`;
   }
 });
+
+

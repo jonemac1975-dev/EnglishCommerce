@@ -3075,3 +3075,250 @@ body.dark .msg.me .bubble {
   height: 100%;
   object-fit: cover;
 }
+
+/=====nâng cấp trang load====/
+/* ===== WRAP CENTER FULL ===== */
+.gv-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;   /* 🔥 giữa ngang */
+  justify-content: center;
+  text-align: center;
+
+  width: 100%;
+  margin: 40px auto;
+}
+
+/* ===== AVATAR WRAP ===== */
+.gv-avatar-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ===== AVATAR ===== */
+.gv-avatar {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  object-fit: cover;
+
+  display: block;
+  margin: 0 auto;
+
+  border: 4px solid transparent;
+
+  /* viền gradient */
+  background:
+    linear-gradient(#fff, #fff) padding-box,
+    linear-gradient(135deg, #ff9800, #ff5722) border-box;
+
+  animation: glowRotate 6s linear infinite;
+
+  box-shadow: 0 0 20px rgba(255,140,0,0.35);
+  transition: 0.3s;
+}
+
+.gv-avatar:hover {
+  transform: scale(1.06);
+  box-shadow: 0 0 30px rgba(255,140,0,0.6);
+}
+
+/* ===== BADGE ===== */
+.gv-badge {
+  position: absolute;
+  bottom: -6px;
+  right: -6px;
+
+  background: linear-gradient(135deg, #ff9800, #ff5722);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+
+  padding: 4px 10px;
+  border-radius: 20px;
+
+  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+}
+
+/* ===== INFO ===== */
+.gv-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;   /* 🔥 ép giữa */
+  margin-top: 14px;
+}
+
+/* ===== NAME ===== */
+.gv-info h2 {
+  font-size: 24px;
+  font-weight: 800;
+  color: #b45309;
+  margin-bottom: 10px;
+}
+
+/* ===== SLOGAN ===== */
+.gv-slogan-wrap {
+  width: 260px;
+  overflow: hidden;
+  height: 28px;
+}
+
+.gv-slogan-track {
+  white-space: nowrap;
+  animation: sloganRun 12s linear infinite;
+}
+
+#gvSlogan {
+  font-size: 14px;
+  font-weight: 600;
+  color: #8B4513;
+}
+
+/* ===== ANIMATION ===== */
+@keyframes sloganRun {
+  0%   { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+/* viền quay nhẹ */
+@keyframes glowRotate {
+  0% { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+
+
+/===== Bình chọn======/
+
+
+/* =========================
+   GLOBAL
+========================= */
+body {
+  background: #eef3fb;
+  font-family: "Segoe UI", sans-serif;
+  color: #1f2d3d;
+}
+
+/* =========================
+   DASHBOARD WRAPPER
+========================= */
+.dashboard {
+  padding: 18px;
+}
+
+/* =========================
+   TOP BAR
+========================= */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.top-bar h2 {
+  font-size: 22px;
+  color: #2d6bff;
+}
+
+/* =========================
+   KPI CARD
+========================= */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  margin-bottom: 14px;
+}
+
+.kpi-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  transition: 0.2s;
+}
+
+.kpi-card:hover {
+  transform: translateY(-3px);
+}
+
+.kpi-title {
+  font-size: 13px;
+  color: #6b7a90;
+}
+
+.kpi-value {
+  font-size: 26px;
+  font-weight: 700;
+  color: #2d6bff;
+  margin-top: 4px;
+}
+
+/* =========================
+   CONTENT GRID
+========================= */
+.content-grid {
+  display: grid;
+  grid-template-columns: 35% 65%;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+/* CHART */
+.chart-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+/* SUMMARY */
+.summary-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+/* =========================
+   TABLE CARD
+========================= */
+.table-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 0;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+
+/* TABLE */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  background: linear-gradient(135deg, #4f7cff, #2d89ef);
+  color: #fff;
+  padding: 12px;
+  font-size: 12px;
+}
+
+td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #f1f4f9;
+}
+
+/* HOVER */
+tr:hover td {
+  background: #f6faff;
+}
+
+/* STAR */
+td:nth-child(3) {
+  color: #ffb400;
+  font-weight: bold;
+}
