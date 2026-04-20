@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Trang Admin Quản Lý</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header class="ad-header">
+    <div class="ad-title">ADMIN</div>
+    <div class="ad-actions">
+      <button class="menu-toggle">☰ Menu</button>
+      <button onclick="adminchange()">🔒 pass</button>
+      <button onclick="goHome()">🏠 Home</button>
+    </div>
+  </header>
+
+  <!-- BODY -->
+  <div class="ad-layout">
+
+    <!-- MENU -->
+    <aside class="ad-menu">
+
+      <div class="menu-group">DANH MỤC</div>
+      <div class="menu-children">
+        <div class="menu-item" data-tab="monhoc">Môn học</div>
+        <div class="menu-item" data-tab="hocham">Học hàm</div>
+        <div class="menu-item" data-tab="chuyenmon">Chuyên môn</div>
+        <div class="menu-item" data-tab="kythi">Kỳ thi</div>
+        <div class="menu-item" data-tab="lop">Lớp</div>
+        <div class="menu-item" data-tab="theloaisach">Thể loại sách</div>
+      </div>
+
+      <div class="menu-group">GIÁO VIÊN</div>
+      <div class="menu-children">
+        <div class="menu-item" data-tab="dsgiaovien">Danh sách giáo viên</div>
+      </div>
+
+      <div class="menu-group">HỌC VIÊN</div>
+      <div class="menu-children">
+        <div class="menu-item" data-tab="dshocvien">Danh sách sinh viên</div>
+      </div>
+
+      <div class="menu-group">THƯ VIỆN</div>
+      <div class="menu-children">
+        <div class="menu-item" data-tab="sach">Cập nhật sách</div>
+        <div class="menu-item" data-tab="tailieu">Tài liệu tham khảo</div>
+      </div>
+
+      <div class="menu-group">THỜI SỰ</div>
+      <div class="menu-children">
+        <div class="menu-item" data-tab="thoisu">Thời sự trong nước</div>
+        <div class="menu-item" data-tab="hoatdong">Thời sự thế giới</div>
+      </div>
+
+      <div class="menu-group">CHỨNG CHỈ</div>
+      <div class="menu-children">
+        <div class="menu-item" data-tab="chungchihv">Cấp chứng chỉ HV</div>
+      </div>
+
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="ad-content" id="adContent"></main>
+
+  </div>
+
+  <!-- ✅ overlay PHẢI đặt ở đây -->
+  <div class="menu-overlay"></div>
+
+  <script type="module" src="./js/admin.js"></script>
+  <div id="toast"></div>
+
+</body>
+</html>

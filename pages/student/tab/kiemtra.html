@@ -1,0 +1,85 @@
+
+<link rel="stylesheet" href="/pages/student/css/student.css">
+
+<section class="kiemtra-wrap">
+
+  <!-- ===== HEADER ===== -->
+  <div class="kt-head">
+    <h2>KIỂM TRA</h2>
+
+    <div class="kt-meta">
+      <div><b>Ngày: </b><span id="ktNgay">--/--/----</span></div>
+      <div><b>Số câu đúng: </b><span id="ktDung">0</span></div>
+      <div><b>Số điểm: </b><span id="ktDiem">0</span></div>
+      <div class="kt-timer" id="ktTimer">00:00</div>
+    </div>
+  </div>
+
+  <!-- ===== THÔNG TIN ===== -->
+<div class="kt-info">
+
+  <div class="kt-row">
+    <span class="kt-label">Tên học viên</span>
+    <span class="kt-value"><b id="ktHocVien"></b></span>
+  </div>
+
+  <div class="kt-row">
+    <span class="kt-label">Giáo viên</span>
+    <span class="kt-value"><b id="ktGiaoVien"></b></span>
+  </div>
+
+  <div class="kt-row">
+    <span class="kt-label">Lớp</span>
+    <span class="kt-value kt-lop-display" id="ktLop"></span>
+  </div>
+<div class="kt-row">
+    <span class="kt-label">Môn học</span>
+    <span class="kt-value kt-monhoc-display" id="ktMonhoc"></span>
+  </div>
+</div>
+
+<!-- ===== CHỌN DANH MỤC ===== -->
+<div class="kt-select">
+
+  <div class="kt-row">
+    <span class="kt-label">Kỳ kiểm tra</span>
+    <select id="selKyThi"></select>
+  </div>
+
+  <div class="kt-row">
+    <span class="kt-label">Bài kiểm tra</span>
+    <select id="selBaiKT"></select>
+  </div>
+
+</div>
+
+<div id="ktCoCauDiem" class="kt-score-structure" style="
+  margin: 12px 0;
+  padding: 10px 14px;
+  background: #fff8e1;
+  border: 1px solid #f0d98a;
+  border-radius: 10px;
+  font-weight: 600;
+  color: #8a5a00;
+">
+  Cơ cấu điểm: --
+</div>
+
+    <!-- ===== NỘI DUNG TRẮC NGHIỆM ===== -->
+  <div id="ktNoiDung" class="kt-noidung">
+    <!-- câu hỏi trắc nghiệm sinh ở đây -->
+  </div>
+
+  <!-- ===== PHẦN TỰ LUẬN ===== -->
+  <div id="ktEssayWrap" class="kt-essay-wrap" style="display:none; margin-top:24px;">
+    <h3>PHẦN TỰ LUẬN</h3>
+    <div id="ktEssayList"></div>
+  </div>
+
+  <!-- ===== ACTION ===== -->
+  <div class="kt-action">
+    <button id="btnSubmit"><b>Nộp bài</b></button>
+    <button onclick="location.href='/index.html'"><b>Home</b></button>
+  </div>
+
+</section>

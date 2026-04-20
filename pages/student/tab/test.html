@@ -1,0 +1,182 @@
+<link rel="stylesheet" href="/pages/student/css/student.css">
+
+<section class="toeic-page">
+
+  <!-- ===== TOP HEADER ===== -->
+  <div class="toeic-topbar">
+    <div class="toeic-brand">
+      
+      <div>
+        <h1>TOEIC Practice Test</h1>
+        <p>Professional English Testing Interface</p>
+      </div>
+    </div>
+
+    <div class="toeic-top-actions">
+      
+      <button onclick="location.href='/index.html'" class="toeic-mini-btn ghost">Home</button>
+    </div>
+  </div>
+
+  <!-- ===== EXAM INFO ===== -->
+  <div class="toeic-info-card">
+    <div class="toeic-info-grid">
+
+      <div class="lux-stat-card glass candidate-name-card">
+        <span class="info-label">Candidate ID</span>
+        <span class="info-value" id="testId"></span>
+      </div>
+
+      <div class="lux-stat-card glass candidate-name-card">
+        <span class="info-label">Candidate Name</span>
+        <span class="info-value" id="testName"></span>
+      </div>
+
+      <div class="info-box">
+        <span class="info-label">Remaining Time</span>
+        <span class="info-value timer" id="testTimer">30:00</span>
+      </div>
+
+      <div class="info-box">
+        <span class="info-label">Correct Answers</span>
+        <span class="info-value" id="testDung">0</span>
+      </div>
+
+      <div class="info-box">
+        <span class="info-label">Score</span>
+        <span class="info-value" id="testDiem">0</span>
+      </div>
+
+      <div class="info-box">
+        <span class="info-label">Progress</span>
+        <span class="info-value" id="testProgress">0/0</span>
+      </div>
+
+    </div>
+
+    <!-- progress bar -->
+    <div class="toeic-progress-wrap">
+      <div class="toeic-progress-top">
+        <span>Exam Progress</span>
+        <span id="testProgressPercent">0%</span>
+      </div>
+      <div class="toeic-progress-bar">
+        <div id="testProgressBar" class="toeic-progress-fill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MAIN LAYOUT ===== -->
+  <div class="toeic-layout">
+
+    <!-- ===== LEFT ===== -->
+    <div class="toeic-main">
+
+      <!-- intro -->
+      <div class="toeic-section intro-box" id="testIntroBox">
+        <h2>BÀI THI TEST TOEIC</h2>
+        <p>Giao diện này mô phỏng phong cách thi TOEIC chuyên nghiệp.</p>
+      </div>
+
+      <!-- summary -->
+      <div id="testSummaryWrap"></div>
+
+      <!-- toolbar -->
+      <div class="toeic-toolbar" id="testToolbar" style="display:none;">
+        <div class="toolbar-left">
+          <button class="toolbar-chip active" data-filter="all">Tất cả</button>
+          <button class="toolbar-chip" data-filter="unanswered">Chưa làm</button>
+          <button class="toolbar-chip" data-filter="answered">Đã làm</button>
+          <button class="toolbar-chip" data-filter="flagged">🚩 Đánh dấu</button>
+          <button class="toolbar-chip" data-filter="wrong">❌ Câu sai</button>
+        </div>
+      </div>
+
+      <!-- questions -->
+      <div class="toeic-section">
+        <div id="testNoiDung" class="toeic-question-wrap">
+          <div class="toeic-empty">
+            <div class="toeic-empty-icon">📝</div>
+            <p>Chọn mã đề bên phải để bắt đầu làm bài</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- action -->
+      <div class="toeic-bottom-actions">
+        <button id="btnSubmitTest" class="toeic-primary-btn">Nộp bài</button>
+        <button id="btnScrollBottom" class="toeic-secondary-btn">↓ Xuống cuối</button>
+      </div>
+    </div>
+
+    <!-- ===== RIGHT SIDEBAR ===== -->
+    <aside class="toeic-sidebar">
+
+      <div class="toeic-side-card">
+        <h3>Danh sách mã đề</h3>
+        <div id="testGrid" class="test-grid"></div>
+      </div>
+
+      <div class="toeic-side-card">
+        <h3>Question Navigator</h3>
+        <div id="questionNav" class="question-nav">
+          <div class="nav-empty">Chưa chọn đề</div>
+        </div>
+      </div>
+
+      <div class="toeic-side-card">
+        <h3>Legend</h3>
+        <div class="legend-wrap">
+          <div class="legend-item"><span class="legend-dot current"></span> Đang xem</div>
+          <div class="legend-item"><span class="legend-dot answered"></span> Đã chọn</div>
+          <div class="legend-item"><span class="legend-dot unanswered"></span> Chưa làm</div>
+          <div class="legend-item"><span class="legend-dot flagged"></span> Đánh dấu</div>
+          <div class="legend-item"><span class="legend-dot wrong"></span> Câu sai</div>
+        </div>
+      </div>
+
+    </aside>
+
+  </div>
+
+  <!-- ===== SUBMIT MODAL ===== -->
+  <div id="submitModal" class="toeic-modal">
+    <div class="toeic-modal-box">
+      <div class="toeic-modal-head">
+        <h3>Xác nhận nộp bài</h3>
+        <button id="btnCloseModal" class="modal-close">×</button>
+      </div>
+
+      <div class="toeic-modal-body">
+        <div class="modal-stat-grid">
+          <div class="modal-stat">
+            <span>Tổng số câu</span>
+            <b id="modalTong">0</b>
+          </div>
+          <div class="modal-stat">
+            <span>Đã làm</span>
+            <b id="modalDaLam">0</b>
+          </div>
+          <div class="modal-stat">
+            <span>Chưa làm</span>
+            <b id="modalChuaLam">0</b>
+          </div>
+          <div class="modal-stat">
+            <span>Đánh dấu</span>
+            <b id="modalFlagged">0</b>
+          </div>
+        </div>
+
+        <div class="modal-note">
+          Bạn vẫn có thể quay lại kiểm tra trước khi nộp bài.
+        </div>
+      </div>
+
+      <div class="toeic-modal-foot">
+        <button id="btnCancelSubmit" class="toeic-secondary-btn">Quay lại</button>
+        <button id="btnConfirmSubmit" class="toeic-primary-btn">Xác nhận nộp</button>
+      </div>
+    </div>
+  </div>
+
+</section>

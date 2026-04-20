@@ -1,0 +1,76 @@
+<h2>PHIẾU THU HỌC PHÍ</h2>
+
+<div class="form-grid">
+  <div>
+    <label>Số phiếu</label>
+    <input type="text" id="soPhieu">
+  </div>
+
+  <div>
+    <label>Ngày</label>
+    <input type="date" id="ngayThu">
+  </div>
+
+  <div>
+    <label>Học viên</label>
+    <select id="hocVien"></select>
+  </div>
+<div>
+  <label>Hình thức đóng phí</label>
+  <input type="text" id="hinhThuc" readonly>
+</div>
+
+<div>
+  <label>Học phí phải đóng</label>
+  <input type="number" id="tienPhaiThuHV" readonly>
+</div>
+  <div>
+    <label>Nội dung</label>
+    <input type="text" id="noiDung">
+  </div>
+
+  <div>
+    <label>Số tiền</label>
+    <input type="number" id="soTien">
+  </div>
+
+  <div>
+    <label>Giảm</label>
+    <input type="number" id="giam">
+  </div>
+
+  <div>
+    <label>Phải thu</label>
+    <input type="number" id="phaiThu" readonly>
+  </div>
+
+  <div>
+    <label>Bằng chữ</label>
+    <input type="text" id="bangChu" readonly>
+  </div>
+</div>
+
+<div class="actions">
+  <button id="btnThem">Thêm</button>
+  <button id="btnLuu">Lưu</button>
+  <button id="btnIn">In</button>
+</div>
+
+<hr>
+
+<h3>BẢNG KÊ THU TIỀN</h3>
+
+<table class="admin-table">
+  <thead>
+    <tr>
+      <th>STT</th>
+      <th>Số</th>
+      <th>Ngày</th>
+      <th>Học viên</th>
+      <th>Nội dung</th>
+      <th>Số tiền</th>
+      <th>Xóa</th>
+    </tr>
+  </thead>
+  <tbody id="bangThu"></tbody>
+</table>

@@ -1,0 +1,103 @@
+<div class="card baigiang-card">
+
+  <h2 class="section-title">CẬP NHẬT BÀI GIẢNG</h2>
+
+  <div class="form-grid">
+
+    <div class="form-group">
+      <label><b>ID</b></label>
+      <input id="bgId" readonly>
+    </div>
+
+        <div class="form-group">
+      <label><b>Môn học</b></label>
+      <select id="bgMonHoc"></select>
+    </div>
+
+    <div class="form-group">
+      <label><b>Lớp</b></label>
+      <select id="bgLop"></select>
+    </div>
+
+    <div class="form-group full">
+      <label><b>Tên bài giảng</label>
+      <input id="bgTenBai">
+    </div>
+
+    <div class="form-group">
+      <label><b>Link MP3 - 1</label>
+      <input id="bgMp3">
+    <div id="previewMp3"></div>
+    </div>
+
+<div class="form-group">
+      <label><b>Link MP3 - 2</label>
+      <input id="bgMp32">
+    <div id="previewMp32"></div>
+    </div>
+
+    <div class="form-group">
+      <label><b>Link MP4</label>
+      <input id="bgMp4">
+<div id="previewMp4"></div>
+    </div>
+
+    <div class="form-group">
+      <label><b>Link Youtube</label>
+      <input id="bgYoutube">
+     <div id="previewYoutube"></div>
+    </div>
+
+    <div class="form-group">
+      <label><b>Ngày </label>
+      <input type="date" id="bgNgay">
+    </div>
+
+    <div class="form-group full">
+  <label><b>Dán nội dung từ Word vào đây :</b></label>
+</div>
+
+<div class="form-group full">
+  <label>Đặt trỏ tại vị trí cần chèn rồi nhấn các nút bên dưới để chèn</label>
+
+  <div class="editor-toolbar">
+    <button type="button" onclick="chooseImage()">🖼️ Chèn ảnh</button>
+    <input type="file" id="imageInput" accept="image/*" hidden>
+
+    <button type="button" onclick="insertPDF()">📄 PDF</button>
+    <button type="button" onclick="insertPPT()">📊PPTx – FlipHTML5</button>
+    <button type="button" onclick="previewContent()">👁️ Preview</button>
+  </div>
+</div>
+
+<div class="form-group full">
+  <label>Nội dung bài giảng</label>
+  <div id="bgNoiDung" contenteditable="true"></div>
+</div>
+
+    </div>
+
+  </div>
+
+  <div class="actions">
+    <button class="btn-primary" onclick="addBaiGiang()">➕Thêm</button>
+    <button class="btn-secondary" onclick="saveBaiGiang()">💾Lưu</button>
+  </div>
+
+  <hr>
+
+  <h3>Danh sách bài giảng</h3>
+
+  <table class="bg-table">
+    <thead>
+      <tr>
+        <th>STT</th>
+        <th>Tên bài giảng</th>
+        <th>Ngày</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+    <tbody id="bgList"></tbody>
+  </table>
+
+</div>

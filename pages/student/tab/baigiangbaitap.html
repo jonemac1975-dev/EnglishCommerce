@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Bài Giảng – Bài Tập</title>
+  <link rel="stylesheet" href="/pages/student/css/student.css">
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <h2>📚 Bài Giảng – Bài Tập</h2>
+
+  <!-- FILTER -->
+  <div class="filter-box">
+    <label><input type="radio" name="type" value="baigiang" checked> Bài giảng</label>
+    <label><input type="radio" name="type" value="baitap"> Bài tập</label>
+
+    <select id="teacher"></select>
+    <select id="class"></select>
+    <select id="subject"></select>
+
+    <button onclick="loadList()">Load</button>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- LEFT -->
+    <div class="left-panel">
+
+      <!-- LIST -->
+      <div class="list" id="list">
+        <p>👉 Chọn điều kiện để load dữ liệu...</p>
+      </div>
+
+      <!-- MEDIA -->
+      <div class="media-box" id="mediaBox"></div>
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="content">
+      <div id="content_html"></div>
+    </div>
+
+  </div> <!-- ✅ đóng main -->
+
+</div> <!-- ✅ đóng container -->
+
+<script type="module" src="../js/baigiangbaitap.js"></script>
+</body>
+</html>

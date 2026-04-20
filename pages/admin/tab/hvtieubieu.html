@@ -1,0 +1,42 @@
+<h2>CẬP NHẬT HỌC VIÊN TIÊU BIỂU THÁNG</h2>
+
+<div class="form-box">
+  <label>Ảnh:</label>
+  <input type="file" id="hvImgFile" accept="image/*">
+  <button id="btnXoaAnh" type="button" style="display:none">Xóa ảnh</button>
+  <br>
+  <img id="hvImgPreview" style="display:none;max-width:120px;margin:6px 0">
+
+  <label>Tên học viên:</label>
+  <select id="hvTen"></select>
+
+  <label>Môn học:</label>
+  <select id="hvMon"></select>
+
+  <label>Tháng:</label>
+  <input type="text" id="hvThang" placeholder="VD: 03/2026">
+
+  <label>Thành tích:</label>
+  <input type="text" id="hvThanhTich">
+
+  <div class="btn-row">
+    <button id="btnThem">Thêm</button>
+    <button id="btnLuu" style="display:none">Lưu</button>
+    <button id="btnXoa" style="display:none">Xóa</button>
+  </div>
+</div>
+
+<table class="admin-table">
+  <thead>
+    <tr>
+      <th>STT</th>
+      <th>Tên học viên</th>
+      <th>Môn học</th>
+      <th>Tháng</th>
+      <th>Thành tích</th>
+    </tr>
+  </thead>
+  <tbody id="hvTable"></tbody>
+</table>
+
+<div id="toast" class="toast"></div>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Hồ sơ sinh viên</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="./css/student.css">
+</head>
+
+<body>
+  <div class="page-wrapper">
+    <div class="card profile-card">
+
+      <div class="page-title">Hồ sơ sinh viên</div>
+
+      <!-- MESSAGE -->
+      <div id="msg" class="msg"></div>
+
+      <!-- AVATAR -->
+      <div class="avatar-box">
+        <img id="avatarPreview" alt="Avatar">
+        <input type="file" id="avatarFile" accept="image/*">
+        <div class="avatar-actions">
+          <button type="button" class="btn-secondary" onclick="removeAvatar()">Xóa ảnh</button>
+        </div>
+      </div>
+
+      <!-- FORM -->
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label>ID</label>
+          <input type="text" id="username" readonly>
+        </div>
+
+        <div class="form-group">
+          <label>Họ và tên</label>
+          <input type="text" id="ho_ten">
+        </div>
+
+        <div class="form-group">
+          <label>Giới tính</label>
+          <select id="gioi_tinh">
+            <option value="">-- chọn --</option>
+            <option value="Nam">Nam</option>
+            <option value="Nữ">Nữ</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Ngày sinh</label>
+          <input type="date" id="ngay_sinh">
+        </div>
+
+        <div class="form-group">
+          <label>Điện thoại</label>
+          <input type="text" id="dien_thoai">
+        </div>
+
+        <div class="form-group">
+          <label>Gmail</label>
+          <input type="text" id="gmail">
+        </div>
+
+        <div class="form-group">
+          <label>Facebook</label>
+          <input type="text" id="facebook">
+        </div>
+
+        <div class="form-group">
+          <label>Zalo</label>
+          <input type="text" id="zalo">
+        </div>
+
+        <div class="form-group">
+          <label>Trường học</label>
+          <input type="text" id="truong_hoc">
+        </div>
+
+        
+
+        <div class="form-group">
+          <label>Lớp</label>
+          <select id="lop">
+            <option value="">-- chọn --</option>
+          </select>
+        </div>
+
+        
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="actions">
+    <!--    <button class="btn-primary" onclick="register()">Đăng ký</button>-->
+        <button class="btn-primary" onclick="updateProfile()">Cập nhật</button>
+        <button class="btn-secondary" onclick="goHome()">Home</button>
+<button class="btn-secondary" onclick="gopage()">My page</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script type="module" src="hosohocvien.js"></script>
+</body>
+</html>

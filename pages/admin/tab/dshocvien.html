@@ -1,0 +1,40 @@
+<section class="hocvien-wrap">
+  <h2>DANH SÁCH HỌC VIÊN</h2>
+
+  <div class="filter-bar">
+    <label>
+      Theo lớp:
+      <select id="filterLop">
+        <option value="">Tất cả</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="table-wrap">
+    <table class="hocvien-table">
+      <thead>
+        <tr>
+          <th>STT</th>
+          <th class="col-name">Họ và tên</th>
+          <th>Điện thoại</th>
+          <th>Lớp</th>
+          <th>User</th>
+          <th>Pass</th>
+          <th>Đổi</th>
+          <th>HỒ SƠ</th>
+          <th>Mail</th>
+          <th>FB</th>
+          <th>Zalo</th>
+        </tr>
+      </thead>
+      <tbody id="hocVienBody">
+        <tr>
+          <td colspan="12" class="loading">Đang tải dữ liệu...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<link rel="stylesheet" href="/pages/admin/css/admin.css">
+<script type="module" src="/js/dshocvien.js"></script>

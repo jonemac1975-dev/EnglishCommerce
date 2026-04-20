@@ -1,0 +1,208 @@
+<div class="ai-teacher-page">
+
+  <!-- HEADER -->
+  <div class="ai-header">
+    <h2>🤖 AI Teacher Assistant</h2>
+
+    <div class="ai-status-wrap">
+      <div id="aiStatusBadge" class="ai-status-badge idle">
+        <span class="dot"></span>
+        <span class="label">AI READY</span>
+      </div>
+    </div>
+
+    <p>Soạn bài giảng, bài tập, đề kiểm tra, TOEIC bằng AI</p>
+  </div>
+
+  <!-- TABS -->
+  <div class="ai-type-tabs">
+    <button class="ai-type-btn active" data-type="lesson">📘 Bài giảng</button>
+    <button class="ai-type-btn" data-type="exercise">📝 Bài tập</button>
+    <button class="ai-type-btn" data-type="exam">📋 Đề kiểm tra</button>
+    <button class="ai-type-btn" data-type="toeic">🎧 TOEIC</button>
+  </div>
+
+  <!-- ================= LESSON ================= -->
+  <div class="ai-form-section active" id="form-lesson">
+
+    <div class="ai-grid">
+      <label>Môn học</label>
+      <input id="lesson_monHoc">
+
+      <label>Chủ đề</label>
+      <input id="lesson_chuDe">
+
+      <label>Trình độ</label>
+      <input id="lesson_trinhDo">
+
+      <label>Loại nội dung</label>
+      <select id="lesson_mode">
+        <option value="core">Core (Từ vựng + Grammar)</option>
+        <option value="reading">Reading + Practice</option>
+        <option value="skills">Skills (Listening/Speaking)</option>
+        <option value="test">Test / Tổng hợp</option>
+        <option value="full">Full bài</option>
+      </select>
+
+      <label>Mức xử lý</label>
+      <select id="lesson_strict">
+        <option value="strict">Giữ nguyên nội dung gốc</option>
+        <option value="smart">Viết lại dễ hiểu</option>
+        <option value="expand">Mở rộng + ví dụ</option>
+      </select>
+
+      <label>Phong cách</label>
+      <input id="lesson_phongCach" placeholder="dễ hiểu / học thuật / sinh động">
+    </div>
+
+    <div class="ai-full ai-highlight-box">
+      <label>🎯 Yêu cầu cho AI</label>
+      <textarea id="lesson_instruction" rows="4"
+        placeholder="VD: giữ format gốc, không markdown, IPA đúng 1 dòng..."></textarea>
+    </div>
+
+    <div class="ai-full ai-highlight-box">
+      <label>📚 Nội dung giáo trình</label>
+      <textarea id="lesson_duLieuGoc" rows="10"></textarea>
+    </div>
+<div id="splitPreviewBox" class="ai-split-box">
+  <i>Chưa tách nội dung...</i>
+</div>
+    <div class="ai-actions">
+      <button id="btnAutoSplit">⚡ Tách nội dung</button>
+      <button id="btnGenerateLesson" class="ai-main-btn">🤖 Tạo bài giảng</button>
+    </div>
+
+  </div>
+
+  <!-- ================= EXERCISE ================= -->
+  <div class="ai-form-section" id="form-exercise">
+
+    <div class="ai-grid">
+      <label>Môn học</label>
+      <input id="exercise_monHoc">
+
+      <label>Chủ đề</label>
+      <input id="exercise_chuDe">
+
+      <label>Dạng bài</label>
+      <input id="exercise_dangBai" placeholder="reading / dialogue / mcq / essay">
+
+      <label>Độ khó</label>
+      <input id="exercise_doKho">
+
+      <label>Số lượng</label>
+      <input id="exercise_soLuong">
+
+      <label>Có đáp án</label>
+      <select id="exercise_dapAn">
+        <option value="Có">Có</option>
+        <option value="Không">Không</option>
+      </select>
+    </div>
+
+    <div class="ai-full ai-highlight-box">
+      <label>🎯 Yêu cầu</label>
+      <textarea id="exercise_instruction" rows="4"></textarea>
+    </div>
+
+    <div class="ai-full ai-highlight-box">
+      <label>📚 Nội dung gốc</label>
+      <textarea id="exercise_duLieuGoc" rows="8"></textarea>
+    </div>
+
+    <button id="btnGenerateExercise" class="ai-main-btn">🤖 Tạo bài tập</button>
+  </div>
+
+  <!-- ================= EXAM ================= -->
+  <div class="ai-form-section" id="form-exam">
+
+    <div class="ai-grid">
+      <label>Môn học</label>
+      <input id="exam_monHoc">
+
+      <label>Chủ đề</label>
+      <input id="exam_chuDe">
+
+      <label>Thời gian</label>
+      <input id="exam_thoiGian">
+
+      <label>Số câu</label>
+      <input id="exam_soCau">
+
+      <label>Độ khó</label>
+      <input id="exam_doKho">
+
+      <label>Loại đề</label>
+      <input id="exam_loaiDe" placeholder="mcq / essay / mix / reading">
+
+      <label>Có đáp án</label>
+      <select id="exam_dapAn">
+        <option value="Có">Có</option>
+        <option value="Không">Không</option>
+      </select>
+    </div>
+
+    <div class="ai-full ai-highlight-box">
+      <label>🎯 Yêu cầu</label>
+      <textarea id="exam_instruction" rows="4"></textarea>
+    </div>
+
+    <div class="ai-full ai-highlight-box">
+      <label>📚 Nội dung gốc</label>
+      <textarea id="exam_duLieuGoc" rows="8"></textarea>
+    </div>
+
+    <button id="btnGenerateExam" class="ai-main-btn">🤖 Tạo đề kiểm tra</button>
+  </div>
+
+  <!-- ================= TOEIC ================= -->
+  <div class="ai-form-section" id="form-toeic">
+
+    <div class="ai-grid">
+      <label>TOEIC Part</label>
+      <input id="toeic_part">
+
+      <label>Chủ đề</label>
+      <input id="toeic_chuDe">
+
+      <label>Số câu</label>
+      <input id="toeic_soCau">
+
+      <label>Độ khó</label>
+      <input id="toeic_doKho">
+
+      <label>Từ vựng</label>
+      <input id="toeic_vocab">
+
+      <label>Style</label>
+      <input id="toeic_style">
+    </div>
+
+    <div class="ai-full ai-highlight-box">
+      <label>🎯 Yêu cầu</label>
+      <textarea id="toeic_instruction" rows="4"></textarea>
+    </div>
+
+    <div class="ai-full ai-highlight-box">
+      <label>📚 Nội dung gốc</label>
+      <textarea id="toeic_duLieuGoc" rows="8"></textarea>
+    </div>
+
+
+    <button id="btnGenerateToeic" class="ai-main-btn">🤖 Tạo TOEIC</button>
+  </div>
+
+  <!-- OUTPUT -->
+  <div class="ai-actions">
+    <button id="btnCopyAI">📋 Copy</button>
+    <button id="btnNormalizeAI">✨ Chuẩn hóa</button>
+    <button id="btnClearAIDraft">🗑 Xóa lịch sử</button>
+    <button id="btnHistoryAI">🕘 Xem 5 bài gần nhất</button>
+  </div>
+
+  <div id="aiOutputBox" class="ai-output-box">
+    <div class="ai-placeholder">Nội dung AI sẽ hiển thị tại đây...</div>
+  </div>
+
+</div>

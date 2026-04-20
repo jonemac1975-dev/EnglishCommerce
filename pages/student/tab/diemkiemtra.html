@@ -1,0 +1,256 @@
+<link rel="stylesheet" href="/pages/student/css/student.css">
+
+<section class="diem-wrap">
+
+  <h2 class="tab-title">BẢNG ĐIỂM KIỂM TRA</h2>
+
+  <!-- TABLE -->
+  <div class="table-box score-table-wrap">
+    <table class="score-table">
+      <thead>
+        <tr>
+          <th>STT</th>
+          <th>Giáo viên</th>
+          <th>Môn</th>
+          <th>Lớp</th>
+          <th>Kỳ kiểm tra</th>
+          <th>Tên đề</th>
+          <th>Điểm trắc nghiệm</th>
+          <th>Điểm tự luận</th>
+          <th>Điểm tổng</th>
+          <th>Nhận xét giáo viên</th>
+          <th>Ngày</th>
+          <th>Xem tự luận</th>
+        </tr>
+      </thead>
+      <tbody id="diemTableBody">
+        <tr>
+          <td colspan="11" style="text-align:center; padding:20px;">
+            Đang tải dữ liệu...
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  
+</section>
+
+<!-- MODAL XEM TỰ LUẬN -->
+<div id="essayModal" class="essay-modal hidden">
+  <div class="essay-modal-content">
+    <div class="essay-modal-header">
+      <h3>📘 Xem lại bài tự luận</h3>
+      <button id="closeEssayModal" class="essay-close-btn">✖</button>
+    </div>
+
+    <div id="essayModalBody" class="essay-modal-body">
+      <!-- nội dung js render -->
+    </div>
+  </div>
+</div>
+
+<style>
+  .score-table-wrap {
+    overflow-x: auto;
+  }
+
+  .score-table {
+    min-width: 1700px;
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .score-table th,
+  .score-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+
+  .score-table th {
+    background: #f5f5f5;
+    font-weight: 700;
+  }
+
+  .score-table td:nth-child(2),
+  .score-table td:nth-child(4),
+  .score-table td:nth-child(5),
+  .score-table td:nth-child(9) {
+    text-align: left;
+  }
+
+  .score-green {
+    color: #198754;
+    font-weight: bold;
+  }
+
+  .score-red {
+    color: #dc3545;
+    font-weight: bold;
+  }
+
+  .essay-note {
+    max-width: 260px;
+    white-space: normal !important;
+    line-height: 1.5;
+  }
+
+  .btn-view-essay {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 8px;
+    background: #0d6efd;
+    color: #fff;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .btn-view-essay:hover {
+    opacity: 0.9;
+  }
+
+  .chart-section {
+    margin-top: 30px;
+  }
+
+  .chart-title {
+    margin-bottom: 15px;
+  }
+
+  .chart-box {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+
+  /* ===== MODAL ===== */
+  .essay-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+  }
+
+  .essay-modal.hidden {
+    display: none;
+  }
+
+  .essay-modal-content {
+    width: min(1100px, 96vw);
+    max-height: 92vh;
+    overflow: hidden;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .essay-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #eee;
+    background: #f8f9fa;
+  }
+
+  .essay-close-btn {
+    border: none;
+    background: #dc3545;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  .essay-modal-body {
+    padding: 20px;
+    overflow-y: auto;
+  }
+
+  .essay-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .essay-info-card {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 14px;
+    background: #fafafa;
+  }
+
+  .essay-info-card strong {
+    display: block;
+    margin-bottom: 6px;
+    color: #333;
+  }
+
+  .essay-question-box {
+    border: 1px solid #ddd;
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 20px;
+    background: #fff;
+  }
+
+  .essay-question-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 12px;
+    color: #0d6efd;
+  }
+
+  .essay-block {
+    margin-bottom: 16px;
+  }
+
+  .essay-block strong {
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .essay-answer-text {
+    background: #f8f9fa;
+    border: 1px solid #eee;
+    padding: 12px;
+    border-radius: 10px;
+    white-space: pre-wrap;
+    line-height: 1.6;
+  }
+
+  .essay-image {
+    max-width: 100%;
+    max-height: 420px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    margin-top: 10px;
+  }
+
+  .essay-score {
+    color: #198754;
+    font-weight: bold;
+    font-size: 18px;
+  }
+
+  .essay-comment {
+    background: #fff8db;
+    border: 1px solid #ffe58f;
+    padding: 12px;
+    border-radius: 10px;
+    line-height: 1.6;
+  }
+</style>

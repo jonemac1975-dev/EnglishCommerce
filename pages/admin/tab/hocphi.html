@@ -1,0 +1,55 @@
+<h2>CẬP NHẬT HỌC PHÍ </h2>
+
+<div class="hp-form">
+  <label>Tháng:</label>
+  <input type="month" id="hpMonth">
+
+  <label>Học viên:</label>
+  <select id="hpStudent"></select>
+
+  <label>Lớp:</label>
+  <select id="hpClass"></select>
+
+  <label>Hình thức đóng:</label>
+  <select id="hpHinhThuc">
+    <option value="">-- chọn --</option>
+    <option value="1">1 tháng</option>
+    <option value="3">3 tháng</option>
+    <option value="6">6 tháng</option>
+    <option value="9">9 tháng</option>
+    <option value="12">12 tháng</option>
+  </select>
+
+  <label>Tiền học phí:</label>
+  <input type="number" id="hpTien">
+
+  <div style="margin-top:15px;">
+  <button id="btnThem">Thêm</button>
+  <button id="btnLuu" style="display:none">Lưu</button>
+</div>
+
+</div>
+
+<hr>
+
+<h3>DANH SÁCH HỌC SINH ĐÓNG HỌC PHÍ</h3>
+
+<label>Tháng:</label>
+<input type="month" id="hpFilterMonth">
+
+<table class="hp-table">
+  <thead>
+    <tr>
+      <th>STT</th>
+      <th>Họ tên</th>
+      <th>Điện thoại</th>
+      <th>Lớp</th>
+      <th>Hình thức</th>
+      <th>Tiền</th>
+      <th>Tình trạng</th>
+      <th>Xóa</th>
+    </tr>
+  </thead>
+  <tbody id="hpTable"></tbody>
+</table>
+<div id="toast" class="toast"></div>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Đăng nhập giáo viên</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="./css/teacher.css">
+</head>
+
+<body>
+  <div class="page-wrapper">
+    <div class="card auth-card">
+
+      <div class="page-title">Đăng nhập giáo viên</div>
+
+      <div id="msg" class="msg"></div>
+
+      <div class="form-group">
+        <label for="username">Tên đăng nhập</label>
+        <input id="username" type="text" placeholder="Nhập tên đăng nhập">
+      </div>
+
+      <div class="form-group">
+        <label for="password">Mật khẩu</label>
+        <input id="password" type="password" placeholder="Nhập mật khẩu">
+      </div>
+
+      <div class="actions">
+        <button class="btn-primary" onclick="login()">Đăng nhập</button>
+        <button class="btn-secondary"
+          onclick="window.location='../../index.html'">Hủy</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script type="module" src="teacher-auth.js"></script>
+</body>
+</html>

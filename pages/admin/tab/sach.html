@@ -1,0 +1,51 @@
+<h2>CẬP NHẬT DANH MỤC SÁCH</h2>
+
+<div class="form">
+ 
+  <div class="img-upload">
+  <label>Ảnh bìa</label>
+
+  <input type="file" id="sachImgFile" accept="image/*">
+
+  <div class="img-preview">
+    <img id="sachImgPreview" src="" alt="" style="display:none">
+  </div>
+
+  <button type="button" id="btnXoaAnh" class="btn-danger" style="display:none">
+    Xóa ảnh
+  </button>
+</div>
+
+  <label>Thể loại sách</label>
+  <select id="sachTheLoai"></select>
+
+  <label>Tên sách</label>
+  <input type="text" id="sachTen">
+
+  <label>Link</label>
+  <input type="text" id="sachLink">
+
+  <div class="btn-row">
+    <button id="btnThem">Thêm</button>
+    <button id="btnLuu" style="display:none">Lưu</button>
+    <button id="btnXoa" style="display:none">Xóa</button>
+  </div>
+</div>
+
+<hr>
+
+<h3>DANH SÁCH SÁCH</h3>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>STT</th>
+      <th>Ảnh</th>
+      <th>Tên</th>
+      <th>Link</th>
+    </tr>
+  </thead>
+  <tbody id="sachTable"></tbody>
+</table>
+
+<div id="toast" class="toast"></div>

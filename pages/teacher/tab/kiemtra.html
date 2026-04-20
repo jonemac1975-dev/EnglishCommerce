@@ -1,0 +1,120 @@
+<section class="kiemtra-wrap">
+  <h2 class="kt-title">CẬP NHẬT BÀI KIỂM TRA ĐỊNH KỲ</h2>
+
+  <div class="kt-form">
+
+    <div class="kt-row">
+      <label><b>ID Giáo viên</b></label>
+      <input type="text" id="kt_giaovien" readonly />
+    </div>
+
+    <div class="kt-row">
+      <label><b>Môn học</b></label>
+      <select id="kt_monhoc"></select>
+    </div>
+
+    <div class="kt-row">
+      <label><b>Lớp</b></label>
+      <select id="kt_lop"></select>
+    </div>
+
+    <div class="kt-row">
+      <label><b>Kỳ kiểm tra</b></label>
+      <select id="kt_kythi"></select>
+    </div>
+
+    <div class="kt-row">
+      <label><b>Tiêu đề</b></label>
+      <input type="text" id="kt_tieude" />
+    </div>
+
+    <div class="kt-row">
+      <label><b>Ngày cập nhật</b></label>
+      <input type="date" id="kt_ngay" />
+    </div>
+
+<div class="form-group">
+  <label>Ngày- giờ làm bài</label>
+  <input type="datetime-local" id="kt_examTime" />
+  <small style="display:block;color:#666;margin-top:4px;">
+    Chỉ khi đến đúng thời điểm này sinh viên mới được mở đề.
+  </small>
+</div>
+
+    <!-- LOẠI BÀI KIỂM TRA -->
+    <div class="kt-row">
+      <label><b>Loại bài kiểm tra</b></label>
+      <select id="kt_examType">
+        <option value="multiple_choice">Trắc nghiệm</option>
+        <option value="mixed">Tổng hợp</option>
+      </select>
+    </div>
+
+<div class="score-structure-box">
+<label><b>Cơ cấu điểm : </b></label>
+  <label>Điểm trắc nghiệm</label>
+  <input type="number" id="kt_diemTN" min="0" max="10" step="0.5" value="10">
+
+  <label>Điểm tự luận</label>
+  <input type="number" id="kt_diemTL" min="0" max="10" step="0.5" value="0">
+
+  <small>Tổng TN + TL nên bằng 10</small>
+</div>
+
+    <!-- TOOLBAR -->
+    <input type="file" id="fileInput" hidden />
+
+        <div>
+      <label>Đặt trỏ tại vị trí cần chèn rồi nhấn các nút bên dưới để chèn</label>
+    </div>
+
+    <div class="kt-toolbar">
+      <button type="button" id="btnChooseFile">🖼️ Ảnh</button>
+      <button type="button" id="btnAudio">🎧 Audio</button>
+      <button type="button" id="btnMp4">🎬 Mp4</button>
+      <button type="button" id="btnYoutube">▶️ YouTube</button>
+      <button type="button" id="btnPdf">📄 PDF</button>
+      <button type="button" id="btnPptx">📊 PPT / HTML</button>
+      <button type="button" id="btnPreview">👁️ Preview</button>
+    </div>
+
+    <!-- EDITOR TRẮC NGHIỆM -->
+    <div class="kt-row">
+      <label><b>Đề trắc nghiệm</b></label>
+    </div>
+    <div id="kt_noidung" class="kt-editor" contenteditable="true"></div>
+
+    <!-- PHẦN TỰ LUẬN -->
+    <div id="essay_wrap" style="display:none; margin-top:24px;">
+      <div class="kt-box-head">
+        <h3><b>PHẦN TỰ LUẬN</b></h3>
+        
+      </div>
+
+      <div id="essay_html_list"></div>
+<div class="kt-box-head">
+<button type="button" id="btnAddEssayHtml">➕ Thêm tự luận</button>
+</div>
+    </div>
+
+    <div class="kt-actions">
+      <button type="button" id="kt_add">➕Thêm</button>
+      <button type="button" id="kt_save">💾Lưu</button>
+    </div>
+  </div>
+
+  <h3><b>Danh sách bài kiểm tra</b></h3>
+  <table class="kt-table">
+    <thead>
+      <tr>
+        <th>STT</th>
+        <th>Tiêu đề</th>
+        <th>Ngày/giờ thi</th>
+        <th>Loại</th>
+        <th>Cơ cấu điểm</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+    <tbody id="kt_list"></tbody>
+  </table>
+</section>

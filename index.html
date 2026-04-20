@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>CHƯƠNG TRÌNH ĐÀO TẠO CHUYÊN NGÀNH CHẾ BIẾN MÓN ĂN</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./css/index.css">
+</head>
+
+<body>
+<div id="overlay"></div>
+<!-- ===== HEADER ===== -->
+<header class="header" id="header">
+
+  <!-- LEFT -->
+  <div class="header-left">
+    <img class="logo big">
+    <img class="logo small">
+    <div id="userName" class="user-name"></div>
+     <div id="userRating" class="user-rating"></div>
+<div class="top-menu">
+  <button onclick="toggleSidebar('teacher')">👨‍🏫 Giáo viên</button>
+</div>
+  </div>
+
+  
+  <!-- CENTER -->
+<div class="header-center">
+  <h1 id="siteTitle">CHƯƠNG TRÌNH ĐÀO TẠO CHUYÊN NGÀNH CHẾ BIẾN MÓN ĂN</h1>
+  <h2 id="siteTeacher">Program Editor: Trần Thị Ngọc Dư - Nguyễn Huỳnh Ngọc Thanh</h2>
+  <p id="siteSlogan">Welcome To College of Commerce</p>
+</div>
+
+  <!-- RIGHT -->
+<div id="langSwitch">
+  🇻🇳
+  <label class="switch">
+    <input type="checkbox" id="langToggle">
+    <span class="slider"></span>
+  </label>
+  🇺🇸
+</div>
+  <div class="header-right">
+  <div class="translate-panel">
+    <div class="search-box">
+
+      <input id="searchInput" placeholder="Translate < 500 word..." />
+
+      
+    
+<div class="top-menu">
+  
+  <button onclick="toggleSidebar('student')">🎓 Sinh viên</button>
+</div>
+</div>
+
+</header>
+
+<div id="searchResults"></div>
+
+
+
+<!-- ===== MAIN LAYOUT ===== -->
+<div class="layout">
+
+  <!-- ===== CỘT GIÁO VIÊN ===== -->
+  <aside class="sidebar teacher">
+
+    <h3>Giáo viên</h3>
+
+    <button onclick="goGVRegister()">Đăng ký</button>
+    <button onclick="goGVLogin()">Đăng nhập</button>
+
+    <!-- Tên GV -->   
+
+<!-- ===== TRỰC TIẾP / ONLINE ===== -->
+<div class="teacher-mode">
+  <label><input type="radio" name="teacher_mode" value="truc_tiep" checked> Trực tiếp</label>
+  <label><input type="radio" name="teacher_mode" value="online"> Online</label>
+</div>
+
+<!-- Dropdown chọn lớp (hiển thị khi tick Online) -->
+<select id="teacherLop" style="display:none;">
+  <option value="">Chọn lớp</option>
+</select>
+
+<!-- Danh sách link Online -->
+<div id="teacherLinks"></div>
+
+
+ <!-- MENU -->
+    <div class="menu">
+
+      <div class="menu-title" onclick="toggleMenu('gv-baigiang')">Bài giảng</div>
+      <ul id="gv-baigiang" class="submenu"></ul>
+
+      <div class="menu-title" onclick="toggleMenu('gv-baitap')">Bài tập</div>
+      <ul id="gv-baitap" class="submenu"></ul>
+
+      <div class="menu-title" onclick="toggleMenu('gv-kiemtra')">Bài Kiểm tra</div>
+      <ul id="gv-kiemtra" class="submenu"></ul>
+      <div class="menu-title" onclick="toggleMenu('gv-vanban')">Văn bản - Hội Thảo</div>
+      <ul id="gv-vanban" class="submenu"></ul>
+    </div>
+
+    <!-- MEDIA LINK HIỆN KHI CHỌN BÀI -->
+    <div class="media" id="teacherMedia" style="display:none;">
+<b>[Mp3 - Mp4 - Youtube]</b>
+  <div id="gvMp3"></div>
+  <div id="gvMp32"></div>
+  <div id="gvMp4"></div>
+  <div id="gvYoutube"></div>
+</div>
+
+<div id="teacherPlayer"></div>
+<button class="page-btn" onclick="goTeacherPage()">Teacher page</button>
+
+  </aside>
+  
+  <!-- ===== MAIN CENTER ===== -->
+<section id="main">
+  <div id="mainBg"></div>
+  <div id="mainContent"></div>
+</section>
+
+  <!-- ===== CỘT SINH VIÊN ===== -->
+  <aside class="sidebar student">
+
+    <h3>Sinh viên</h3>
+
+    <div class="avatar-student" id="studentAvatar"></div>
+    <div class="name" id="studentName"></div>
+<div class="student-actions">
+    <button onclick="goHVRegister()">Đăng ký</button>
+    <button onclick="goHVLogin()">Đăng nhập</button>
+</div>
+    <select id="teacherSelect">
+      <option value="">Chọn giáo viên</option>
+    </select>
+    <select id="lopSelect">
+      <option value="">Chọn lớp</option>
+    </select>
+    <select id="monhocSelect">
+      <option value="">Chọn môn</option>
+    </select>
+    <div class="menu">
+
+
+<!-- ===== TRỰC TIẾP / ONLINE ===== -->
+<div class="student-mode">
+  <label><input type="radio" name="student_mode" value="truc_tiep" checked> Trực tiếp</label>
+  <label><input type="radio" name="student_mode" value="online"> Online</label>
+</div>
+
+<!-- Danh sách link Online -->
+<div id="studentLinks"></div>
+
+
+<!-- =====  <div class="menu-title" onclick="toggleMenu('hv-baigiang')">Bài giảng</div>===== -->
+<!-- =====  <ul id="hv-baigiang" class="submenu"></ul>===== -->
+
+<!-- =====  <div class="menu-title" onclick="toggleMenu('hv-baitap')">Bài tập</div>===== -->
+<!-- =====  <ul id="hv-baitap" class="submenu"></ul>===== -->
+
+<div class="menu-title" onclick="toggleMenu('hv-duan')">Project</div>
+<ul id="hv-duan" class="submenu"></ul>
+
+<!-- MEDIA PROJECT STUDENT -->
+  <div id="studentMediaBox" class="student-media-box" style="display:none;">
+<b>[Mp3 - Mp4 - Youtube]</b>
+    <div class="student-media-list">
+      <div id="svMp3" class="student-media-btn"></div>
+      <div id="svMp32" class="student-media-btn"></div>
+      <div id="svMp4" class="student-media-btn"></div>
+      <div id="svYoutube" class="student-media-btn"></div>
+    </div>
+
+    <div id="studentPlayer" class="student-player"></div>
+  </div>
+
+  <!-- NÚT KIỂM TRA -->
+  
+<button id="btnKiemTra">Bài kiểm tra</button>
+  
+<!-- NÚT TEST -->
+  <button class="menu-btn" onclick="openStudentTest()">
+    🧪Test Toeic
+  </button>
+
+</div>
+<button class="page-btn" onclick="goStudentPage()">Student page</button>
+  </aside>
+</div>
+<select class="teacherSelect select-teacher">
+  <option value="">-- Chọn giáo viên --</option>
+</select>
+<button class="btn-rating btn-rating-style" onclick="openRatingGV()">
+  ⭐ Xem bình chọn giáo viên
+</button>
+  
+
+<!-- ===== FOOTER ===== -->
+
+<footer class="footer">
+
+  <div class="footer-box">
+    <h4>News</h4>
+    <ul id="ftNews"></ul>
+  </div>
+
+  <div class="footer-box">
+    <h4>Sự kiện</h4>
+    <ul id="ftHoatDong"></ul>
+  </div>
+
+  <div class="footer-box">
+    <h4>Thư viện</h4>
+
+    <strong>Sách</strong>
+    <ul id="ftSach"></ul>
+
+    <strong>Tài liệu</strong>
+    <ul id="ftTaiLieu"></ul>
+<div class="footer-box">
+    <h4>Kết nối</h4>
+    <a class="school-link" href="https://cdtm.edu.vn/" target="_blank" rel="noopener noreferrer">
+  Trường CĐTM Đà Nẵng
+</a><br>
+    <a href="#">Facebook</a><br>
+    <a href="#">Zalo</a><br>
+    
+<a class="school-link" href="https://www.youtube.com/@EnglishCommercedn">
+Youtube
+</a><br> 
+</div>
+  </div>
+
+
+  <div class="footer-box">
+    <h4>Liên hệ</h4>
+    <p>📍 Địa chỉ: ...</p>
+    <p>📞 Hotline: 0982 165 887</p>
+    <p>✉ Email: englishcommercedn@gmail.com</p>
+<div id="adminLock" style="cursor:pointer; font-size:18px;">
+  🔒
+  </div>
+
+</div>
+</footer>
+
+
+
+<script type="module" src="./js/index.js"></script>
+
+<!-- GOOGLE TRANSLATE (ẨN) -->
+<div id="google_translate_element" style="display:none;"></div>
+
+<script>
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement(
+    {
+      pageLanguage: 'vi',
+      includedLanguages: 'en,vi',
+      autoDisplay: false
+    },
+    'google_translate_element'
+  );
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="../scripts/libs/qrcode.min.js"></script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+</body>
+<!-- ===== VIDEO MODAL ===== -->
+<div id="videoModal" class="video-modal">
+  <div class="video-box">
+
+    <div class="video-controls">
+      <button onclick="minimizeVideo()">–</button>
+      <button onclick="maximizeVideo()">⬜</button>
+      <button onclick="closeVideo()">✕</button>
+    </div>
+<iframe id="videoFrame"
+            width="100%"
+            height="500"
+            frameborder="0"
+            allowfullscreen>
+    </iframe>
+
+  </div>
+</div>
+
+
+</html>

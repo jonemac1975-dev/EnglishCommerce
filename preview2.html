@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Preview Viewer Pro</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+  margin: 0;
+  font-family: system-ui;
+  background: #eef2f7;
+}
+
+.wrapper {
+  max-width: 1100px;
+  margin: 20px auto;
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.content {
+  margin-top: 18px;
+}
+
+iframe, video {
+  width: 100%;
+  height: 80vh;
+  border: none;
+  border-radius: 12px;
+}
+
+img {
+  max-width: 100%;
+  border-radius: 12px;
+  display: block;
+  margin: auto;
+}
+
+.toolbar {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 999;
+}
+
+.btn {
+  background: #111827;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.fallback {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.link-btn {
+  display: inline-block;
+  padding: 10px 14px;
+  background: #2563eb;
+  color: #fff;
+  border-radius: 10px;
+  text-decoration: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="toolbar">
+  <button class="btn" onclick="history.back()">← Back</button>
+</div>
+
+<div class="wrapper">
+  <div class="title" id="title"></div>
+  <div class="content" id="content"></div>
+</div>
+
+<script>
+const data = JSON.parse(localStorage.getItem("lesson_preview") || "{}");
+
+const titleEl = document.getElementById("title");
+const contentEl = document.getElementById("content");
+
+titleEl.innerText = data.title || "Tài liệu";
+
+/* ================= UTIL ================= */
+function iframe(src) {
+  return `
+    <iframe src="${src}" allowfullscreen></iframe>
+  `;
+}
+
+/* ================= FLIPHTML5 FIX PRO ================= */
+function openFlip(url) {
+  const embed = url.replace(/\/$/, "/index.html");
+
+  const win = window.open(embed, "_blank");
+
+  if (!win || win.closed) {
+    // fallback nếu bị chặn
+    alert("Không thể mở FlipHTML5 trong tab, đang mở trong hệ thống");
+    document.getElementById("content").innerHTML =
+      `<iframe src="${embed}" style="width:100%;height:80vh;border:none"></iframe>`;
+  }
+}
+
+/* ================= EMBED ENGINE ================= */
+function buildEmbed(url) {
+  if (!url) return "<i>Không có nội dung</i>";
+
+  // FLIPHTML5 (FIX PRO)
+  if (url.includes("fliphtml5.com")) {
+  const isInTab = window.self !== window.top;
+
+  if (isInTab) {
+    return `
+      <div style="text-align:center">
+        <button onclick="window.open('${url}', '_blank')">
+          👉 Mở FlipHTML5
+        </button>
+      </div>
+    `;
+  }
+
+  return iframe(url);
+}
+
+
+  // VIDEO
+  if (url.match(/\.(mp4|webm|ogg)$/i)) {
+    return `<video controls src="${url}"></video>`;
+  }
+
+  // AUDIO
+  if (url.match(/\.(mp3|wav|ogg)$/i)) {
+    return `<audio controls src="${url}"></audio>`;
+  }
+
+  // IMAGE
+  if (url.match(/\.(jpg|jpeg|png|webp|gif)$/i)) {
+    return `<img src="${url}">`;
+  }
+
+  // PDF
+  if (url.endsWith(".pdf")) {
+    return iframe(url);
+  }
+
+  // PPT / DOC
+  if (url.match(/\.(pptx|doc|docx)$/i)) {
+    return iframe(
+      "https://view.officeapps.live.com/op/embed.aspx?src=" + encodeURIComponent(url)
+    );
+  }
+
+  // GOOGLE DRIVE
+  if (url.includes("drive.google.com/file/d/")) {
+    const id = url.split("/d/")[1].split("/")[0];
+    return iframe(`https://drive.google.com/file/d/${id}/preview`);
+  }
+
+  // GOOGLE DOCS
+  if (url.includes("docs.google.com/document")) {
+    const id = url.match(/\/d\/([^/]+)/)?.[1];
+    return iframe(`https://docs.google.com/document/d/${id}/preview`);
+  }
+
+  // GOOGLE SLIDES
+  if (url.includes("docs.google.com/presentation")) {
+    const id = url.match(/\/d\/([^/]+)/)?.[1];
+    return iframe(`https://docs.google.com/presentation/d/${id}/embed`);
+  }
+
+  // YOUTUBE
+  if (url.includes("youtube.com/watch") || url.includes("youtu.be")) {
+    let id = "";
+
+    if (url.includes("youtu.be")) {
+      id = url.split("/").pop();
+    } else {
+      id = new URL(url).searchParams.get("v");
+    }
+
+    return iframe(`https://www.youtube.com/embed/${id}`);
+  }
+
+  // DEFAULT
+  return iframe(url);
+}
+
+
+function handleFlip(url) {
+  let embed = url.replace(/\/$/, "");
+
+  // ép domain chuẩn
+  embed = embed.replace("fliphtml5.com", "online.fliphtml5.com");
+
+  return `
+    <div style="text-align:center;padding:20px">
+      <p>📖 Tài liệu FlipHTML5</p>
+
+      <button onclick="window.open('${embed}', '_blank')" 
+        style="padding:12px 18px;
+               border:none;
+               border-radius:10px;
+               background:#2563eb;
+               color:#fff;
+               cursor:pointer;
+               font-size:14px">
+        👉 Mở tài liệu
+      </button>
+    </div>
+  `;
+}
+
+
+
+
+/* ================= RENDER ================= */
+function render() {
+
+  if (data.url) {
+    contentEl.innerHTML = buildEmbed(data.url);
+    return;
+  }
+
+  if (data.content_html) {
+    contentEl.innerHTML = data.content_html;
+    return;
+  }
+
+  if (data.image) {
+    contentEl.innerHTML = `<img src="${data.image}">`;
+    return;
+  }
+
+  contentEl.innerHTML = "<i>Không có nội dung</i>";
+}
+
+render();
+</script>
+
+</body>
+</html>

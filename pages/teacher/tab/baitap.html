@@ -1,0 +1,64 @@
+<div class="form-wrapper">
+
+  <h3>CẬP NHẬT BÀI TẬP</h3>
+<div class="form-group">
+      <label><b>ID</label>
+      <input id="btId" readonly>
+    </div>
+  <div class="form-group">
+    <label><b>Môn học</label>
+    <select id="btMon"></select>
+    <label><b>Lớp</label>
+    <select id="btLop"></select>
+  </div>
+
+  <div class="form-group">
+    <label><b>Tên bài tập</label>
+    <input id="btTitle">
+  </div>
+<div class="form-group">
+      <label><b>Ngày cập nhật</label>
+      <input type="date" id="btDate">
+
+    </div>
+   
+
+ 
+<div >
+<label>Đặt trỏ tại vị trí cần chèn rồi nhấn các nút bên dưới để chèn</label>
+</div>
+    <div class="editor-toolbar">
+      <button id="btnImg">🖼️ Chèn ảnh</button>
+<button id="btnPdf">📊 PDF / FlipHTML5</button>
+<button id="btnPreview">👁️ Preview</button>
+<div>
+<b>Dán nội dung từ Word vào đây :</b>
+</div >
+    </div>
+    <div id="btContent" contenteditable="true" class="editor-box"></div>
+  </div>
+
+  <div class="actions">
+    <button id="btnAdd">➕Thêm</button>
+<button id="btnSave">💾Lưu</button>
+  </div>
+
+  <hr>
+
+  <h4>Danh sách bài tập</h4>
+
+  <table class="table-list">
+    <thead>
+      <tr>
+        <th>STT</th>
+        <th>Tên</th>
+        <th>Ngày</th>
+        <th>Xóa</th>
+      </tr>
+    </thead>
+    <tbody id="btList"></tbody>
+  </table>
+
+</div>
+
+<input type="file" id="imgInput" accept="image/*" hidden>

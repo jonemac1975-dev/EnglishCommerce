@@ -1,0 +1,42 @@
+<h2>CẬP NHẬT GIÁO VIÊN TIÊU BIỂU THÁNG</h2>
+
+<div class="form-box">
+  <label>Ảnh:</label>
+  <input type="file" id="gvImgFile" accept="image/*">
+  <button id="btnXoaAnh" type="button" style="display:none">Xóa ảnh</button>
+  <br>
+  <img id="gvImgPreview" style="display:none;max-width:120px;margin:6px 0">
+
+  <label>Tên giáo viên:</label>
+  <select id="gvTen"></select>
+
+  <label>Môn Dạy:</label>
+  <select id="gvMon"></select>
+
+  <label>Tháng:</label>
+  <input type="text" id="gvThang" placeholder="VD: 03/2026">
+
+  <label>Thành tích:</label>
+  <input type="text" id="gvThanhTich">
+
+  <div class="btn-row">
+    <button id="btnThem">Thêm</button>
+    <button id="btnLuu" style="display:none">Lưu</button>
+    <button id="btnXoa" style="display:none">Xóa</button>
+  </div>
+</div>
+
+<table class="admin-table">
+  <thead>
+    <tr>
+      <th>STT</th>
+      <th>Tên giáo viên</th>
+      <th>Môn Dạy</th>
+      <th>Tháng</th>
+      <th>Thành tích</th>
+    </tr>
+  </thead>
+  <tbody id="gvTable"></tbody>
+</table>
+
+<div id="toast" class="toast"></div>

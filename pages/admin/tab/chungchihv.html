@@ -1,0 +1,45 @@
+<h2>CHỨNG NHẬN HOÀN THÀNH DỰ ÁN - THỰC HÀNH SINH VIÊN</h2>
+
+<div class="form-box">
+  <label>Ảnh:</label>
+  <div class="avatar-box">
+    <img id="hvImgPreview" src="" alt="avatar" />
+  </div>
+
+  <label>Họ và tên:</label>
+  <select id="hvTen"></select>
+
+  <label>Lớp:</label>
+  <input id="hvLop" type="text" readonly>
+
+  <label>Môn học:</label>
+  <select id="hvMon"></select>
+
+  <label>Tháng:</label>
+  <input type="text" id="hvThang" placeholder="VD: 03/2026">
+
+  <label>Thành tích:</label>
+  <input type="text" id="hvThanhTich">
+
+  <div class="btn-row">
+    <button id="btnThem">Thêm</button>
+    <button id="btnLuu" style="display:none">Lưu</button>
+    <button id="btnXoa" style="display:none">Xóa</button>
+  </div>
+</div>
+
+<table class="admin-table">
+  <thead>
+    <tr>
+      <th>STT</th>
+      <th>Họ tên</th>
+      <th>Lớp</th>
+      <th>Môn học</th>
+      <th>Tháng</th>
+      <th>Thành tích</th>
+    </tr>
+  </thead>
+  <tbody id="hvTable"></tbody>
+</table>
+
+<div id="toast" class="toast"></div>

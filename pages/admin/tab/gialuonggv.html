@@ -1,0 +1,48 @@
+<div class="admin-box">
+  <h3>BẢNG GIÁ THANH TOÁN TIẾT DẠY</h3>
+
+  <div class="form-grid">
+    <div>
+      <label>Ngày cập nhật</label>
+      <input type="date" id="ngayCapNhat">
+    </div>
+
+    <div>
+      <label>Môn học</label>
+      <select id="monHoc">
+        <option value="">-- Chọn môn học --</option>
+      </select>
+    </div>
+
+    <div>
+      <label>Giáo viên</label>
+      <select id="giaoVien">
+        <option value="">-- Chọn giáo viên --</option>
+      </select>
+    </div>
+
+    <div>
+      <label>Đơn giá / tiết</label>
+      <input type="number" id="donGia" placeholder="VD: 100000">
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button id="btnThem">Thêm</button>
+    <button id="btnLuu">Lưu</button>
+  </div>
+</div>
+
+<table class="admin-table">
+  <thead>
+    <tr>
+      <th>STT</th>
+      <th>Giáo viên</th>
+      <th>Môn học</th>
+      <th>Đơn giá / tiết</th>
+      <th>Ngày cập nhật</th>
+      <th>Xóa</th>
+    </tr>
+  </thead>
+  <tbody id="bangGiaLuong"></tbody>
+</table>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Change Pass</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+  <div class="admin-auth">
+    <div class="auth-box">
+
+      <h2>Admin Change</h2>
+
+      <label for="oldPass">Old pass:</label>
+      <input type="password" id="oldPass" autocomplete="current-password">
+
+      <label for="newPass">New pass:</label>
+      <input type="password" id="newPass" autocomplete="new-password">
+
+      <div class="btn-group">
+        <button id="btnOK">OK</button>
+        <button id="btnCancel">Cancel</button>
+      </div>
+
+      <p id="msg"></p>
+
+    </div>
+  </div>
+
+  <script type="module" src="./js/adminchange.js"></script>
+</body>
+</html>

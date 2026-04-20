@@ -1,0 +1,42 @@
+<h2>CẬP NHẬT DANH MỤC TÀI LIỆU</h2>
+
+<div class="form-box">
+  <!-- Ảnh -->
+  <label>Ảnh bìa:</label>
+  <input type="file" id="tlImgFile" accept="image/*">
+  <button id="btnXoaAnh" type="button" style="display:none">Xóa ảnh</button>
+  <br>
+  <img id="tlImgPreview" style="display:none;max-width:120px;margin:6px 0">
+
+  <!-- Thể loại -->
+  <label>Thể loại tài liệu:</label>
+  <select id="tlTheLoai"></select>
+
+  <!-- Tên -->
+  <label>Tên tài liệu:</label>
+  <input type="text" id="tlTen">
+
+  <!-- Link -->
+  <label>Link:</label>
+  <input type="text" id="tlLink">
+
+  <div class="btn-row">
+    <button id="btnThem">Thêm</button>
+    <button id="btnLuu" style="display:none">Lưu</button>
+    <button id="btnXoa" style="display:none">Xóa</button>
+  </div>
+</div>
+
+<table class="admin-table">
+  <thead>
+    <tr>
+      <th>STT</th>
+      <th>Ảnh</th>
+      <th>Tên</th>
+      <th>Link</th>
+    </tr>
+  </thead>
+  <tbody id="tailieuTable"></tbody>
+</table>
+
+<div id="toast" class="toast"></div>

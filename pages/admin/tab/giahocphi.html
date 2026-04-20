@@ -1,0 +1,77 @@
+<!-- ===== GIÁ HỌC PHÍ ===== -->
+<section class="admin-box">
+  <h2>CẬP NHẬT BẢNG GIÁ HỌC PHÍ</h2>
+
+  <div class="form-grid">
+    <div>
+      <label>Ngày cập nhật</label>
+      <input type="date" id="ngayCapNhat">
+    </div>
+
+    <div>
+      <label>Môn học</label>
+      <select id="monHoc">
+        <option value="">-- Chọn môn --</option>
+        <option value="toan">Toán</option>
+        <option value="tienganh">Tiếng Anh</option>
+        <option value="ly">Vật Lý</option>
+        <option value="hoa">Hóa</option>
+      </select>
+    </div>
+
+    <div>
+      <label>Số buổi / tuần</label>
+      <select id="soBuoi">
+        <option value="">-- Chọn --</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+      </select>
+    </div>
+
+    <div>
+      <label>Học phí 1 tháng</label>
+      <input type="number" id="gia1Thang">
+    </div>
+
+    <div>
+      <label>Học phí 3 tháng</label>
+      <input type="number" id="gia3Thang">
+    </div>
+
+    <div>
+      <label>Học phí 6 tháng</label>
+      <input type="number" id="gia6Thang">
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button id="btnThem">Thêm</button>
+    <button id="btnLuu">Lưu</button>
+  </div>
+</section>
+
+<hr>
+
+<h3>BẢNG GIÁ HỌC PHÍ</h3>
+
+<table class="admin-table">
+  <thead>
+    <tr>
+      <th>STT</th>
+      <th>Môn học</th>
+      <th>Số buổi / tuần</th>
+      <th>1 tháng</th>
+      <th>3 tháng</th>
+      <th>6 tháng</th>
+      <th>Xóa</th>
+    </tr>
+  </thead>
+  <tbody id="bangGiaHocPhi"></tbody>
+</table>
+
+<script type="module" src="../js/giahocphi.js"></script>

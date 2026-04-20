@@ -1,0 +1,100 @@
+<div class="card duan-card">
+
+  <h2 class="section-title">CẬP NHẬT DỰ ÁN - THỰC NGHIỆM</h2>
+
+  <div class="form-grid">
+
+    <div class="form-group">
+      <label><b>ID</b></label>
+      <input id="daId" readonly>
+    </div>
+
+        <div class="form-group">
+      <label><b>Môn học</b></label>
+      <select id="daMonHoc"></select>
+    </div>
+
+    <div class="form-group">
+      <label><b>Lớp</b></label>
+      <select id="daLop"></select>
+    </div>
+
+    <div class="form-group full">
+      <label><b>Tên dự án</b></label>
+      <input id="daTenDuAn">
+    </div>
+
+    <div class="form-group">
+      <label><b>Link MP3 - 1</b></label>
+      <input id="daMp3">
+    <div id="previewMp3"></div>
+    </div>
+
+<div class="form-group">
+      <label><b>Link MP3 - 2</b></label>
+      <input id="daMp32">
+    <div id="previewMp32"></div>
+    </div>
+
+    <div class="form-group">
+      <label><b>Link MP4</b></label>
+      <input id="daMp4">
+<div id="previewMp4"></div>
+    </div>
+
+    <div class="form-group">
+      <label><b>Link Youtube</b></label>
+      <input id="daYoutube">
+     <div id="previewYoutube"></div>
+    </div>
+
+    <div class="form-group">
+      <label><b>Ngày </b></label>
+      <input type="date" id="daNgay">
+    </div>
+
+    
+<div class="form-group full">
+  <label>Đặt trỏ tại vị trí cần chèn rồi nhấn các nút bên dưới để chèn</label>
+
+  <div class="editor-toolbar">
+    <button type="button" onclick="chooseImage()">Chèn ảnh</button>
+    <input type="file" id="imageInput" accept="image/*" hidden>
+
+    <button type="button" onclick="insertPDF()">PDF</button>
+    <button type="button" onclick="insertPPT()">PPTx – FlipHTML5</button>
+    <button type="button" onclick="previewContent()">Preview</button>
+  </div>
+</div>
+
+<div class="form-group full">
+  <label>Dán nội dung dự án - thực nghiệm vào Ô dưới</label>
+  <div id="daNoiDung" contenteditable="true" spellcheck="false"></div>
+</div>
+
+    </div>
+
+  </div>
+
+  <div class="actions">
+    <button class="btn-primary" onclick="addDuAn()">➕Thêm</button>
+    <button class="btn-secondary" onclick="saveDuAn()">💾Lưu</button>
+  </div>
+
+  <hr>
+
+  <h3>Danh sách dự án - thực nghiệm</h3>
+
+  <table class="da-table">
+    <thead>
+      <tr>
+        <th>STT</th>
+        <th>Tên Dự án</th>
+        <th>Ngày</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+    <tbody id="daList"></tbody>
+  </table>
+
+</div>

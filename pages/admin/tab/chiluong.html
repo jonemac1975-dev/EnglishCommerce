@@ -1,0 +1,68 @@
+<h2>PHIẾU CHI LƯƠNG GIÁO VIÊN</h2>
+
+<div class="form-grid">
+
+  <div>
+    <label>Số</label>
+    <input type="text" id="soPhieu">
+  </div>
+
+  <div>
+    <label>Ngày</label>
+    <input type="date" id="ngayChi">
+  </div>
+
+  <div>
+    <label>Kỳ lương</label>
+    <input type="month" id="kyLuong">
+  </div>
+
+  <div>
+    <label>Giáo viên</label>
+    <select id="giaoVien"></select>
+  </div>
+
+  <div>
+    <label>Nội dung</label>
+    <input type="text" id="noiDung">
+  </div>
+
+  <div>
+    <label>Số tiền</label>
+    <input type="number" id="soTien" readonly>
+  </div>
+
+  <div>
+    <label>Bằng chữ</label>
+    <input type="text" id="bangChu" readonly>
+  </div>
+
+</div>
+
+<div class="actions">
+  <button id="btnThem">Thêm</button>
+  <button id="btnLuu">Lưu</button>
+  <button id="btnIn">In</button>
+</div>
+
+<hr>
+
+<h3>BẢNG KÊ CHI TIỀN</h3>
+<div style="margin-top:10px; font-weight:bold">
+  Tổng tiền: <span id="tongTien">0</span> đ
+</div>
+<table class="admin-table">
+  <thead>
+    <tr>
+      <th>STT</th>
+      <th>Số</th>
+      <th>Ngày</th>
+      <th>Tên giáo viên</th>
+      <th>Nội dung</th>
+      <th>Số tiền</th>
+      <th>Xóa</th>
+    </tr>
+  </thead>
+  <tbody id="bangChi"></tbody>
+</table>
+

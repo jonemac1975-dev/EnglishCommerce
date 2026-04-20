@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>STUDENT PAGE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="./css/student.css">
+</head>
+
+<body>
+
+
+
+<!-- ===== HEADER ===== -->
+<header class="hv-header">
+  <div class="logo">STUDENT PAGE</div>
+
+  <div class="header-actions">
+<button class="menu-toggle" onclick="toggleMenu()">☰ Menu</button>
+    <button onclick="openProfile()">👤 Frofile</button>
+    <button onclick="openChangePass()">🔒 Pass</button>
+<button onclick="goHome()">🏠 Home</button>
+  </div>
+</header>
+
+<!-- ===== LAYOUT ===== -->
+<div class="hv-layout">
+
+ 
+  <!-- MENU -->
+<aside class="hv-menu">
+
+  <!-- HỒ SƠ SINH VIÊN -->
+  <div class="menu-group">HỒ SƠ </div>
+  <div class="menu-children">
+    <div class="menu-item active" data-tab="hocvienpreview">Hồ sơ sinh viên </div>
+   <div class="menu-item" data-tab="binhchon">Bình chọn GV </div>
+  </div>
+
+  <!-- HỌC TẬP -->
+  <div class="menu-group">HỌC TẬP </div>
+  <div class="menu-children">
+    <div class="menu-item" data-tab="thoikhoabieu">Thời khóa biểu</div>
+    <div class="menu-item" data-tab="baigiangbaitap">Bài Giảng - Bài tập</div>
+  </div>
+
+  <!-- XEM ĐIỂM -->
+  <div class="menu-group">XEM ĐIỂM </div>
+  <div class="menu-children">
+    <div class="menu-item" data-tab="diemkiemtra">Điểm kiểm tra</div>
+    <div class="menu-item" data-tab="tonghopdiem">Điểm tổng hợp </div>
+    <div class="menu-item" data-tab="diemtest">Điểm thi TOEIC</div>
+  </div>
+
+  <!-- DỰ ÁN -->
+  <div class="menu-group">DỰ ÁN </div>
+  <div class="menu-children">
+    <div class="menu-item" data-tab="duan">Dự án - Thực nghiệm</div>
+    <div class="menu-item" data-tab="chungchi">Chứng chỉ</div>
+  </div>
+
+</aside>
+
+  <!-- CONTENT -->
+  <main class="hv-content" id="content"></main>
+
+</div>
+
+<script type="module" src="./js/hocvien.js"></script>
+<div id="toast"></div>
+
+
+<!-- ===== CHAT FLOAT BUTTON ===== -->
+
+<div id="chat-toggle">
+  💬
+  <span id="chat-badge" class="hidden">0</span>
+</div>
+
+<!-- ===== CHAT CONTAINER ===== -->
+
+<div id="chat-container" class="hidden">
+
+  <!-- SEARCH -->
+  <div class="chat-search">
+    <input id="chat-search" placeholder="🔍 Tìm người..." />
+    <button onclick="toggleDarkMode()">🌙</button>
+  </div>
+
+  <!-- USER LIST -->
+  <div id="chat-list"></div>
+
+  <!-- CHAT BOX -->
+  <div id="chat-box" class="hidden">
+
+    <div class="chat-header">
+      <span id="chat-name"></span>
+      <div>
+        <button id="back-chat">←</button>
+        <button id="close-chat">✕</button>
+      </div>
+    </div>
+
+    <div id="chat-messages"></div>
+
+    <div class="chat-input">
+      <input id="chat-text" placeholder="Nhập tin nhắn..." />
+      <button id="send-btn">Gửi</button>
+    </div>
+
+  </div>
+</div>
+
+
+</body>
+
+</html>

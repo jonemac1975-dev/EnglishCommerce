@@ -1,0 +1,947 @@
+/* ===== FIX FOCUS RING ===== */
+button:focus,
+button:active,
+.menu-item:focus,
+.menu-item:active,
+a:focus,
+a:active {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.menu-item {
+  outline: none;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f6f9;
+}
+
+.ad-header {
+  height: 60px;
+  background: #1e3a8a;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 25px;
+  font-weight: bold;
+}
+
+.ad-actions button {
+  margin-left: 10px;
+  padding: 6px 12px;
+  border: none;
+  background: white;
+  color: #1e3a8a;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.ad-layout {
+  display: flex;
+  height: calc(100vh - 60px);
+}
+
+.ad-menu {
+  width: 15%;
+  background: #111827;
+  color: white;
+  overflow-y: auto;
+  padding: 15px 0;
+}
+
+.menu-group {
+  font-size: 13px;
+  padding: 10px 20px;
+  color: #9ca3af;
+  text-transform: uppercase;
+}
+
+.menu-item {
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.menu-item:hover,
+.menu-item.active {
+  background: #1f2937;
+}
+
+.ad-content {
+  width: 85%;
+  padding: 25px;
+  overflow-y: auto;
+  background: #ffffff;
+}
+
+
+
+
+
+
+
+
+
+.dm-wrapper {
+  max-width: 600px;
+}
+
+.dm-title {
+  font-size: 20px;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+.dm-form {
+  margin-bottom: 20px;
+}
+
+.dm-form input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.dm-actions button {
+  padding: 6px 14px;
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.dm-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dm-table th,
+.dm-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.dm-table tr:hover {
+  background: #f1f5f9;
+  cursor: pointer;
+}
+
+
+ /------Khóa Học--------/
+
+/* ==============================
+   KHOA HOC
+============================== */
+
+.tab-page {
+  padding: 20px;
+}
+
+.form-box {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 25px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+#mo_ta_html {
+  min-height: 180px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 10px;
+  background: #fff;
+  overflow-y: auto;
+}
+
+.form-actions {
+  margin-top: 15px;
+}
+
+.form-actions button {
+  padding: 8px 16px;
+  margin-right: 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #1976d2;
+  color: white;
+  font-weight: 600;
+}
+
+.form-actions button:hover {
+  opacity: 0.9;
+}
+
+.list-box {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.list-box table {
+  border-collapse: collapse;
+}
+
+.list-box th {
+  background: #f2f2f2;
+}
+
+.list-box tr:hover {
+  background: #f9f9f9;
+  cursor: pointer;
+}
+
+/-----Danh sách giáo viên------/
+.list-box table {
+  border-collapse: collapse;
+}
+
+.list-box th,
+.list-box td {
+  padding: 8px;
+  text-align: center;
+}
+
+.list-box th {
+  background: #f2f2f2;
+}
+
+.list-box tr:hover {
+  background: #f9f9f9;
+}
+
+.list-box button {
+  padding: 4px 10px;
+  border: none;
+  border-radius: 5px;
+  background: #1976d2;
+  color: white;
+  cursor: pointer;
+}
+
+.list-box button:hover {
+  opacity: 0.9;
+}
+
+
+
+
+/......Danh sách học viên........./
+.hocvien-wrap {
+  padding: 12px;
+}
+
+.hocvien-wrap h2 {
+  margin-bottom: 10px;
+}
+
+.filter-bar {
+  margin-bottom: 10px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+.hocvien-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.hocvien-table th,
+.hocvien-table td {
+  border: 1px solid #ddd;
+  padding: 6px 8px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* ✅ HỌ TÊN: KHÔNG CẮT – KHÔNG XUỐNG DÒNG */
+.col-name {
+  min-width: 180px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* ❌ Các cột dài: cho ... */
+.hocvien-table td.truncate {
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hocvien-table td.pass-mask {
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.hocvien-table button {
+  padding: 3px 8px;
+  cursor: pointer;
+}
+
+.loading {
+  text-align: center;
+  color: #888;
+}
+
+
+/.........Học Phí......../
+.hp-form {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 8px;
+  max-width: 600px;
+}
+
+.hp-form input,
+.hp-form select {
+  padding: 5px;
+}
+
+.hp-btn {
+  grid-column: span 2;
+  margin-top: 10px;
+}
+
+.hp-btn button {
+  padding: 6px 14px;
+  margin-right: 6px;
+}
+
+.hp-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.hp-table th,
+.hp-table td {
+  border: 1px solid #ccc;
+  padding: 6px;
+  white-space: nowrap;
+}
+
+.status-paid {
+  color: green;
+  font-weight: bold;
+}
+
+.status-unpaid {
+  color: red;
+}
+
+
+/-------Sách - Tài liệu ------------/
+/* ===== IMAGE UPLOAD ===== */
+.img-upload {
+  margin-bottom: 15px;
+}
+
+.img-upload input[type="file"] {
+  display: block;
+  margin-top: 6px;
+}
+
+.img-preview {
+  margin-top: 10px;
+  width: 120px;
+  height: 160px;
+  border: 1px dashed #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fafafa;
+}
+
+.img-preview img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.btn-danger {
+  margin-top: 8px;
+  background: #e53935;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.btn-danger:hover {
+  background: #c62828;
+}
+/-------Thời Sự --------/
+.form-box {
+  max-width: 500px;
+  background: #fff;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+}
+
+.form-box label {
+  display: block;
+  margin-top: 8px;
+  font-weight: 600;
+}
+
+.form-box input {
+  width: 100%;
+  padding: 6px;
+  margin-top: 4px;
+}
+
+.btn-row {
+  margin-top: 12px;
+}
+
+.btn-row button {
+  margin-right: 6px;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+  border: 1px solid #ccc;
+  padding: 6px;
+}
+
+.admin-table tr:hover {
+  background: #f5f5f5;
+  cursor: pointer;
+}
+
+
+
+/---Lịch dạy----/
+.form-box {
+  max-width: 900px;
+  background: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.08);
+}
+
+.form-box label {
+  font-weight: 600;
+  margin-top: 10px;
+  display: block;
+}
+
+.form-box input,
+.form-box select {
+  width: 100%;
+  padding: 6px 8px;
+  margin-top: 4px;
+}
+
+.tick-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.tick-table th,
+.tick-table td {
+  border: 1px solid #ddd;
+  padding: 6px;
+  text-align: center;
+}
+
+.tick-table input {
+  width: 100%;
+}
+
+.admin-table {
+  margin-top: 15px;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+  border: 1px solid #ccc;
+  padding: 6px;
+}
+
+.admin-table tr:hover {
+  background: #f5f7ff;
+  cursor: pointer;
+}
+
+.btn-row {
+  margin-top: 12px;
+}
+
+.btn-row button {
+  padding: 6px 14px;
+  margin-right: 6px;
+}
+.lichday-box {
+  margin-top: 15px;
+  border: 1px solid #ddd;
+  padding: 12px;
+  border-radius: 6px;
+  background: #fafafa;
+}
+
+.lichday-head {
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #2c3e50;
+}
+
+.lichday-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+}
+
+.day-col {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 8px;
+  text-align: center;
+}
+
+.day-col label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 6px;
+  cursor: pointer;
+}
+
+.day-col input[type="text"] {
+  width: 100%;
+  padding: 6px;
+  font-size: 13px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.day-col input[type="text"]:disabled {
+  background: #eee;
+}
+
+/----Giáo viên tiêu biểu--------/
+.form-box { max-width: 520px }
+.form-box label { font-weight: 600 }
+.admin-table img { width: 40px }
+
+/----Bài giảng mẫu--------/
+.form-box {
+  max-width: 520px;
+  background: #fff;
+  padding: 16px;
+  border-radius: 6px;
+}
+
+.form-box label {
+  display: block;
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+.form-box input,
+.form-box select {
+  width: 100%;
+  padding: 6px;
+  margin-top: 4px;
+}
+
+.btn-row {
+  margin-top: 12px;
+}
+
+.btn-row button {
+  padding: 6px 14px;
+  margin-right: 6px;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+  border: 1px solid #ccc;
+  padding: 6px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.preview-box {
+  margin-top: 10px;
+}
+
+.preview-box iframe,
+.preview-box video {
+  border-radius: 6px;
+  background: #000;
+}
+
+
+/-------Login - Change pass-----/
+/* ===============================
+   ADMIN AUTH (LOGIN + CHANGE)
+   =============================== */
+
+.admin-auth {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+}
+
+.admin-auth .auth-box {
+  width: 360px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 26px 28px 28px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+}
+
+/* TITLE */
+.admin-auth h2 {
+  margin: 0 0 18px;
+  text-align: center;
+  color: #2c3e50;
+}
+
+/* FORM */
+.admin-auth label {
+  display: block;
+  margin-top: 14px;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #555;
+}
+
+.admin-auth input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.admin-auth input:focus {
+  border-color: #3498db;
+  outline: none;
+}
+
+/* BUTTON */
+.admin-auth .btn-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.admin-auth button {
+  flex: 1;
+  padding: 10px 0;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.admin-auth #btnOK {
+  background: #3498db;
+  color: #fff;
+}
+
+.admin-auth #btnCancel {
+  background: #ecf0f1;
+  color: #333;
+}
+
+/* MESSAGE */
+.admin-auth #msg {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 13px;
+}
+
+
+
+
+
+/* ===== Giá học phí ===== */
+.admin-box {
+  background: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.form-grid label {
+  font-size: 13px;
+  color: #555;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.form-grid input,
+.form-grid select {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.form-actions {
+  margin-top: 12px;
+}
+
+.form-actions button {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#btnThem {
+  background: #0d6efd;
+  color: white;
+}
+
+#btnLuu {
+  background: #198754;
+  color: white;
+}
+
+/* ===== TABLE ===== */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.admin-table th,
+.admin-table td {
+  border: 1px solid #ddd;
+  padding: 6px 8px;
+  text-align: center;
+}
+
+.admin-table th {
+  background: #f2f2f2;
+}
+
+.btn-xoa {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+/* ===== GLOBAL TOAST ===== */
+#toast {
+  position: fixed;
+  top: 80px;
+  right: 520px;
+  min-width: 140px;
+  max-width: 220px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 500;
+  color: white;
+  background: #4e73ff;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  opacity: 0;
+  transform: translateY(-20px);
+  z-index: 99999;
+  pointer-events: none;
+  transition: all 0.35s ease;
+}
+
+/* hiện */
+#toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* loại */
+#toast.success { background: #22c55e; }
+#toast.error   { background: #ef4444; }
+#toast.warn    { background: #f59e0b; }
+#toast.info    { background: #4e73ff; }
+
+
+/* ===== GROUP ===== */
+.menu-group {
+  font-weight: 700;
+  padding: 4px;
+  cursor: pointer;
+  background: Black;
+  border-radius: 6px;
+  margin-top: 10px;
+  transition: 0.25s;
+}
+
+.menu-group:hover {
+  background: #1e293b;
+}
+
+/* icon mũi tên */
+.menu-group::after {
+  content: "▸";
+  float: right;
+  transition: transform 0.25s;
+}
+
+.menu-group.active::after {
+  transform: rotate(90deg);
+}
+
+/* ===== CHILDREN ===== */
+.menu-children {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+}
+
+/* khi mở */
+.menu-children.open {
+  max-height: 500px; /* đủ lớn */
+}
+
+/* ===== ITEM ===== */
+.menu-item {
+  padding: 8px 12px;
+  margin-left: 8px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: 0.2s;
+}
+
+.menu-item:hover {
+  background: Black;
+  transform: translateX(4px);
+}
+
+/* ===== MENU TEXT COLOR ===== */
+
+/* Tiêu đề group */
+.menu-group {
+  color: #ffb300;   /* vàng đậm */
+}
+
+
+.avatar-box {
+  margin: 8px 0 14px;
+}
+
+#hvImgPreview {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  display: none;
+  background: #f5f5f5;
+}
+
+
+
+/* ===== MOBILE MENU FIX ===== */
+
+/* Nút menu chỉ hiện mobile */
+.menu-toggle {
+  display: none;
+}
+
+/* overlay */
+.menu-overlay {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 60px);
+  background: rgba(0,0,0,0.4);
+  display: none;
+  z-index: 999;
+}
+
+.menu-overlay.show {
+  display: block;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+
+  /* hiện nút menu */
+  .menu-toggle {
+    display: inline-block;
+  }
+
+  /* menu dạng trượt */
+  .ad-menu {
+    position: fixed;
+    top: 60px;
+    left: -260px;
+    width: 240px;
+    height: calc(100% - 60px);
+    z-index: 1000;
+    transition: 0.3s;
+  }
+
+  .ad-menu.open {
+    left: 0;
+  }
+
+  /* content full width */
+  .ad-content {
+    width: 100% !important;
+    padding: 15px;
+  }
+
+  /* layout stack */
+  .ad-layout {
+    flex-direction: column;
+  }
+}
