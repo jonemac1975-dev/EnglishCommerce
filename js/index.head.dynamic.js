@@ -30,6 +30,7 @@ export function applyHeaderTheme(data = {}) {
   }
 }
 
+
 async function renderUserRating(teacherId) {
   const box = document.getElementById("userRating");
   if (!box) return;
@@ -55,6 +56,7 @@ box.innerHTML = `<div class="stars">${stars}</div>`;
     console.log("Rating error:", err);
   }
 }
+
 
 
 /* =========================
@@ -93,4 +95,8 @@ export async function loadTeacherHeaderTheme() {
     console.log("Lỗi load header giáo viên:", err);
     resetHeaderTheme();
   }
+
 }
+
+}
+

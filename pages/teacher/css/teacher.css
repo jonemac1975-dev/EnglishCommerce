@@ -3191,6 +3191,7 @@ body.dark .msg.me .bubble {
 
 /===== Bình chọn======/
 
+
 /* =========================
    GLOBAL
 ========================= */
@@ -3208,6 +3209,16 @@ body {
   max-width: 1100px;
   margin: auto;
   padding: 20px;
+  background: #eef3fb;
+  font-family: "Segoe UI", sans-serif;
+  color: #1f2d3d;
+}
+
+/* =========================
+   DASHBOARD WRAPPER
+========================= */
+.dashboard {
+  padding: 18px;
 }
 
 /* =========================
@@ -3218,6 +3229,10 @@ body {
   justify-content: center;
   align-items: center;
   margin-bottom: 18px;
+
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
 }
 
 .top-bar h2 {
@@ -3242,10 +3257,33 @@ body {
   padding: 18px 30px;
   text-align: center;
   box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+
+}
+
+/* =========================
+   KPI CARD
+========================= */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  margin-bottom: 14px;
+}
+
+.kpi-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  transition: 0.2s;
+}
+
+.kpi-card:hover {
+  transform: translateY(-3px);
 }
 
 .kpi-title {
   font-size: 13px;
+
   opacity: 0.85;
 }
 
@@ -3253,6 +3291,14 @@ body {
   font-size: 28px;
   font-weight: 700;
   margin-top: 6px;
+  color: #6b7a90;
+}
+
+.kpi-value {
+  font-size: 26px;
+  font-weight: 700;
+  color: #2d6bff;
+  margin-top: 4px;
 }
 
 /* =========================
@@ -3272,11 +3318,18 @@ body {
   background: #fff;
   border-radius: 18px;
   box-shadow: 0 12px 30px rgba(0,0,0,0.06);
+  grid-template-columns: 35% 65%;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
 /* CHART */
 .chart-card {
   padding: 14px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
 }
 
 /* SUMMARY */
@@ -3319,6 +3372,26 @@ body {
 
 table {
   width: 60%;
+  background: #fff;
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+/* =========================
+   TABLE CARD
+========================= */
+.table-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 0;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+
+/* TABLE */
+table {
+  width: 100%;
   border-collapse: collapse;
 }
 
@@ -3328,6 +3401,7 @@ th {
   padding: 12px;
   font-size: 13px;
   letter-spacing: 0.5px;
+  font-size: 12px;
 }
 
 td {
@@ -3340,11 +3414,15 @@ td {
 td:nth-child(2),
 td:nth-child(4) {
   text-align: left;
+  text-align: center;
+  border-bottom: 1px solid #f1f4f9;
 }
 
 /* HOVER */
 tr:hover td {
   background: #f5f8ff;
+
+  background: #f6faff;
 }
 
 /* STAR */
@@ -3372,4 +3450,7 @@ td:nth-child(2) {
   color: #111;!important;
   font-weight: 400;
   letter-spacing: 0.2px;
+}
+  color: #ffb400;
+  font-weight: bold;
 }
