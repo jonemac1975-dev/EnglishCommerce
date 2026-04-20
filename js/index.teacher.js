@@ -1,11 +1,6 @@
 import { readData } from "../scripts/services/firebaseService.js";
 import { loadTeacherHeaderTheme } from "./index.head.dynamic.js";
 
-async function getTeacherAvg(teacherId) {
-  const data = await readData(`ratings/${teacherId}`);
-  return data?.avg || 0;
-}
-
 let GLOBAL_CLASS_MAP = {};
 let offlineStarted = false;
 let MAIN_HISTORY = [];
@@ -89,27 +84,14 @@ async function initTeacherSidebar() {
     MAIN_HOME_HTML = main.innerHTML;
   }
 
- const teacherId = localStorage.getItem("teacher_id");
+  const teacherId = localStorage.getItem("teacher_id");
+  if (!teacherId) return;
 
-await loadTeacherHeaderTheme();
+  await loadTeacherHeaderTheme(); // 🔥 đổi head theo giáo viên
 
-const ratingData = await readData(`ratings/${teacherId}`);
-const avg = Number(ratingData?.avg || 0);
+  const teacherData = await readData("teacher/" + teacherId);
+  if (!teacherData) return;
 
-const ratingEl = document.getElementById("userRating");
-
-if (ratingEl) {
-  const full = Math.floor(avg);
-  const empty = 5 - full;
-
-  const stars = "★".repeat(full) + "☆".repeat(empty);
-
-  ratingEl.innerHTML = stars;
-}
-
-  // =========================
-  // CONFIG
-  // =========================
   const config = await readData("config");
   GLOBAL_CLASS_MAP = config?.danh_muc?.lop || {};
 
@@ -420,7 +402,6 @@ function loadVanbanList(data) {
   render();
 }
 
-
 /* ================= LOAD DANH SÁCH LỚP ================= */
 function loadClassList(data, type) {
   const group = {};
@@ -452,50 +433,40 @@ function loadClassList(data, type) {
 
     document.querySelectorAll(".class-item").forEach(el => {
       el.onclick = async () => {
-        const id = el.dataset.id;
-        const className = GLOBAL_CLASS_MAP[id]?.name || "";
-        const mode = document.querySelector('input[name="teacher_mode"]:checked')?.value;
+  const id = el.dataset.id;
+  const className = GLOBAL_CLASS_MAP[id]?.name || "";
+  const mode = document.querySelector('input[name="teacher_mode"]:checked')?.value;
 
-        if (!mode) {
-          alert("❌ Chọn Online hoặc Offline");
-          return;
-        }
+  if (!mode) {
+    alert("❌ Chọn Online hoặc Offline");
+    return;
+  }
 
-        const items = group[id] || [];
-        if (!items.length) {
-          alert("❌ Không có bài nào trong lớp này");
-          return;
-        }
+  const items = group[id] || [];
+  if (!items.length) {
+    alert("❌ Không có bài nào trong lớp này");
+    return;
+  }
 
-        // =========================
-        // OFFLINE
-        // =========================
-        if (mode === "truc_tiep") {
-          if (!offlineStarted) {
-            const ok = await window.askStartSession(id, className, "offline");
+  // OFFLINE LOGIC
+  if (mode === "truc_tiep" && !offlineStarted) {
 
-            // ❌ Cancel → chỉ load bài, tuyệt đối không điểm danh
-            if (!ok) {
-              pushView(render);
-              loadItemList(items, className, type);
-              return;
-            }
+    const ok = confirm("📢 Bắt đầu điểm danh? OK = có, Cancel = không");
 
-            // ✅ OK → đánh dấu đã bật offline
-            offlineStarted = true;
-          }
+    if (ok) {
+      offlineStarted = true;
 
-          pushView(render);
-          loadItemList(items, className, type);
-          return;
-        }
+      if (window.startSession) {
+        await window.startSession(id, className, "offline");
+      }
 
-        // =========================
-        // ONLINE / MODE KHÁC
-        // =========================
-        pushView(render);
-        loadItemList(items, className, type);
-      };
+      alert("✔ Đã bắt đầu điểm danh");
+    }
+  }
+
+  // CHỈ LOAD BÀI
+  loadItemList(items, className, type);
+};
     });
   };
 
@@ -547,7 +518,3 @@ function loadItemList(list, className, type) {
 
   render();
 }
-
-initTeacherSidebar();
-loadTeacherHeaderTheme();
-window.loadTeacherHeaderTheme = loadTeacherHeaderTheme;

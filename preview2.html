@@ -2,14 +2,14 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>Preview tài liệu</title>
+<title>Preview Viewer Pro</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 body {
   margin: 0;
   font-family: system-ui;
-  background: #e5e7eb;
+  background: #eef2f7;
 }
 
 .wrapper {
@@ -18,22 +18,22 @@ body {
   background: #fff;
   border-radius: 16px;
   padding: 20px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.08);
 }
 
 .title {
   font-size: 22px;
-  font-weight: bold;
+  font-weight: 700;
   text-align: center;
 }
 
 .content {
-  margin-top: 20px;
+  margin-top: 18px;
 }
 
-iframe {
+iframe, video {
   width: 100%;
-  height: 75vh;
+  height: 80vh;
   border: none;
   border-radius: 12px;
 }
@@ -45,24 +45,11 @@ img {
   margin: auto;
 }
 
-video {
-  width: 100%;
-  border-radius: 12px;
-}
-
-audio {
-  width: 100%;
-}
-
-.fallback {
-  margin-top: 10px;
-  text-align: center;
-}
-
 .toolbar {
   position: fixed;
-  top: 10px;
-  left: 10px;
+  top: 12px;
+  left: 12px;
+  z-index: 999;
 }
 
 .btn {
@@ -70,9 +57,22 @@ audio {
   color: #fff;
   border: none;
   padding: 8px 12px;
-  border-radius: 8px;
-  margin-right: 5px;
+  border-radius: 10px;
   cursor: pointer;
+}
+
+.fallback {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.link-btn {
+  display: inline-block;
+  padding: 10px 14px;
+  background: #2563eb;
+  color: #fff;
+  border-radius: 10px;
+  text-decoration: none;
 }
 </style>
 </head>
@@ -80,7 +80,7 @@ audio {
 <body>
 
 <div class="toolbar">
-  <button class="btn" onclick="history.back()">←</button>
+  <button class="btn" onclick="history.back()">← Back</button>
 </div>
 
 <div class="wrapper">
@@ -96,145 +96,111 @@ const contentEl = document.getElementById("content");
 
 titleEl.innerText = data.title || "Tài liệu";
 
-/* ================= NORMALIZE ================= */
-function normalizeUrl(url) {
-  if (!url) return "";
-
-  // FlipHTML5
-  if (url.includes("fliphtml5.com")) {
-    if (!url.endsWith("index.html")) {
-      if (!url.endsWith("/")) url += "/";
-      url += "index.html";
-    }
-  }
-
-  // Google Drive file
-  if (url.includes("drive.google.com/file/d/")) {
-    const id = url.split("/d/")[1].split("/")[0];
-    return `https://drive.google.com/file/d/${id}/preview`;
-  }
-
-  return url;
+/* ================= UTIL ================= */
+function iframe(src) {
+  return `
+    <iframe src="${src}" allowfullscreen></iframe>
+  `;
 }
 
-/* ================= BUILD EMBED ================= */
+/* ================= FLIPHTML5 FIX PRO ================= */
+function openFlip(url) {
+  const embed = url.replace(/\/$/, "/index.html");
+
+  const win = window.open(embed, "_blank");
+
+  if (!win || win.closed) {
+    // fallback nếu bị chặn
+    alert("Không thể mở FlipHTML5 trong tab, đang mở trong hệ thống");
+    document.getElementById("content").innerHTML =
+      `<iframe src="${embed}" style="width:100%;height:80vh;border:none"></iframe>`;
+  }
+}
+
+/* ================= EMBED ENGINE ================= */
 function buildEmbed(url) {
   if (!url) return "<i>Không có nội dung</i>";
 
-  // 🔥 FlipHTML5
+  // FLIPHTML5 (FIX PRO)
   if (url.includes("fliphtml5.com")) {
-  const parts = url.split("/").filter(Boolean);
-  const bookId = parts[parts.length - 2];
-  const bookName = parts[parts.length - 1];
-
-  const embedUrl = `https://online.fliphtml5.com/${bookId}/${bookName}/index.html`;
-
-  return `
-    <iframe 
-      src="${embedUrl}" 
-      style="width:100%;height:80vh;border:none"
-      allow="fullscreen"
-      referrerpolicy="no-referrer">
-    </iframe>
-  `;
+  return handleFlip(url);
 }
-  // 👉 VIDEO
+
+  // VIDEO
   if (url.match(/\.(mp4|webm|ogg)$/i)) {
-    return `
-      <video controls style="width:100%">
-        <source src="${url}">
-      </video>
-    `;
+    return `<video controls src="${url}"></video>`;
   }
 
-  // 👉 AUDIO
+  // AUDIO
   if (url.match(/\.(mp3|wav|ogg)$/i)) {
-    return `
-      <audio controls style="width:100%">
-        <source src="${url}">
-      </audio>
-    `;
+    return `<audio controls src="${url}"></audio>`;
   }
 
-  // 👉 IMAGE
+  // IMAGE
   if (url.match(/\.(jpg|jpeg|png|webp|gif)$/i)) {
-    return `<img src="${url}" style="max-width:100%;border-radius:12px">`;
+    return `<img src="${url}">`;
   }
 
-  // 👉 PDF
+  // PDF
   if (url.endsWith(".pdf")) {
     return iframe(url);
   }
 
-  // 👉 PPTX
-  if (url.endsWith(".pptx")) {
+  // PPT / DOC
+  if (url.match(/\.(pptx|doc|docx)$/i)) {
     return iframe(
       "https://view.officeapps.live.com/op/embed.aspx?src=" + encodeURIComponent(url)
     );
   }
 
-  // 👉 WORD
-  if (url.match(/\.(doc|docx)$/i)) {
-    return iframe(
-      "https://view.officeapps.live.com/op/embed.aspx?src=" + encodeURIComponent(url)
-    );
+  // GOOGLE DRIVE
+  if (url.includes("drive.google.com/file/d/")) {
+    const id = url.split("/d/")[1].split("/")[0];
+    return iframe(`https://drive.google.com/file/d/${id}/preview`);
   }
 
-  // 👉 Google Docs
+  // GOOGLE DOCS
   if (url.includes("docs.google.com/document")) {
     const id = url.match(/\/d\/([^/]+)/)?.[1];
-    if (id) return iframe(`https://docs.google.com/document/d/${id}/preview`);
+    return iframe(`https://docs.google.com/document/d/${id}/preview`);
   }
 
-  // 👉 Google Slides
+  // GOOGLE SLIDES
   if (url.includes("docs.google.com/presentation")) {
     const id = url.match(/\/d\/([^/]+)/)?.[1];
-    if (id) return iframe(`https://docs.google.com/presentation/d/${id}/embed`);
+    return iframe(`https://docs.google.com/presentation/d/${id}/embed`);
   }
 
-  // 👉 YouTube
+  // YOUTUBE
   if (url.includes("youtube.com/watch") || url.includes("youtu.be")) {
-    let videoId = "";
+    let id = "";
 
     if (url.includes("youtu.be")) {
-      videoId = url.split("/").pop();
+      id = url.split("/").pop();
     } else {
-      videoId = new URL(url).searchParams.get("v");
+      id = new URL(url).searchParams.get("v");
     }
 
-    return iframe(`https://www.youtube.com/embed/${videoId}`);
+    return iframe(`https://www.youtube.com/embed/${id}`);
   }
 
-  // 👉 DEFAULT
+  // DEFAULT
   return iframe(url);
-}
-
-/* ================= IFRAME HELPER ================= */
-function iframe(src, label = "Mở link") {
-  return `
-    <iframe src="${src}" allowfullscreen></iframe>
-    <div class="fallback">
-      <a href="${src}" target="_blank">🔗 ${label}</a>
-    </div>
-  `;
 }
 
 /* ================= RENDER ================= */
 function render() {
 
-  // URL
   if (data.url) {
     contentEl.innerHTML = buildEmbed(data.url);
     return;
   }
 
-  // HTML Word (đã convert)
   if (data.content_html) {
-    contentEl.innerHTML = `<div class="word-content">${data.content_html}</div>`;
+    contentEl.innerHTML = data.content_html;
     return;
   }
 
-  // IMAGE fallback
   if (data.image) {
     contentEl.innerHTML = `<img src="${data.image}">`;
     return;

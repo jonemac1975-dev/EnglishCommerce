@@ -2,575 +2,213 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>Preview bài giảng</title>
+<title>Preview Viewer Pro</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-  * {
-    box-sizing: border-box;
-  }
+body {
+  margin: 0;
+  font-family: system-ui;
+  background: #eef2f7;
+}
 
-  html, body {
-    margin: 0;
-    padding: 0;
-    min-height: 100%;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: #e5e7eb;
-    color: #111827;
-  }
+.wrapper {
+  max-width: 1100px;
+  margin: 20px auto;
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+}
 
-  body.fullscreen-active {
-    overflow: hidden;
-  }
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
+}
 
-  .preview-wrapper {
-    max-width: 1100px;
-    margin: 28px auto;
-    background: #ffffff;
-    padding: 36px 42px;
-    border-radius: 18px;
-    box-shadow: 0 24px 70px rgba(15, 23, 42, 0.08);
-    min-height: 100vh;
-    overflow: visible;
-  }
+.content {
+  margin-top: 18px;
+}
 
-  .lesson-title {
-    font-size: 30px;
-    font-weight: 900;
-    text-align: center;
-    margin-bottom: 8px;
-    color: #0f172a;
-  }
+iframe, video {
+  width: 100%;
+  height: 80vh;
+  border: none;
+  border-radius: 12px;
+}
 
-  .lesson-meta {
-    text-align: center;
-    font-size: 14px;
-    color: #64748b;
-    margin-bottom: 28px;
-  }
+img {
+  max-width: 100%;
+  border-radius: 12px;
+  display: block;
+  margin: auto;
+}
 
-  .lesson-content {
-    font-size: 16px;
-    line-height: 1.75;
-    word-wrap: break-word;
-    overflow: visible;
-    min-height: 60vh;
-  }
+.toolbar {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 999;
+}
 
-  .lesson-content * {
-    max-width: 100%;
-    box-sizing: border-box;
-  }
+.btn {
+  background: #111827;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+}
 
-  /* ===== TABLE ===== */
-  .lesson-content table {
-    width: 100% !important;
-    border-collapse: collapse !important;
-    margin: 14px 0 !important;
-  }
+.fallback {
+  text-align: center;
+  margin-top: 10px;
+}
 
-  .lesson-content th,
-  .lesson-content td {
-    border: 1px solid #cbd5e1 !important;
-    padding: 10px 12px !important;
-    text-align: left !important;
-    vertical-align: top !important;
-  }
-
-  /* ===== WORD TEXT ===== */
-  .word-text {
-    white-space: pre-wrap;
-    font-family: "Times New Roman", serif;
-    font-size: 16px;
-    line-height: 1.8;
-    margin: 0;
-  }
-
-  /* ===== TOP CONTROLS ===== */
-  .top-controls {
-    position: fixed;
-    top: 12px;
-    left: 12px;
-    z-index: 9999;
-    display: flex;
-    gap: 10px;
-  }
-
-  #btnHome,
-  #btnFullscreen {
-    background: rgba(15, 23, 42, 0.78);
-    color: #fff;
-    border: none;
-    padding: 8px 12px;
-    font-size: 14px;
-    border-radius: 10px;
-    cursor: pointer;
-    text-decoration: none;
-    transition: 0.2s ease;
-  }
-
-  #btnHome:hover,
-  #btnFullscreen:hover {
-    background: rgba(15, 23, 42, 0.92);
-    transform: translateY(-1px);
-  }
-
-  #btnFs {
-    position: fixed;
-    top: 12px;
-    right: 12px;
-    z-index: 9999;
-    font-size: 18px;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 10px;
-    background: rgba(15, 23, 42, 0.78);
-    color: #fff;
-    cursor: pointer;
-    transition: 0.2s ease;
-  }
-
-  #btnFs:hover {
-    background: rgba(15, 23, 42, 0.92);
-    transform: translateY(-1px);
-  }
-
-  /* ===== DOC FRAME ===== */
-  .doc-frame {
-    width: 100%;
-    height: 80vh;
-    border: none;
-    border-radius: 14px;
-    box-shadow: 0 14px 30px rgba(15,23,42,0.08);
-  }
-
-  /* =========================================
-     TOEIC PREVIEW UI
-  ========================================= */
-  .tb-preview-media {
-    margin: 18px 0;
-    padding: 18px;
-    border-radius: 22px;
-    background: #f8fafc;
-    border: 1px solid rgba(15,23,42,0.06);
-    text-align: center;
-  }
-
-  .tb-preview-media img {
-    max-width: 70%;
-    border-radius: 16px;
-    box-shadow: 0 12px 24px rgba(15,23,42,0.08);
-  }
-
-  .tb-preview-media audio {
-    width: min(380px, 100%);
-  }
-
-  .tb-preview-media video,
-  .tb-preview-media iframe {
-    width: min(720px, 100%);
-    max-width: 100%;
-    aspect-ratio: 16 / 9;
-    border: none;
-    border-radius: 18px;
-    box-shadow: 0 14px 30px rgba(15,23,42,0.08);
-    background: #000;
-  }
-
-  .tb-preview-passage {
-    margin-bottom: 16px;
-    padding: 16px 18px;
-    background: #f8fafc;
-    border: 1px solid rgba(15,23,42,0.06);
-    border-radius: 18px;
-    color: #334155;
-    line-height: 1.85;
-  }
-
-  .tb-preview-question {
-    background: #ffffff;
-    border: 1px solid rgba(15,23,42,0.06);
-    border-radius: 24px;
-    padding: 22px;
-    margin-bottom: 22px;
-    box-shadow: 0 12px 28px rgba(15,23,42,0.04);
-  }
-
-  .tb-preview-qtop {
-    margin-bottom: 14px;
-  }
-
-  .tb-qbadge {
-    display: inline-flex;
-    align-items: center;
-    padding: 8px 14px;
-    border-radius: 999px;
-    background: rgba(22,61,143,0.08);
-    color: #163d8f;
-    font-weight: 900;
-    font-size: 12px;
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-  }
-
-  .tb-preview-qtext {
-    font-size: 19px;
-    font-weight: 800;
-    color: #0f172a;
-    margin-bottom: 16px;
-    line-height: 1.8;
-  }
-
-  .tb-preview-options {
-    display: grid;
-    gap: 12px;
-  }
-
-  .tb-preview-option {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    border-radius: 18px;
-    border: 1px solid rgba(15,23,42,0.08);
-    background: #ffffff;
-    padding: 15px 16px;
-  }
-
-  .tb-preview-option.correct {
-    background: rgba(21,128,61,0.06);
-    border-color: rgba(21,128,61,0.18);
-  }
-
-  .tb-preview-letter {
-    width: 40px;
-    height: 40px;
-    min-width: 40px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, #163d8f, #295fcf);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 900;
-  }
-
-  .tb-preview-optext {
-    flex: 1;
-    color: #334155;
-    font-weight: 700;
-    line-height: 1.75;
-  }
-
-  .tb-preview-ok {
-    color: #15803d;
-    font-size: 18px;
-    font-weight: 900;
-  }
-
-  .tb-empty-preview {
-    min-height: 220px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    color: #94a3b8;
-    text-align: center;
-  }
-
-  .tb-empty-icon {
-    font-size: 44px;
-    margin-bottom: 10px;
-  }
-
-  /* ===== FULLSCREEN ===== */
-  :fullscreen,
-  :fullscreen body {
-    background: #fff !important;
-  }
-
-  ::backdrop {
-    background: #e5e7eb !important;
-  }
-
-  :fullscreen .preview-wrapper {
-    max-width: 100vw !important;
-    width: 100vw !important;
-    min-height: 100vh !important;
-    margin: 0 !important;
-    border-radius: 0 !important;
-    padding-top: 10px !important;
-    height: 100vh;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  :fullscreen .lesson-title {
-    margin-top: 0 !important;
-  }
-
-  :fullscreen .doc-frame {
-    height: 100vh !important;
-  }
-
-  @media (max-width: 768px) {
-    .preview-wrapper {
-      margin: 12px;
-      padding: 20px 16px;
-      border-radius: 16px;
-    }
-
-    .lesson-title {
-      font-size: 24px;
-    }
-
-    .tb-preview-qtext {
-      font-size: 17px;
-    }
-
-    .tb-preview-media img {
-      max-width: 100%;
-    }
-  }
+.link-btn {
+  display: inline-block;
+  padding: 10px 14px;
+  background: #2563eb;
+  color: #fff;
+  border-radius: 10px;
+  text-decoration: none;
+}
 </style>
-<script type="module">
-  import { finalizeAIContent } from "../scripts/utils/aiContentFormatter.js";
-  window.finalizeAIContent = finalizeAIContent;
-</script>
 </head>
 
 <body>
 
-<button id="btnFs">⛶</button>
-
-<div class="top-controls">
-  <a href="../index.html" id="btnHome"><==</a>
+<div class="toolbar">
+  <button class="btn" onclick="history.back()">← Back</button>
 </div>
 
-<div class="preview-wrapper">
-  <div class="lesson-title" id="pTitle"></div>
-  <div class="lesson-meta" id="pMeta"></div>
-  <div class="lesson-content" id="pContent"></div>
+<div class="wrapper">
+  <div class="title" id="title"></div>
+  <div class="content" id="content"></div>
 </div>
 
 <script>
 const data = JSON.parse(localStorage.getItem("lesson_preview") || "{}");
 
-const titleEl = document.getElementById("pTitle");
-const metaEl  = document.getElementById("pMeta");
-const contentEl = document.getElementById("pContent");
+const titleEl = document.getElementById("title");
+const contentEl = document.getElementById("content");
 
-titleEl.innerText = data.title || data.name || "Bài giảng";
-metaEl.innerText  = data.meta || "";
+titleEl.innerText = data.title || "Tài liệu";
 
-/* ===== UTIL ===== */
-function isURL(text) {
-  return /^https?:\/\//i.test(text.trim());
+/* ================= UTIL ================= */
+function iframe(src) {
+  return `
+    <iframe src="${src}" allowfullscreen></iframe>
+  `;
 }
 
-function isDrivePreview(url) {
-  return url.includes("drive.google.com") && url.includes("/preview");
+/* ================= FLIPHTML5 FIX PRO ================= */
+function openFlip(url) {
+  const embed = url.replace(/\/$/, "/index.html");
+
+  const win = window.open(embed, "_blank");
+
+  if (!win || win.closed) {
+    // fallback nếu bị chặn
+    alert("Không thể mở FlipHTML5 trong tab, đang mở trong hệ thống");
+    document.getElementById("content").innerHTML =
+      `<iframe src="${embed}" style="width:100%;height:80vh;border:none"></iframe>`;
+  }
+}
+/* ================= EMBED ENGINE ================= */
+function buildEmbed(url) {
+  if (!url) return "<i>Không có nội dung</i>";
+
+  // FLIPHTML5 (FIX PRO)
+  if (url.includes("fliphtml5.com")) {
+  return handleFlip(url);
 }
 
-function isPDF(url) {
-  return url.toLowerCase().endsWith(".pdf") || isDrivePreview(url);
-}
-
-function isFlipbook(url) {
-  return url.endsWith(".html");
-}
-
-function isLikelyToeicTest(html) {
-  const text = stripHtml(html || "");
-  return (
-    /câu\s*\d+/i.test(text) ||
-    /question\s*\d+/i.test(text) ||
-    /^[A-D][\.\)\,\-:]/im.test(text) ||
-    /\*/.test(text)
-  );
-}
-
-function escapeHtml(str = "") {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-}
-
-function stripHtml(html = "") {
-  const div = document.createElement("div");
-  div.innerHTML = html;
-  return div.innerText || div.textContent || "";
-}
-
-function isHTML(str = "") {
-  return /<\/?[a-z][\s\S]*>/i.test(str);
-}
-
-
-function getPreviewRawContent(data = {}) {
-  // 🔥 Ưu tiên TEXT trước (fix AI)
-  return (
-    data.content_text ||
-    data.content_html ||
-    data.content ||
-    data.html ||
-    data.content_text ||
-    data.text ||
-    ""
-  ).trim();
-}
-
-
-/* ===== WORD CLEAN ===== */
-function cleanWordHTML(html) {
-  if (!html) return "<i>Không có nội dung</i>";
-
-  return html
-    .replace(/class="?Mso[a-zA-Z0-9]*"?/g, "")
-    .replace(/style="[^"]*mso-[^"]*"/g, "")
-    .replace(/<o:p>\s*<\/o:p>/g, "")
-    .replace(/<span style="[^"]*"><\/span>/g, "")
-    .replace(/<!--\[if[^>]*>.*?<!\[endif\]-->/g, "");
-}
-
-
-
-/* ===== TOEIC RENDER ===== */
-function renderToeicPreview(input) {
-  let lines = [];
-
-  // ✅ CASE 1: HTML (Word hoặc AI có <br>)
-  if (isHTML(input)) {
-    const tempDiv = document.createElement("div");
-    tempDiv.innerHTML = input;
-
-    // 🔥 FIX QUAN TRỌNG NHẤT
-    lines = tempDiv.innerText
-      .split("\n")
-      .map(x => x.trim())
-      .filter(Boolean);
-  } 
-  // ✅ CASE 2: TEXT thuần
-  else {
-    lines = String(input)
-      .split("\n")
-      .map(x => x.trim())
-      .filter(Boolean);
+  // VIDEO
+  if (url.match(/\.(mp4|webm|ogg)$/i)) {
+    return `<video controls src="${url}"></video>`;
   }
 
-  let out = "";
-  let qIndex = 0;
-  let currentQuestionOpen = false;
+  // AUDIO
+  if (url.match(/\.(mp3|wav|ogg)$/i)) {
+    return `<audio controls src="${url}"></audio>`;
+  }
 
-  for (const line of lines) {
+  // IMAGE
+  if (url.match(/\.(jpg|jpeg|png|webp|gif)$/i)) {
+    return `<img src="${url}">`;
+  }
 
-    const isQuestion =
-      /^câu\s*\d+/i.test(line) ||
-      /^question\s*\d+/i.test(line);
+  // PDF
+  if (url.endsWith(".pdf")) {
+    return iframe(url);
+  }
 
-    const isOption = /^[A-D][\.\)\,\-:]/i.test(line);
+  // PPT / DOC
+  if (url.match(/\.(pptx|doc|docx)$/i)) {
+    return iframe(
+      "https://view.officeapps.live.com/op/embed.aspx?src=" + encodeURIComponent(url)
+    );
+  }
 
-    if (isQuestion) {
-      if (currentQuestionOpen) out += `</div></div>`;
+  // GOOGLE DRIVE
+  if (url.includes("drive.google.com/file/d/")) {
+    const id = url.split("/d/")[1].split("/")[0];
+    return iframe(`https://drive.google.com/file/d/${id}/preview`);
+  }
 
-      qIndex++;
+  // GOOGLE DOCS
+  if (url.includes("docs.google.com/document")) {
+    const id = url.match(/\/d\/([^/]+)/)?.[1];
+    return iframe(`https://docs.google.com/document/d/${id}/preview`);
+  }
 
-      out += `
-        <div class="tb-preview-question">
-          <div class="tb-preview-qtop">
-            <span class="tb-qbadge">Question ${qIndex}</span>
-          </div>
-          <div class="tb-preview-qtext">${escapeHtml(line)}</div>
-          <div class="tb-preview-options">
-      `;
+  // GOOGLE SLIDES
+  if (url.includes("docs.google.com/presentation")) {
+    const id = url.match(/\/d\/([^/]+)/)?.[1];
+    return iframe(`https://docs.google.com/presentation/d/${id}/embed`);
+  }
 
-      currentQuestionOpen = true;
-      continue;
+  // YOUTUBE
+  if (url.includes("youtube.com/watch") || url.includes("youtu.be")) {
+    let id = "";
+
+    if (url.includes("youtu.be")) {
+      id = url.split("/").pop();
+    } else {
+      id = new URL(url).searchParams.get("v");
     }
 
-    if (isOption) {
-      const letter = line.charAt(0).toUpperCase();
-      const isCorrect = /\*\s*$/.test(line);
-
-      const optionText = line
-        .replace(/^[A-D][\.\)\,\-:]\s*/i, "")
-        .replace(/\s*\*+\s*$/, "")
-        .trim();
-
-      out += `
-        <div class="tb-preview-option ${isCorrect ? "correct" : ""}">
-          <div class="tb-preview-letter">${letter}</div>
-          <div class="tb-preview-optext">${escapeHtml(optionText)}</div>
-          ${isCorrect ? `<div class="tb-preview-ok">✔</div>` : ""}
-        </div>
-      `;
-      continue;
-    }
-
-    out += `<div class="tb-preview-passage">${escapeHtml(line)}</div>`;
+    return iframe(`https://www.youtube.com/embed/${id}`);
   }
 
-  if (currentQuestionOpen) out += `</div></div>`;
-
-  return out;
+  // DEFAULT
+  return iframe(url);
 }
 
-/* ===== MAIN RENDER ===== */
-(function render() {
-  let raw = getPreviewRawContent(data);
+/* ================= RENDER ================= */
+function render() {
 
-  let rawText = raw;
-
-  if (isHTML(rawText)) {
-    rawText = rawText
-      .replace(/<br\s*\/?>/gi, "\n")
-      .replace(/<\/p>/gi, "\n")
-      .replace(/<[^>]+>/g, "")
-      .trim();
-  }
-
-  rawText = rawText.replace(/^TIÊU ĐỀ.*\n/i, "").trim();
-
-  if (!rawText) {
-    contentEl.innerHTML = "<i>Không có nội dung</i>";
+  if (data.url) {
+    contentEl.innerHTML = buildEmbed(data.url);
     return;
   }
 
-  // 👉 LINK
-  if (isURL(rawText)) {
-    contentEl.innerHTML = `<iframe src="${rawText}" class="doc-frame"></iframe>`;
+  if (data.content_html) {
+    contentEl.innerHTML = data.content_html;
     return;
   }
 
-  // 👉 TOEIC / AI EXERCISE
-  if (isLikelyToeicTest(rawText)) {
-    const fixed = window.finalizeAIContent
-      ? window.finalizeAIContent(rawText, "exercise")
-      : rawText;
-
-    console.log("AI FIXED:", fixed);
-
-    contentEl.innerHTML = renderToeicPreview(fixed);
+  if (data.image) {
+    contentEl.innerHTML = `<img src="${data.image}">`;
     return;
   }
 
-  // 👉 TEXT thường
-  contentEl.innerHTML = `<div class="word-text">${escapeHtml(rawText)}</div>`;
-})();
-</script>
+  contentEl.innerHTML = "<i>Không có nội dung</i>";
+}
 
-<script>
-const btn = document.getElementById("btnFs");
-
-btn.onclick = async () => {
-  if (!document.fullscreenElement) {
-    await document.documentElement.requestFullscreen();
-    document.body.classList.add("fullscreen-active");
-  } else {
-    await document.exitFullscreen();
-    document.body.classList.remove("fullscreen-active");
-  }
-};
+render();
 </script>
 
 </body>
