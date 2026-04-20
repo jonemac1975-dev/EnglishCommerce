@@ -197,7 +197,6 @@ display: block;
 /* ================= SIDEBAR CHUNG ================= */
 .sidebar {
   background: #fffs;
-  background: #ffffff;
   padding: 1px;
 
 }
@@ -240,9 +239,7 @@ color: brown;
   padding: 5px;
   border: none;
   border-radius: 6px;
-
   background: Brown;
-  background: #3f6fc1;
   color: #fff;
   cursor: pointer;
 }
@@ -848,7 +845,6 @@ body.ready{
 
   /* Logo + avatar về trái */
   .header-right {
-  .header-left {
     align-items: flex-start;
   }
 
@@ -1321,11 +1317,8 @@ body {
 
 
 .back-btn {
-
   background: Brown;
   color: White;
-  background: #ffd700;
-  color: black;
   border: none;
   padding: 2px 10px;
   border-radius: 8px;
@@ -1963,7 +1956,6 @@ background: rgba(20,20,20,0.85);
 
 .top-menu button {
   background: linear-gradient(135deg,#2e7d32);
-  background: linear-gradient(135deg, #4caf50, #2e7d32);
   color: #fff;
   border: none;
   font-size: 14px;
@@ -2080,4 +2072,3 @@ td:nth-child(2) {
   font-weight: 600;
   letter-spacing: 0.2px;
 }
-

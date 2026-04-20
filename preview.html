@@ -138,11 +138,6 @@ function buildEmbed(url) {
 }
 
 
-=======
-  return handleFlip(url);
-}
-
->>>>>>> f554390796016033cf7a0ada4689a944078a3fe9
   // VIDEO
   if (url.match(/\.(mp4|webm|ogg)$/i)) {
     return `<video controls src="${url}"></video>`;
@@ -206,7 +201,6 @@ function buildEmbed(url) {
 }
 
 
-
 function handleFlip(url) {
   let embed = url.replace(/\/$/, "");
 
@@ -230,7 +224,6 @@ function handleFlip(url) {
     </div>
   `;
 }
-
 
 /* ================= RENDER ================= */
 function render() {

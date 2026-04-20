@@ -46,7 +46,6 @@ async function loadList() {
 
   list.innerHTML = "";
 
-
   // 👉 lấy tuần + tháng hiện tại
   const now = new Date();
   const month = now.getMonth() + 1;
@@ -58,7 +57,6 @@ async function loadList() {
     titleEl.innerText = `📊 Tuần ${week} - Tháng ${month}`;
   }
 
-
   if (!data) {
     list.innerHTML =
       "<tr><td colspan='4'>Chưa có bình chọn</td></tr>";
@@ -67,15 +65,10 @@ async function loadList() {
   }
 
   let stars = [];
-
   let index = 1;
 
   Object.values(data).forEach(r => {
     if (!r?.star) return;
-
-
-
-  Object.values(data).forEach(r => {
 
     stars.push(r.star);
 
@@ -84,21 +77,13 @@ async function loadList() {
 
     list.innerHTML += `
       <tr>
-
         <td>${index++}</td>
         <td style="text-align:left">${name}</td>
         <td>${"⭐".repeat(r.star)}</td>
         <td style="text-align:left">${r.comment || ""}</td>
-
-        <td>${r.week}</td>
-        <td>${name}</td>
-        <td>${"⭐".repeat(r.star)}</td>
-        <td>${r.comment || ""}</td>
-
       </tr>
     `;
   });
-
 
   // 👉 nếu không có dữ liệu hợp lệ
   if (stars.length === 0) {
@@ -109,20 +94,15 @@ async function loadList() {
   }
 
   // 👉 tính điểm trung bình
-
   const avg =
     stars.reduce((a, b) => a + b, 0) / stars.length;
 
   avgEl.innerText =
     `⭐ ${avg.toFixed(1)} / 5 (${stars.length} lượt)`;
 
-
   // 👉 vẽ chart + summary
   drawChart(stars);
   renderSummary(stars);
-}
-
-  drawChart(stars);
 }
 
 
@@ -130,8 +110,6 @@ async function loadList() {
    CHART (FIX FULL)
 ========================= */
 function drawChart(data) {
-
-  // 🔥 chống render đè
 
   if (chartInstance) {
     chartInstance.destroy();
@@ -141,15 +119,7 @@ function drawChart(data) {
   const count = [0, 0, 0, 0, 0];
   data.forEach(s => count[s - 1]++);
 
-
   const ctx = document.getElementById("chart").getContext("2d");
-  const canvas = document.getElementById("chart");
-  const ctx = canvas.getContext("2d");
-
-  // gradient đẹp
-  const gradient = ctx.createLinearGradient(0, 0, 200, 0);
-  gradient.addColorStop(0, "#ff7a00");
-  gradient.addColorStop(1, "#ffb347");
 
   chartInstance = new Chart(ctx, {
     type: "bar",
@@ -159,10 +129,6 @@ function drawChart(data) {
       datasets: [{
         data: count,
         borderRadius: 10,
-      datasets: [{
-        data: count,
-        backgroundColor: gradient,
-        borderRadius: 8,
         borderSkipped: false
       }]
     },
@@ -174,14 +140,6 @@ function drawChart(data) {
 
       plugins: {
         legend: { display: false }
-      indexAxis: "y", // 🔥 FIX QUAN TRỌNG: bar ngang chuẩn
-
-      plugins: {
-        legend: { display: false },
-
-        tooltip: {
-          backgroundColor: "#333"
-        }
       },
 
       scales: {
@@ -194,9 +152,6 @@ function drawChart(data) {
             color: "#eee"
           }
         },
-          grid: { color: "#eee" }
-        },
-
         y: {
           grid: { display: false }
         }
@@ -224,38 +179,6 @@ function drawChart(data) {
         });
       }
     }]
-  });
-}
-
-
-    plugins: [
-      {
-        id: "valueLabel",
-        afterDatasetsDraw(chart) {
-          const { ctx } = chart;
-
-          chart.data.datasets.forEach((dataset, i) => {
-            const meta = chart.getDatasetMeta(i);
-
-            meta.data.forEach((bar, index) => {
-              const value = dataset.data[index];
-
-              if (value > 0) {
-                ctx.fillStyle = "#333";
-                ctx.font = "12px Arial";
-                ctx.textAlign = "left";
-
-                ctx.fillText(
-                  value,
-                  bar.x + 8,
-                  bar.y + 4
-                );
-              }
-            });
-          });
-        }
-      }
-    ]
   });
 }
 
