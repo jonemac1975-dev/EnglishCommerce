@@ -1,0 +1,61 @@
+<div class="tab-ai-wrap">
+
+  <!-- HEADER -->
+  <div class="ai-header">
+    <h2>🤖 Soạn bài giảng đa môn</h2>
+    <p>Tạo nội dung + slide bằng AI, chỉnh sửa trước khi xuất PPT</p>
+  </div>
+
+  <!-- FORM -->
+  <div class="ai-form">
+    <div class="form-row">
+      <label>Môn học</label>
+      <select id="aiSubject">
+        <option>Toán</option>
+        <option>Văn</option>
+        <option>Anh</option>
+        <option>Lý</option>
+        <option>Hóa</option>
+        <option>Sinh</option>
+        <option>Sử</option>
+        <option>Địa</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label>Chương</label>
+      <input id="aiChapter" placeholder="VD: Hàm số" />
+    </div>
+
+    <div class="form-row">
+      <label>Bài</label>
+      <input id="aiLesson" placeholder="VD: Hàm số bậc 2" />
+    </div>
+
+    <div class="form-row">
+      <label>Nội dung yêu cầu</label>
+<div class="file-box">
+  <input type="file" id="aiFile" accept=".docx,.pdf,.txt" />
+  <button id="btnReadFile">📄 Đọc file</button>
+</div>
+     <textarea id="aiContent" class="ai-textarea"></textarea>
+        placeholder="VD: Lý thuyết + ví dụ + bài tập + tóm tắt"></textarea>
+    </div>
+
+    <!-- ACTION -->
+    <div class="ai-actions">
+      <button id="btnGenerate">⚡ Tạo bài</button>
+      <button id="btnClear">🗑 Reset</button>
+      <button id="btnExport">📊 Xuất PPT</button>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div id="aiLoading" class="ai-loading hidden">
+    ⏳ AI đang soạn bài...
+  </div>
+
+  <!-- PREVIEW -->
+  <div id="aiPreview" class="ai-preview"></div>
+
+</div>

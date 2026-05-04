@@ -20,6 +20,14 @@ function init() {
     const teacherId = e.target.value;
     if (teacherId) loadList(teacherId);
   };
+
+  // 🔥 GẮN Ở ĐÂY (CHUẨN)
+  ["year", "month", "week"].forEach(id => {
+    document.getElementById(id).onchange = () => {
+      const teacherId = document.getElementById("teacher").value;
+      if (teacherId) loadList(teacherId);
+    };
+  });
 }
 
 //
@@ -193,9 +201,18 @@ async function loadList(teacherId) {
   }
 
   // ✅ LỌC CHỈ BÌNH CHỌN CỦA CHÍNH SV
-  const myRatings = Object.values(data)
-    .filter(r => r.studentId === studentId)
-    .sort((a, b) => b.time - a.time);
+  const year = +document.getElementById("year").value;
+const month = +document.getElementById("month").value;
+const week = +document.getElementById("week").value;
+
+const myRatings = Object.values(data)
+  .filter(r => 
+    r.studentId === studentId &&
+    Number(r.year) === year &&
+    Number(r.month) === month &&
+    Number(r.week) === week
+  )
+  .sort((a, b) => b.time - a.time);
 
   if (myRatings.length === 0) {
     list.innerHTML = "<tr><td colspan='5'>Bạn chưa bình chọn</td></tr>";

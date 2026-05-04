@@ -3310,6 +3310,10 @@ body {
   background: linear-gradient(90deg, #ff8a00, #ffb347);
 }
 
+#summary {
+  display: none;
+}
+
 /* =========================
    TABLE
 ========================= */

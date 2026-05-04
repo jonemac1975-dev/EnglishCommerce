@@ -1,8 +1,11 @@
 import { readData } from "../../../scripts/services/firebaseService.js";
 
-const teacherId =
-  localStorage.getItem("view_teacher_id") ||
-  localStorage.getItem("teacher_id");
+function getTeacherId() {
+  return (
+    localStorage.getItem("view_teacher_id") ||
+    localStorage.getItem("teacher_id")
+  );
+}
 
 let chartInstance = null;
 let studentMap = {};
@@ -13,6 +16,8 @@ init();
    INIT
 ========================= */
 async function init() {
+  const teacherId = getTeacherId();
+
   if (!teacherId) {
     alert("Không có ID giáo viên");
     return;
@@ -42,6 +47,16 @@ async function loadList() {
   const list = document.getElementById("list");
   const avgEl = document.getElementById("avg");
 
+  // 🔥 RESET TOÀN BỘ STATE
+  list.innerHTML = "";
+  avgEl.innerText = "Đang tải...";
+
+  if (chartInstance) {
+    chartInstance.destroy();
+    chartInstance = null;
+  }
+
+  const teacherId = getTeacherId();
   const data = await readData(`ratingDetails/${teacherId}`);
 
   list.innerHTML = "";
@@ -68,9 +83,18 @@ async function loadList() {
   let index = 1;
 
   Object.values(data).forEach(r => {
-    if (!r?.star) return;
+  if (!r?.star) return;
 
-    stars.push(r.star);
+  // 🔥 FILTER THEO NĂM / THÁNG / TUẦN
+  if (
+    r.year !== now.getFullYear() ||
+    r.month !== month ||
+    r.week !== week
+  ) {
+    return;
+  }
+
+  stars.push(r.star);
 
     const name =
       studentMap[r.studentId] || r.studentId;
@@ -128,8 +152,16 @@ function drawChart(data) {
       labels: ["1⭐", "2⭐", "3⭐", "4⭐", "5⭐"],
       datasets: [{
         data: count,
-        borderRadius: 10,
-        borderSkipped: false
+backgroundColor: [
+  "#3e2a1f",
+  "#4a3326",
+  "#5a3e2b",
+  "#6b4f3a",
+  "#7a5a45"
+],
+        borderRadius: 14,
+        borderSkipped: false,
+        barThickness: 18
       }]
     },
 
@@ -149,7 +181,7 @@ function drawChart(data) {
             precision: 0
           },
           grid: {
-            color: "#eee"
+            color: "rgba(0,0,0,0.05)"
           }
         },
         y: {
@@ -170,7 +202,7 @@ function drawChart(data) {
             const value = dataset.data[index];
 
             if (value > 0) {
-              ctx.fillStyle = "#111";
+              ctx.fillStyle = "#444";
               ctx.font = "12px system-ui";
               ctx.textAlign = "left";
               ctx.fillText(value, bar.x + 6, bar.y + 4);
@@ -187,6 +219,11 @@ function drawChart(data) {
    SUMMARY BAR
 ========================= */
 function renderSummary(data) {
+  const el = document.getElementById("summary");
+
+  // 🔥 CHỐT: không có thì bỏ qua
+  if (!el) return;
+
   const count = [0, 0, 0, 0, 0];
 
   data.forEach(s => count[s - 1]++);
@@ -212,5 +249,5 @@ function renderSummary(data) {
     .reverse()
     .join("");
 
-  document.getElementById("summary").innerHTML = html;
+  el.innerHTML = html;
 }

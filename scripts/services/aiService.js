@@ -44,12 +44,11 @@ export async function askAI({
     }
 
     return {
-      success: true,
-      text: data.result,   // 🔥 always string
-      mode: data.mode,
-      provider: data.provider
-    };
-
+  success: true,
+  text: data.result,   // 👈 phải gán key
+  mode: data.mode,
+  provider: data.provider
+};
   } catch (err) {
     return fallback(type, "network_error");
   }
