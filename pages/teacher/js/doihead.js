@@ -19,8 +19,8 @@ export async function init() {
 
   // ===== MẶC ĐỊNH GỐC =====
   const DEFAULT_HEAD = {
-    title: "CHƯƠNG TRÌNH ĐÀO TẠO CHUYÊN NGÀNH CHẾ BIẾN MÓN ĂN",
-    teacher: "Program Editor: Trần Thị Ngọc Dư - Nguyễn Huỳnh Ngọc Thanh",
+    title: "CHƯƠNG TRÌNH MÔN HỌC TIẾNG ANH NGÀNH CHẾ BIẾN MÓN ĂN",
+    teacher: "Program Editor: Nguyễn Huỳnh Ngọc Thanh - Trần Thị Ngọc Dư",
     slogan: "Welcome To College of Commerce"
   };
 
