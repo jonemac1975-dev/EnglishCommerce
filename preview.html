@@ -74,13 +74,24 @@ img {
   border-radius: 10px;
   text-decoration: none;
 }
+
+.exercise-image-wrap{
+  max-height: 950px;
+  overflow: hidden;
+  border-radius: 12px;
+  transition: all .3s ease;
+}
+
+.exercise-image-wrap.show-answer{
+  max-height: none;
+}
 </style>
 </head>
 
 <body>
 
 <div class="toolbar">
-  <button class="btn" onclick="history.back()">← Back</button>
+  <button class="btn" onclick="goBack()">← Back</button>
 </div>
 
 <div class="wrapper">
@@ -228,18 +239,52 @@ function handleFlip(url) {
 /* ================= RENDER ================= */
 function render() {
 
+  // ===== URL =====
   if (data.url) {
     contentEl.innerHTML = buildEmbed(data.url);
     return;
   }
 
-  if (data.content_html) {
-    contentEl.innerHTML = data.content_html;
+  // ===== HTML / LINK =====
+  if (data.content_html || data.content) {
+
+    const raw = data.content_html || data.content;
+
+    // nếu là link
+    if (
+      typeof raw === "string" &&
+      raw.trim().startsWith("http")
+    ) {
+      contentEl.innerHTML = buildEmbed(raw.trim());
+      return;
+    }
+
+    // html thường
+    contentEl.innerHTML = raw;
     return;
   }
 
+  // ===== IMAGE =====
   if (data.image) {
-    contentEl.innerHTML = `<img src="${data.image}">`;
+    contentEl.innerHTML = `
+  <div class="exercise-image-wrap" id="exerciseWrap">
+    <img src="${data.image}">
+  </div>
+
+  <div style="text-align:center;margin-top:16px;">
+    <button id="btnShowAnswer"
+      style="
+        padding:10px 16px;
+        border:none;
+        border-radius:10px;
+        background:#2563eb;
+        color:#fff;
+        cursor:pointer;
+      ">
+      📘 Xem đáp án
+    </button>
+  </div>
+`;
     return;
   }
 
@@ -247,6 +292,34 @@ function render() {
 }
 
 render();
+
+
+document.addEventListener("click", function(e){
+
+  if(e.target.id === "btnShowAnswer"){
+
+    const wrap = document.getElementById("exerciseWrap");
+
+    if(wrap){
+      wrap.classList.add("show-answer");
+    }
+
+    e.target.remove();
+  }
+
+});
+
+
+function goBack() {
+
+  // tab mở bằng JS
+  window.close();
+
+  // fallback nếu browser chặn close
+  setTimeout(() => {
+    location.href = "/";
+  }, 100);
+}
 </script>
 
 </body>

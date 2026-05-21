@@ -80,7 +80,7 @@ img {
 <body>
 
 <div class="toolbar">
-  <button class="btn" onclick="history.back()">← Back</button>
+  <button class="btn" onclick="goBack()">← Back</button>
 </div>
 
 <div class="wrapper">
@@ -232,16 +232,32 @@ function handleFlip(url) {
 /* ================= RENDER ================= */
 function render() {
 
+  // ===== URL =====
   if (data.url) {
     contentEl.innerHTML = buildEmbed(data.url);
     return;
   }
 
-  if (data.content_html) {
-    contentEl.innerHTML = data.content_html;
+  // ===== HTML / LINK =====
+  if (data.content_html || data.content) {
+
+    const raw = data.content_html || data.content;
+
+    // nếu là link
+    if (
+      typeof raw === "string" &&
+      raw.trim().startsWith("http")
+    ) {
+      contentEl.innerHTML = buildEmbed(raw.trim());
+      return;
+    }
+
+    // html thường
+    contentEl.innerHTML = raw;
     return;
   }
 
+  // ===== IMAGE =====
   if (data.image) {
     contentEl.innerHTML = `<img src="${data.image}">`;
     return;
@@ -251,6 +267,17 @@ function render() {
 }
 
 render();
+
+function goBack() {
+
+  // tab mở bằng JS
+  window.close();
+
+  // fallback nếu browser chặn close
+  setTimeout(() => {
+    location.href = "/";
+  }, 100);
+}
 </script>
 
 </body>
