@@ -7,6 +7,11 @@
   <label>Link (MP4 / YouTube):</label>
   <input type="text" id="hdLink">
 
+<label>Ảnh hoạt động:</label>
+<input type="file" id="hdImage" accept="image/*">
+
+<div id="previewBox" style="margin-top:10px"></div>
+
   <div class="btn-row">
     <button id="btnThem">Thêm</button>
     <button id="btnLuu" style="display:none">Lưu</button>
@@ -17,10 +22,11 @@
 <table class="admin-table">
   <thead>
     <tr>
-      <th>STT</th>
-      <th>Tiêu đề</th>
-      <th>Link</th>
-    </tr>
+  <th>STT</th>
+  <th>Ảnh</th>
+  <th>Tiêu đề</th>
+  <th>Link</th>
+</tr>
   </thead>
   <tbody id="hoatdongTable"></tbody>
 </table>

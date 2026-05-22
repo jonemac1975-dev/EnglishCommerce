@@ -141,7 +141,7 @@ function loadContent(item, type) {
 
       // MP3
       if (item.media.mp3) {
-        mediaBox.appendChild(createMediaButton("🎧 MP3", () => {
+        mediaBox.appendChild(createMediaButton("🎧 MP3-1", () => {
           renderMedia(`
             <iframe 
               src="${convertDriveToPreview(item.media.mp3)}"
@@ -240,18 +240,23 @@ function createMediaButton(label, onClick) {
 }
 
 function renderMedia(html) {
+
   const mediaBox = document.getElementById("mediaBox");
 
-  // giữ lại vùng button
-  let viewer = mediaBox.querySelector(".media-viewer");
+  mediaBox.innerHTML = `
+    <div class="media-viewer active">
+      <button class="close-media">✖</button>
 
-  if (!viewer) {
-    viewer = document.createElement("div");
-    viewer.className = "media-viewer";
-    mediaBox.appendChild(viewer);
-  }
+      <div class="media-inner">
+        ${html}
+      </div>
+    </div>
+  `;
 
-  viewer.innerHTML = html;
+  // close
+  mediaBox.querySelector(".close-media").onclick = () => {
+    mediaBox.innerHTML = "";
+  };
 }
 
 function convertDriveToPreview(url) {
