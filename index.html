@@ -5,6 +5,7 @@
   <title>CHƯƠNG TRÌNH MÔN HỌC TIẾNG ANH NGÀNH CHẾ BIẾN MÓN ĂN</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="./css/index.css">
+  <link rel="icon" href="data:,">
 </head>
 
 <body>
@@ -237,6 +238,93 @@ Youtube
   </div>
 
 </div>
+<!-- ===== FM MINI ===== -->
+<div class="fm-box">
+
+  <h4>📻 FM Radio + TV </h4>
+
+  <select id="fmSelect">
+
+    <option value="">
+      -- Chọn Radio - TV --
+    </option>
+
+    <!-- AUDIO -->
+    <option value="https://icecast.radiofrance.fr/fip-midfi.mp3">
+      🎵 FIP Chill Radio
+    </option>
+
+    <option value="https://live-radio01.mediahubaustralia.com/2TJW/mp3/">
+      🌍 World Radio
+    </option>
+
+    <option value="https://npr-ice.streamguys1.com/live.mp3">
+      🇺🇸 NPR News
+    </option>
+
+    <option value="https://stream.zeno.fm/0r0xa792kwzuv">
+      🇻🇳 VOH Radio
+    </option>
+
+    <option value="https://listen.moe/stream">
+      🎧 Study Music
+    </option>
+
+    <!-- YOUTUBE -->
+    <option value="https://www.youtube.com/embed/5qap5aO4i9A">
+      🎥 Lofi Live
+    </option>
+
+    <option value="https://www.youtube.com/embed/jfKfPfyJRdk">
+      ☕ Study With Me
+    </option>
+<option value="https://www.youtube.com/embed/VwVg9jCtqaU">
+  🌍 DW News
+</option>
+
+<option value="https://www.youtube.com/embed/l8PMl7tUDIE">
+  🇫🇷 France24
+</option>
+<option value="https://www.youtube.com/embed/d0yGdNEWdn0">
+    💹 Bloomberg Live
+  </option>
+
+  <option value="https://www.youtube.com/embed/XWq5kBlakcQ">
+    🇸🇬 CNA Live
+  </option>
+
+  <option value="https://www.youtube.com/embed/9Auq9mYxFEE">
+    🇺🇸 NBC News
+  </option>
+
+  <option value="https://www.youtube.com/embed/w_Ma8oQLmSM">
+    🌎 Reuters Live
+  </option>
+
+  <option value="https://www.youtube.com/embed/gCNeDWCI0vo">
+    🇯🇵 NHK World
+  </option>
+  </select>
+
+  <div id="fmPlayerWrap">
+
+    <audio
+      id="fmAudio"
+      controls
+      style="width:100%;margin-top:10px;display:none">
+    </audio>
+
+    <iframe
+      id="fmYoutube"
+      width="100%"
+      height="220"
+      style="border:none;border-radius:12px;display:none;margin-top:10px"
+      allowfullscreen>
+    </iframe>
+
+  </div>
+
+</div>
 </footer>
 
 
@@ -262,6 +350,75 @@ function googleTranslateElementInit() {
 <script src="../scripts/libs/qrcode.min.js"></script>
 <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
+<script>
+
+const fmSelect = document.getElementById("fmSelect");
+
+const fmAudio = document.getElementById("fmAudio");
+const fmYoutube = document.getElementById("fmYoutube");
+
+fmSelect.addEventListener("change", () => {
+
+  const url = fmSelect.value;
+
+  if (!url) return;
+
+  // reset
+  fmAudio.pause();
+
+  fmAudio.style.display = "none";
+  fmYoutube.style.display = "none";
+
+  // ===== YOUTUBE =====
+  if (url.includes("youtube")) {
+
+    fmYoutube.src = url + "?autoplay=1";
+    fmYoutube.style.display = "block";
+
+    return;
+  }
+
+  // ===== AUDIO =====
+  fmAudio.src = url;
+  fmAudio.style.display = "block";
+
+  fmAudio.play().catch(() => {
+    console.log("Browser chặn autoplay");
+  });
+
+});
+
+</script>
+function loadTV() {
+
+  const url = document.getElementById("tvSelect").value;
+  const box = document.getElementById("tvBox");
+
+  if (!url) {
+    box.innerHTML = "";
+    return;
+  }
+
+  box.innerHTML = `
+    <iframe
+      src="${url}?autoplay=1"
+      width="100%"
+      height="220"
+      style="
+        border:none;
+        border-radius:12px;
+        background:#000;
+      "
+      allowfullscreen>
+    </iframe>
+  `;
+}
+
+document
+  .getElementById("tvSelect")
+  .addEventListener("change", loadTV);
+
+</script>
 </body>
 <!-- ===== VIDEO MODAL ===== -->
 <div id="videoModal" class="video-modal">

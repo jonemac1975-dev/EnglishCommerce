@@ -2072,3 +2072,23 @@ td:nth-child(2) {
   font-weight: 600;
   letter-spacing: 0.2px;
 }
+
+
+
+
+
+/* =========================
+   Đài FM
+========================= */
+#fmSelect{
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  margin-top:8px;
+  background:#fff;
+}
+
+#fmPlayer{
+  width:100%;
+}
