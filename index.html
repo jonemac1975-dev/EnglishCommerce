@@ -304,6 +304,14 @@ Youtube
   <option value="https://www.youtube.com/embed/gCNeDWCI0vo">
     🇯🇵 NHK World
   </option>
+
+<option value="https://tv360.vn/">
+    🇯🇵 TV 360
+  </option>
+
+<option value="http://danangtv.vn/trang_chu">
+    🇯🇵 Đà Năng Radio
+  </option>
   </select>
 
   <div id="fmPlayerWrap">
@@ -311,18 +319,19 @@ Youtube
     <audio
       id="fmAudio"
       controls
-      style="width:100%;margin-top:10px;display:none">
+      style="width:60%;margin-top:10px;display:none">
     </audio>
 
     <iframe
       id="fmYoutube"
-      width="100%"
+      width="80%"
       height="220"
       style="border:none;border-radius:12px;display:none;margin-top:10px"
       allowfullscreen>
     </iframe>
   </div>
 </div>
+<div id="tvBox"></div>
 </footer>
 
 
@@ -349,11 +358,10 @@ function googleTranslateElementInit() {
 <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
 <script>
-
-const fmSelect = document.getElementById("fmSelect");
-
-const fmAudio = document.getElementById("fmAudio");
-const fmYoutube = document.getElementById("fmYoutube");
+const fmSelect   = document.getElementById("fmSelect");
+const fmAudio    = document.getElementById("fmAudio");
+const fmYoutube  = document.getElementById("fmYoutube");
+const tvBox      = document.getElementById("tvBox");
 
 fmSelect.addEventListener("change", () => {
 
@@ -361,23 +369,133 @@ fmSelect.addEventListener("change", () => {
 
   if (!url) return;
 
-  // reset
+  // ===== RESET =====
   fmAudio.pause();
 
-  fmAudio.style.display = "none";
+  fmAudio.style.display   = "none";
   fmYoutube.style.display = "none";
 
-  // ===== YOUTUBE =====
-  if (url.includes("youtube")) {
+  fmYoutube.src = "";
 
-    fmYoutube.src = url + "?autoplay=1";
+  if (tvBox) {
+    tvBox.innerHTML = "";
+  }
+
+
+// ====================================
+  // Radio Đà Nẵng
+  // ====================================
+  if (url.includes("danangtv.vn")) {
+
+    if (tvBox) {
+
+      tvBox.innerHTML = `
+        <div style="
+          text-align:center;
+          padding:20px;
+        ">
+
+          <button
+            onclick="window.open('${url}','_blank')"
+            style="
+              padding:12px 20px;
+              border:none;
+              border-radius:10px;
+              background:#2563eb;
+              color:#fff;
+              cursor:pointer;
+              font-size:16px;
+            ">
+            📺 Mở DNTV
+          </button>
+
+        </div>
+      `;
+    }
+
+    return;
+  }
+
+
+  // ====================================
+  // TV360
+  // ====================================
+  if (url.includes("tv360.vn")) {
+
+    if (tvBox) {
+
+      tvBox.innerHTML = `
+        <div style="
+          text-align:center;
+          padding:20px;
+        ">
+
+          <button
+            onclick="window.open('${url}','_blank')"
+            style="
+              padding:12px 20px;
+              border:none;
+              border-radius:10px;
+              background:#2563eb;
+              color:#fff;
+              cursor:pointer;
+              font-size:16px;
+            ">
+            📺 Mở TV360
+          </button>
+
+        </div>
+      `;
+    }
+
+    return;
+  }
+
+  // ====================================
+  // YOUTUBE
+  // ====================================
+  if (
+    url.includes("youtube.com") ||
+    url.includes("youtu.be")
+  ) {
+
+    let embed = url;
+
+    // youtu.be
+    if (url.includes("youtu.be")) {
+
+      const id = url.split("/").pop();
+
+      embed =
+        "https://www.youtube.com/embed/" +
+        id +
+        "?autoplay=1";
+    }
+
+    // youtube watch
+    else if (url.includes("watch?v=")) {
+
+      const id =
+        new URL(url).searchParams.get("v");
+
+      embed =
+        "https://www.youtube.com/embed/" +
+        id +
+        "?autoplay=1";
+    }
+
+    fmYoutube.src = embed;
+
     fmYoutube.style.display = "block";
 
     return;
   }
 
-  // ===== AUDIO =====
+  // ====================================
+  // AUDIO
+  // ====================================
   fmAudio.src = url;
+
   fmAudio.style.display = "block";
 
   fmAudio.play().catch(() => {
@@ -385,40 +503,10 @@ fmSelect.addEventListener("change", () => {
   });
 
 });
-
-</script>
-<script>
-function loadTV() {
-
-  const url = document.getElementById("tvSelect").value;
-  const box = document.getElementById("tvBox");
-
-  if (!url) {
-    box.innerHTML = "";
-    return;
-  }
-
-  box.innerHTML = `
-    <iframe
-      src="${url}?autoplay=1"
-      width="100%"
-      height="220"
-      style="
-        border:none;
-        border-radius:12px;
-        background:#000;
-      "
-      allowfullscreen>
-    </iframe>
-  `;
-}
-
-document
-  .getElementById("tvSelect")
-  .addEventListener("change", loadTV);
-
 </script>
 </body>
+
+
 <!-- ===== VIDEO MODAL ===== -->
 <div id="videoModal" class="video-modal">
   <div class="video-box">

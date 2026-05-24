@@ -2081,7 +2081,7 @@ td:nth-child(2) {
    Đài FM
 ========================= */
 #fmSelect{
-  width:100%;
+  width:60%;
   padding:10px;
   border:none;
   border-radius:10px;
@@ -2090,5 +2090,5 @@ td:nth-child(2) {
 }
 
 #fmPlayer{
-  width:100%;
+  width:60%;
 }

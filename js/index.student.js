@@ -103,7 +103,7 @@ try {
   }
 
   if (nameBox) {
-    nameBox.textContent = "Học viên";
+    nameBox.textContent = "Sinh viên";
   }
 }
 
@@ -357,7 +357,7 @@ if (type === "duan") {
 }
 
     if (!data) {
-      container.innerHTML = "<li>Chưa có dữ liệu</li>";
+      container.innerHTML = "<li>Chưa có dự án</li>";
       continue;
     }
 
@@ -641,8 +641,8 @@ window.loadStudentProject = function(item) {
   // ===== MEDIA =====
   const media = item.media || {};
 
-  renderStudentMedia(svMp3,  "🎧", "MP3",     media.mp3, item.title || "");
-  renderStudentMedia(svMp32, "🎧", "MP32",    media.mp32, item.title || "");
+  renderStudentMedia(svMp3,  "🎧", "MP3-1",     media.mp3, item.title || "");
+  renderStudentMedia(svMp32, "🎧", "MP3-22",    media.mp32, item.title || "");
   renderStudentMedia(svMp4,  "🎬", "MP4",     media.mp4, item.title || "");
   renderStudentMedia(svYt,   "▶️", "YouTube", media.youtube, item.title || "");
 
