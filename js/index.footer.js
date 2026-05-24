@@ -13,6 +13,9 @@ const ftNews      = document.getElementById("ftNews");
 const ftHoatDong  = document.getElementById("ftHoatDong");
 const ftSach      = document.getElementById("ftSach");
 const ftTaiLieu   = document.getElementById("ftTaiLieu");
+const musicCategory = document.getElementById("musicCategory");
+const musicList     = document.getElementById("musicList");
+const musicPlayer   = document.getElementById("musicPlayer");
 
 /* ===== HÀM RENDER LIST ===== */
 function renderList(container, data, textField) {
@@ -298,6 +301,200 @@ async function loadFooter() {
   } catch (error) {
     console.error("Lỗi load footer:", error);
   }
+await loadMusicFooter();
+}
+
+
+async function loadMusicFooter() {
+
+  if (!musicCategory) return;
+
+  const categories =
+    await readData("config/danh_muc/theloainhac");
+
+  const musicData =
+    await readData("nhactailieu/nhac");
+
+  if (!categories || !musicData) return;
+
+  musicCategory.innerHTML = "";
+
+  Object.entries(categories).forEach(([catId, cat]) => {
+
+    const div = document.createElement("div");
+
+    div.className = "music-category-item";
+
+    div.innerHTML = `
+      <span>• ${cat.name}</span>
+    `;
+
+    div.onclick = () => {
+
+      openMusicPopup(cat.name, catId, musicData);
+
+    };
+
+    musicCategory.appendChild(div);
+
+  });
+
+}
+
+/* =========================
+   POPUP
+========================= */
+
+function openMusicPopup(title, catId, musicData) {
+
+  const popup =
+    document.getElementById("musicPopup");
+
+  const popupTitle =
+    document.getElementById("musicPopupTitle");
+
+  const popupList =
+    document.getElementById("musicPopupList");
+
+  const player =
+    document.getElementById("musicPlayer");
+
+  popupTitle.innerText = title;
+
+  popupList.innerHTML = "";
+
+  player.innerHTML = "";
+
+  Object.entries(musicData).forEach(([id, item]) => {
+
+    if (item.theloai !== catId) return;
+
+    const row = document.createElement("div");
+
+    row.className = "music-popup-item";
+
+    row.innerHTML = `
+      <div style="
+        display:flex;
+        align-items:center;
+        gap:10px;
+      ">
+
+        ${
+          item.img
+          ? `
+            <img
+              src="${item.img}"
+              style="
+                width:55px;
+                height:55px;
+                object-fit:cover;
+                border-radius:10px;
+              ">
+          `
+          : ""
+        }
+
+        <div style="flex:1">
+          ▶ ${item.ten}
+        </div>
+
+      </div>
+    `;
+
+    row.onclick = () => {
+
+      player.innerHTML = `
+        <iframe
+          width="100%"
+          height="320"
+          src="${convertYoutube(item.link)}"
+          frameborder="0"
+          allowfullscreen>
+        </iframe>
+      `;
+    };
+
+    popupList.appendChild(row);
+
+  });
+
+  popup.style.display = "flex";
+}
+
+/* =========================
+   CLOSE + MIN + MAX
+========================= */
+
+document.addEventListener("click", e => {
+
+  const popup =
+    document.getElementById("musicPopup");
+
+  if (!popup) return;
+
+  // ===== CLOSE =====
+
+  if (e.target.id === "closeMusicPopup") {
+
+    popup.style.display = "none";
+
+    popup.classList.remove(
+      "minimized",
+      "maximized"
+    );
+
+    document.getElementById("musicPlayer")
+      .innerHTML = "";
+
+  }
+
+  // ===== MIN =====
+
+  if (e.target.id === "btnMinMusic") {
+
+    popup.classList.remove("maximized");
+
+    popup.classList.toggle("minimized");
+  }
+
+  // ===== MAX =====
+
+  if (e.target.id === "btnMaxMusic") {
+
+    popup.classList.remove("minimized");
+
+    popup.classList.toggle("maximized");
+  }
+
+});
+
+/* =========================
+   CONVERT YOUTUBE
+========================= */
+
+function convertYoutube(link) {
+
+  if (!link) return "";
+
+  if (link.includes("watch?v=")) {
+
+    return link.replace(
+      "watch?v=",
+      "embed/"
+    );
+  }
+
+  if (link.includes("youtu.be/")) {
+
+    const id = link.split("youtu.be/")[1];
+
+    return `
+      https://www.youtube.com/embed/${id}
+    `;
+  }
+
+  return link;
 }
 
 document.addEventListener("DOMContentLoaded", loadFooter);

@@ -1,0 +1,51 @@
+<h2>CẬP NHẬT DANH MỤC NHẠC - PHIM</h2>
+
+<div class="form">
+ 
+  <div class="img-upload">
+  <label>Ảnh bìa</label>
+
+  <input type="file" id="nhacImgFile" accept="image/*">
+
+  <div class="img-preview">
+    <img id="nhacImgPreview" src="" alt="" style="display:none">
+  </div>
+
+  <button type="button" id="btnXoaAnh" class="btn-danger" style="display:none">
+    Xóa ảnh
+  </button>
+</div>
+
+  <label>Thể loại Nhạc - Phim</label>
+  <select id="nhacTheLoai"></select>
+
+  <label>Tên Nhạc - Phim</label>
+  <input type="text" id="nhacTen">
+
+  <label>Link</label>
+  <input type="text" id="nhacLink">
+
+  <div class="btn-row">
+    <button id="btnThem">Thêm</button>
+    <button id="btnLuu" style="display:none">Lưu</button>
+    <button id="btnXoa" style="display:none">Xóa</button>
+  </div>
+</div>
+
+<hr>
+
+<h3>DANH SÁCH NHẠC - PHIM</h3>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>STT</th>
+      <th>Ảnh</th>
+      <th>Tên</th>
+      <th>Link</th>
+    </tr>
+  </thead>
+  <tbody id="nhacTable"></tbody>
+</table>
+
+<div id="toast" class="toast"></div>

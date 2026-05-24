@@ -2092,3 +2092,205 @@ td:nth-child(2) {
 #fmPlayer{
   width:60%;
 }
+
+/*========================
+  NHẠC - PHIM
+========================*/
+
+.music-category-item{
+  padding:6px 0;
+  cursor:pointer;
+  color:white;
+  transition:.2s;
+}
+
+.music-category-item:hover{
+  color:yellow;
+}
+
+/*========================
+  POPUP
+========================*/
+
+.music-popup{
+
+  position:fixed;
+
+  right:20px;
+  bottom:20px;
+
+  width:420px;
+  max-width:95%;
+
+  background:#111;
+  color:#fff;
+
+  border-radius:14px;
+
+  box-shadow:0 0 30px rgba(0,0,0,.5);
+
+  z-index:99999;
+
+  overflow:hidden;
+
+  display:none;
+
+  flex-direction:column;
+
+  transition:.25s;
+}
+
+/*========================
+  HEADER
+========================*/
+
+.music-popup-header{
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:10px 14px;
+
+  background:#1e1e1e;
+
+  border-bottom:1px solid #333;
+}
+
+.music-popup-header h3{
+  margin:0;
+  font-size:16px;
+}
+
+.music-popup-actions{
+  display:flex;
+  gap:6px;
+}
+
+.music-popup-actions button{
+
+  border:none;
+
+  width:32px;
+  height:32px;
+
+  border-radius:8px;
+
+  cursor:pointer;
+
+  background:#333;
+  color:#fff;
+
+  font-size:14px;
+
+  transition:.2s;
+}
+
+.music-popup-actions button:hover{
+  background:#555;
+}
+
+/*========================
+  CONTENT
+========================*/
+
+.music-popup-content{
+
+  max-height:75vh;
+
+  overflow:auto;
+
+  padding:12px;
+}
+
+/*========================
+  LIST ITEM
+========================*/
+
+.music-popup-item{
+
+  padding:10px;
+
+  border-bottom:1px solid #333;
+
+  cursor:pointer;
+
+  transition:.2s;
+}
+
+.music-popup-item:hover{
+  background:#222;
+}
+
+/*========================
+  PLAYER
+========================*/
+
+#musicPlayer{
+  margin-top:16px;
+}
+
+#musicPlayer iframe{
+
+  width:100%;
+
+  height:320px;
+
+  border:none;
+
+  border-radius:12px;
+}
+
+/*========================
+  MINIMIZE
+========================*/
+
+.music-popup.minimized{
+
+  width:320px !important;
+
+  height:auto !important;
+
+  top:auto !important;
+  left:auto !important;
+
+  right:20px !important;
+  bottom:20px !important;
+}
+
+/* ẨN LIST */
+
+.music-popup.minimized #musicPopupList{
+  display:none;
+}
+
+/* THU NHỎ VIDEO */
+
+.music-popup.minimized iframe{
+  height:180px !important;
+}
+
+/*========================
+  MAXIMIZE
+========================*/
+
+.music-popup.maximized{
+
+  top:20px !important;
+  left:20px !important;
+
+  right:20px !important;
+  bottom:20px !important;
+
+  width:auto !important;
+
+  max-width:none !important;
+
+  height:auto !important;
+}
+
+/* VIDEO TO */
+
+.music-popup.maximized iframe{
+  height:65vh !important;
+}
