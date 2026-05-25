@@ -230,7 +230,7 @@ window.addDuAn = async function () {
     const data = collectData();
     if (!data) return;
 
-    const id = "lec_" + Date.now();
+    const id = "duan_" + Date.now();
 
     await writeData(
       `users/students/${studentId}/duan/${id}`,

@@ -271,13 +271,14 @@ Youtube
     </option>
 
     <!-- YOUTUBE -->
-    <option value="https://www.youtube.com/embed/5qap5aO4i9A">
+    <option value="https://app.chillhop.com/">
+      🎥 chillhop
+    </option>
+    
+<option value="https://www.lofi.cafe/">
       🎥 Lofi Live
     </option>
 
-    <option value="https://www.youtube.com/embed/jfKfPfyJRdk">
-      ☕ Study With Me
-    </option>
 <option value="https://www.youtube.com/embed/VwVg9jCtqaU">
   🌍 DW News
 </option>
@@ -293,11 +294,11 @@ Youtube
     🇸🇬 CNA Live
   </option>
 
-  <option value="https://www.youtube.com/embed/9Auq9mYxFEE">
+  <option value="https://www.nbcnews.com/watch">
     🇺🇸 NBC News
   </option>
 
-  <option value="https://www.youtube.com/embed/w_Ma8oQLmSM">
+  <option value="https://www.reuters.com/">
     🌎 Reuters Live
   </option>
 
@@ -308,9 +309,11 @@ Youtube
 <option value="https://tv360.vn/">
     🇯🇵 TV 360
   </option>
-
+<option value="https://vtv.vn/truyen-hinh-truc-tuyen/vtv1.htm">
+    🇯🇵 VTV
+  </option>
 <option value="http://danangtv.vn/trang_chu">
-    🇯🇵 Đà Năng Radio
+    🇯🇵 TH Đà Nẵng
   </option>
   </select>
 
@@ -443,7 +446,7 @@ fmSelect.addEventListener("change", () => {
               cursor:pointer;
               font-size:16px;
             ">
-            📺 Mở DNTV
+            📺 Mở THĐN
           </button>
 
         </div>
@@ -453,6 +456,175 @@ fmSelect.addEventListener("change", () => {
     return;
   }
 
+// ====================================
+  // lofi
+  // ====================================
+  if (url.includes("https://www.lofi.cafe/")) {
+
+    if (tvBox) {
+
+      tvBox.innerHTML = `
+        <div style="
+          text-align:center;
+          padding:20px;
+        ">
+
+          <button
+            onclick="window.open('${url}','_blank')"
+            style="
+              padding:12px 20px;
+              border:none;
+              border-radius:10px;
+              background:#2563eb;
+              color:#fff;
+              cursor:pointer;
+              font-size:16px;
+            ">
+            📺 Mở lofi
+          </button>
+
+        </div>
+      `;
+    }
+
+    return;
+  }
+
+// ====================================
+  // chillhop
+  // ====================================
+  if (url.includes("https://app.chillhop.com/")) {
+
+    if (tvBox) {
+
+      tvBox.innerHTML = `
+        <div style="
+          text-align:center;
+          padding:20px;
+        ">
+
+          <button
+            onclick="window.open('${url}','_blank')"
+            style="
+              padding:12px 20px;
+              border:none;
+              border-radius:10px;
+              background:#2563eb;
+              color:#fff;
+              cursor:pointer;
+              font-size:16px;
+            ">
+            📺 Mở chillhop
+          </button>
+
+        </div>
+      `;
+    }
+
+    return;
+  }
+
+// ====================================
+  //  reuters
+  // ====================================
+  if (url.includes("https://www.reuters.com/")) {
+
+    if (tvBox) {
+
+      tvBox.innerHTML = `
+        <div style="
+          text-align:center;
+          padding:20px;
+        ">
+
+          <button
+            onclick="window.open('${url}','_blank')"
+            style="
+              padding:12px 20px;
+              border:none;
+              border-radius:10px;
+              background:#2563eb;
+              color:#fff;
+              cursor:pointer;
+              font-size:16px;
+            ">
+            📺 Mở reuters
+          </button>
+
+        </div>
+      `;
+    }
+
+    return;
+  }
+
+// ====================================
+  // NBC News
+  // ====================================
+  if (url.includes("https://www.nbcnews.com/watch")) {
+
+    if (tvBox) {
+
+      tvBox.innerHTML = `
+        <div style="
+          text-align:center;
+          padding:20px;
+        ">
+
+          <button
+            onclick="window.open('${url}','_blank')"
+            style="
+              padding:12px 20px;
+              border:none;
+              border-radius:10px;
+              background:#2563eb;
+              color:#fff;
+              cursor:pointer;
+              font-size:16px;
+            ">
+            📺 Mở NBC News
+          </button>
+
+        </div>
+      `;
+    }
+
+    return;
+  }
+
+// ====================================
+  // VTV
+  // ====================================
+  if (url.includes("https://vtv.vn/truyen-hinh-truc-tuyen/vtv1.htm")) {
+
+    if (tvBox) {
+
+      tvBox.innerHTML = `
+        <div style="
+          text-align:center;
+          padding:20px;
+        ">
+
+          <button
+            onclick="window.open('${url}','_blank')"
+            style="
+              padding:12px 20px;
+              border:none;
+              border-radius:10px;
+              background:#2563eb;
+              color:#fff;
+              cursor:pointer;
+              font-size:16px;
+            ">
+            📺 Mở TV VTV
+          </button>
+
+        </div>
+      `;
+    }
+
+    return;
+  }
 
   // ====================================
   // TV360
