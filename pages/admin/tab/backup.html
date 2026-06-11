@@ -1,0 +1,88 @@
+<div class="backup-page">
+
+  <h2>💾 Backup & Restore Database</h2>
+
+  <div class="backup-box">
+
+    <button id="btnBackupDb" class="btn-backup">
+      📥 Backup Database
+    </button>
+
+    <input
+      type="file"
+      id="restoreFile"
+      accept=".json"
+      hidden
+    >
+
+    <button id="btnRestoreDb" class="btn-restore">
+      ♻️ Restore Database
+    </button>
+
+  </div>
+
+  <div class="backup-note">
+
+    <h3>Lưu ý</h3>
+
+    <ul>
+      <li>Backup sẽ tải toàn bộ Firebase Database về máy.</li>
+      <li>Restore sẽ ghi đè dữ liệu hiện tại.</li>
+      <li>Nên Backup trước khi Restore.</li>
+    </ul>
+
+  </div>
+
+</div>
+
+<style>
+
+.backup-page{
+  padding:20px;
+}
+
+.backup-box{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:20px;
+}
+
+.btn-backup,
+.btn-restore{
+
+  border:none;
+  border-radius:10px;
+
+  padding:12px 20px;
+
+  cursor:pointer;
+
+  font-weight:700;
+  font-size:15px;
+}
+
+.btn-backup{
+  background:#198754;
+  color:#fff;
+}
+
+.btn-restore{
+  background:#dc3545;
+  color:#fff;
+}
+
+.backup-note{
+
+  margin-top:25px;
+
+  background:#fff;
+
+  border-radius:12px;
+
+  padding:16px;
+
+  border:1px solid #ddd;
+}
+
+</style>

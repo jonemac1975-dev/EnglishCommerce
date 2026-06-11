@@ -47,10 +47,40 @@
   </div>
 
   <div class="kt-row">
-    <span class="kt-label">Bài kiểm tra</span>
-    <select id="selBaiKT"></select>
+
+<div id="examStatusBox" class="exam-status-box">
+
+  <div>
+    <b>Kỳ kiểm tra:</b>
+    <span id="examStatusName">--</span>
   </div>
 
+  <div>
+    <b>Mã đề:</b>
+    <span id="examStatusCode">Chưa bóc</span>
+  </div>
+</div>
+   
+    <div id="examRandomArea">
+
+  <button id="btnBocXam">
+    🎲 Bốc Xăm Mã Đề
+  </button>
+
+    <button
+  id="btnXemLaiBai"
+  style="display:none">
+  📄 Xem bài kiểm tra
+</button>
+
+  <div id="randomExamResult"></div>
+<div
+  id="examMessage"
+  class="exam-message">
+</div>
+</div> <!-- kt-row -->
+</div> <!-- kt-select -->
+</div>
 </div>
 
 <div id="ktCoCauDiem" class="kt-score-structure" style="
@@ -78,8 +108,18 @@
 
   <!-- ===== ACTION ===== -->
   <div class="kt-action">
-    <button id="btnSubmit"><b>Nộp bài</b></button>
-    <button onclick="location.href='/index.html'"><b>Home</b></button>
-  </div>
+
+  <button
+    id="btnSubmit"
+    style="display:none">
+    📝 Nộp bài
+  </button>
+
+
+  <button onclick="location.href='/index.html'">
+    🏠 Home
+  </button>
+
+</div>
 
 </section>

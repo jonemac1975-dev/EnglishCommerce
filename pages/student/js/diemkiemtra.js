@@ -71,7 +71,7 @@ async function buildTeacherExamMap(teachers) {
     })
   );
 
-  console.log("📚 teacherExamMap:", examMap);
+ 
   return examMap;
 }
 
@@ -113,7 +113,7 @@ const monGV =
       lopDanhMucGlobal?.[item.lop]?.name || item.lop || "";
 
    
-    const tenDe = examInfo.tieude || item.bai || item.baiId || "";
+    const tenDe = examInfo.maDe || item.bai || item.baiId || "";
     const loaiBai = kyThiDanhMucGlobal?.[examInfo.kythi]?.name || item.kythi || "";
 
     const nhanXet = extractNhanXet(item);
@@ -189,7 +189,7 @@ function openEssayModal(item, examInfo) {
   const loaiBai =
     kyThiDanhMucGlobal?.[examInfo.kythi]?.name || item.kythi || "";
 
-  const tenDe = examInfo.tieude || item.bai || item.baiId || "";
+  const tenDe = examInfo.maDe || item.bai || item.baiId || "";
   const tenLop = lopDanhMucGlobal?.[item.lop]?.name || item.lop || "";
   const monHocId = item.monhoc || examInfo.monhoc || "";
   const tenMonHoc = monHocDanhMucGlobal?.[monHocId]?.name || monHocId || "";
@@ -204,7 +204,7 @@ function openEssayModal(item, examInfo) {
 
   let html = `
     <div class="essay-info-grid">
-      <div class="essay-info-card"><strong>Tên đề</strong>${tenDe}</div>
+      <div class="essay-info-card"><strong>Mã đề</strong>${tenDe}</div>
 	<div class="essay-info-card"><strong>Giáo viên</strong>${tenGV}</div>
 	<div class="essay-info-card"><strong>Môn học</strong>${tenMonHoc}</div>
 	<div class="essay-info-card"><strong>Lớp</strong>${tenLop}</div>

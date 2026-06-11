@@ -67,6 +67,8 @@ applyAIPushedExam();
   kt_save.onclick = saveBaiKiemTra;
 
   document.getElementById("kt_examType").onchange = toggleExamTypeUI;
+document.getElementById("btnOpenExam").onclick = openExam;
+document.getElementById("btnCloseExam").onclick = closeExam;
   toggleExamTypeUI();
 }
 
@@ -165,8 +167,14 @@ async function loadDanhSach() {
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>${i++}</td>
-        <td>${item.tieude || ""}</td>
-        <td>${item.examStartText || ""}</td>
+        <td>${item.maDe || ""}</td>
+        <td>
+ ${
+   item.opened
+     ? "🟢 Đang mở"
+     : "🔴 Đang khóa"
+ }
+</td>
         <td>${loai}</td>
         <td>${coCauDiem}</td>
         <td>
@@ -190,17 +198,12 @@ window.editKT = async (id) => {
   kt_monhoc.value = d.monhoc || "";
   kt_lop.value = d.lop || "";
   kt_kythi.value = d.kythi || "";
-  kt_tieude.value = d.tieude || "";
+  kt_maDe.value = d.maDe || "";
   kt_ngay.value = d.ngay || "";
   kt_examType.value = d.examType || "multiple_choice";
   kt_noidung.innerHTML = d.noidung || "";
 
-  const examTimeInput = document.getElementById("kt_examTime");
-  if (examTimeInput) {
-    examTimeInput.value =
-      d.examStartISO || (d.examStartAt ? formatDateTimeLocal(d.examStartAt) : "");
-  }
-
+  
   if (diemTNInput) {
     diemTNInput.value = d.diemTN ?? (d.examType === "mixed" ? 5 : 10);
   }
@@ -232,32 +235,41 @@ window.deleteKT = async (id) => {
 function getFormData() {
   const examType = kt_examType.value;
   const { diemTNInput, diemTLInput } = getDiemInputs();
-
-  const examTimeRaw = document.getElementById("kt_examTime")?.value || "";
-  const examTimeData = parseExamDateTime(examTimeRaw);
-
   const monhoc = kt_monhoc.value;
   const lop = kt_lop.value;
   const kythi = kt_kythi.value;
-  const tieude = kt_tieude.value.trim();
+  const maDe =
+  document.getElementById("kt_maDe")
+  .value
+  .trim();
   const ngay = kt_ngay.value.trim();
   const noidung = kt_noidung.innerHTML.trim();
 
-  if (!tieude) {
-    showToast("Chưa nhập tiêu đề", "error");
-    return null;
-  }
+  if (!maDe) {
+  showToast(
+    "Chưa nhập mã đề",
+    "error"
+  );
+  return null;
+}
+
+const maDeFormat =
+  maDe.padStart(2, "0");
+
+if (!/^\d+$/.test(maDeFormat)) {
+  showToast(
+    "Mã đề chỉ được nhập số",
+    "error"
+  );
+  return null;
+}
+  
 
   if (!monhoc || !lop || !kythi) {
     showToast("Vui lòng chọn đủ Môn học / Lớp / Kỳ kiểm tra", "error");
     return null;
   }
-
-  if (!examTimeRaw || !examTimeData.ts) {
-    showToast("Chưa chọn ngày giờ kiểm tra", "error");
-    return null;
-  }
-
+  
   if (!noidung) {
     showToast("Chưa có nội dung phần trắc nghiệm", "error");
     return null;
@@ -298,27 +310,28 @@ function getFormData() {
   }
 
   return {
-    monhoc,
-    lop,
-    kythi,
-    tieude,
-    ngay,
+  monhoc,
+  lop,
+  kythi,
+  maDe: maDeFormat,
+  ngay,
 
-    // ===== THỜI GIAN MỞ ĐỀ (CHUẨN MỚI) =====
-    examStartAt: examTimeData.ts,
-    examStartISO: examTimeData.iso,
-    examStartText: examTimeData.text,
+  // trạng thái mở đề
+  opened: false,
 
-    examType,
-    diemTN,
-    diemTL,
-    noidung,
-    essays:
-      examType === "mixed"
-        ? essayBlocks.map(x => x.content).filter(x => x.trim() !== "")
-        : [],
-    updatedAt: Date.now()
-  };
+  examType,
+  diemTN,
+  diemTL,
+
+  noidung,
+
+  essays:
+    examType === "mixed"
+      ? essayBlocks.map(x => x.content).filter(x => x.trim() !== "")
+      : [],
+
+  updatedAt: Date.now()
+};
 }
 
 /* ================= CLEAR FORM ================= */
@@ -329,14 +342,12 @@ function clearForm() {
   kt_monhoc.value = "";
   kt_lop.value = "";
   kt_kythi.value = "";
-  kt_tieude.value = "";
+  document.getElementById("kt_maDe").value = "";
   kt_ngay.value = "";
   kt_examType.value = "multiple_choice";
   kt_noidung.innerHTML = "";
 
-  const examTimeInput = document.getElementById("kt_examTime");
-  if (examTimeInput) examTimeInput.value = "";
-
+  
   if (diemTNInput) diemTNInput.value = 10;
   if (diemTLInput) diemTLInput.value = 0;
 
@@ -458,7 +469,12 @@ function initEditor() {
     }
 
     localStorage.setItem("lesson_preview", JSON.stringify({
-      name: kt_tieude.value || "Bài kiểm tra",
+      name:
+  "Mã đề " +
+  (
+    document.getElementById("kt_maDe")
+    ?.value || ""
+  ),
       meta: `Môn: ${kt_monhoc.value} | Lớp: ${kt_lop.value}`,
       content: content.innerHTML
     }));
@@ -530,13 +546,10 @@ function applyAIPushedExam() {
     if (!data) return;
 
     // ===== CHỈ ĐỔ NỘI DUNG CẦN THIẾT =====
-    const tenDe = document.getElementById("kt_tieude");
+ 
     const noiDung = document.getElementById("kt_noidung");
 
-    if (tenDe) {
-      tenDe.value = data.title || "";
-    }
-
+    
     if (noiDung) {
       // nếu AI đã trả html thì ưu tiên html
       if (data.content_html && data.content_html.trim()) {
@@ -590,4 +603,60 @@ function convertPlainTextToHtml(text = "") {
       return `<p>${escapeHtml(clean)}</p>`;
     })
     .join("");
+}
+
+
+async function openExam() {
+
+  const data =
+    await readData(
+      `teacher/${teacherId}/kiemtra`
+    );
+
+  if (data) {
+    for (const id in data) {
+      await writeData(
+        `teacher/${teacherId}/kiemtra/${id}/opened`,
+        true
+      );
+    }
+  }
+
+  await writeData(
+    `teacher/${teacherId}/exam_control`,
+    {
+      opened: true,
+      updatedAt: Date.now()
+    }
+  );
+
+  showToast("🚀 Đã mở toàn bộ đề");
+}
+  
+
+async function closeExam() {
+
+  const data =
+    await readData(
+      `teacher/${teacherId}/kiemtra`
+    );
+
+  if (data) {
+    for (const id in data) {
+      await writeData(
+        `teacher/${teacherId}/kiemtra/${id}/opened`,
+        false
+      );
+    }
+  }
+
+  await writeData(
+    `teacher/${teacherId}/exam_control`,
+    {
+      opened: false,
+      updatedAt: Date.now()
+    }
+  );
+
+  showToast("🔒 Đã khóa toàn bộ đề");
 }

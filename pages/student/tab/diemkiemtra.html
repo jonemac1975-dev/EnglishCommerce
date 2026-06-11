@@ -14,11 +14,11 @@
           <th>Môn</th>
           <th>Lớp</th>
           <th>Kỳ kiểm tra</th>
-          <th>Tên đề</th>
-          <th>Điểm trắc nghiệm</th>
-          <th>Điểm tự luận</th>
+          <th>Mã đề</th>
+          <th>Điểm TN</th>
+          <th>Điểm TL</th>
           <th>Điểm tổng</th>
-          <th>Nhận xét giáo viên</th>
+          <th>Nhận xét </th>
           <th>Ngày</th>
           <th>Xem tự luận</th>
         </tr>
@@ -40,7 +40,7 @@
 <div id="essayModal" class="essay-modal hidden">
   <div class="essay-modal-content">
     <div class="essay-modal-header">
-      <h3>📘 Xem lại bài tự luận</h3>
+      <h3>📘 Xem lại thông tin bài kiểm tra</h3>
       <button id="closeEssayModal" class="essay-close-btn">✖</button>
     </div>
 
@@ -253,4 +253,18 @@
     border-radius: 10px;
     line-height: 1.6;
   }
+.score-table,
+.score-table th,
+.score-table td {
+  color: #222 !important;
+}
+
+.score-table th {
+  background: #f5f5f5 !important;
+  color: #222 !important;
+}
+.score-table thead th {
+  background: #0d6efd !important;
+  color: #fff !important;
+}
 </style>

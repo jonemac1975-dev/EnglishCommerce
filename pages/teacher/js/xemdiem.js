@@ -1,6 +1,6 @@
 import { readData } from "../../../scripts/services/firebaseService.js";
 
-console.log("🔥 xemdiem.js LOADED");
+
 
 const teacherId = localStorage.getItem("teacher_id");
 
@@ -15,11 +15,17 @@ let currentRows = [];
    INIT
 ========================= */
 export async function init() {
-  console.log("🚀 init xemdiem");
-
+  
   const lopSelect = document.getElementById("lopSelect");
   const monhocSelect = document.getElementById("monhocSelect");
-  const btnExportExcel = document.getElementById("btnExportExcel");
+
+
+document
+  .getElementById("btnExportExcelPro")
+  ?.addEventListener(
+    "click",
+    exportExcelPro
+  );
 
   if (!lopSelect || !monhocSelect) {
     console.error("❌ Không tìm thấy #lopSelect hoặc #monhocSelect");
@@ -45,8 +51,6 @@ export async function init() {
   lopSelect.addEventListener("change", handleFilterChange);
   monhocSelect.addEventListener("change", handleFilterChange);
 
-  btnExportExcel?.addEventListener("click", exportExcel);
-
   renderEmpty("Chọn Lớp và Môn học để xem bảng điểm");
 }
 
@@ -69,11 +73,7 @@ async function loadInitialData() {
     teacherKiemTra = teacherExamData || {};
     students = studentData || {};
 
-    console.log("✅ dsLop:", dsLop);
-    console.log("✅ dsKyThi:", dsKyThi);
-    console.log("✅ dsMonHoc:", dsMonHoc);
-    console.log("✅ teacherKiemTra:", teacherKiemTra);
-    console.log("✅ students:", students);
+    
   } catch (err) {
     console.error("❌ loadInitialData error:", err);
     renderEmpty("Lỗi tải dữ liệu");
@@ -357,47 +357,239 @@ function formatDecimal(value) {
   return Number(value).toFixed(1).replace(".", ",");
 }
 
+
+
+
 /* =========================
-   EXPORT EXCEL
+   EXPORT EXCEL CHUẨN
 ========================= */
-function exportExcel() {
+
+async function exportExcelPro() {
+ 
   if (!currentRows.length) {
-    alert("Không có dữ liệu để xuất Excel!");
+
+    alert("Không có dữ liệu");
+
     return;
+
   }
 
-  if (typeof XLSX === "undefined") {
-    alert("Chưa load thư viện XLSX!\nHãy thêm script XLSX vào trang giaovien.html");
-    return;
-  }
+  const workbook =
+    new ExcelJS.Workbook();
 
-  const exportData = currentRows.map(r => ({
-    "STT": r.stt,
-    "TÊN SINH VIÊN": r.hoTen,
-    "LỚP": r.lopName,
-    "MÔN HỌC": r.monHocName,
-    "15 PHÚT (HK I)": r.hk1_15p,
-    "1 TIẾT (HK I)": r.hk1_1tiet,
-    "GIỮA KỲ I": r.hk1_gk,
-    "HỌC KỲ I": r.hk1_hk,
-    "TBHK I": r.tbhk1,
-    "15 PHÚT (HK II)": r.hk2_15p,
-    "1 TIẾT (HK II)": r.hk2_1tiet,
-    "GIỮA KỲ II": r.hk2_gk,
-    "HỌC KỲ II": r.hk2_hk,
-    "TBHK II": r.tbhk2,
-    "ĐIỂM TB NĂM": r.tbNam
-  }));
+  const sheet =
+    workbook.addWorksheet(
+      "BangDiem"
+    );
 
-  const ws = XLSX.utils.json_to_sheet(exportData);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "BangDiem");
+  const lopSelect =
+    document.getElementById(
+      "lopSelect"
+    );
 
-  const lopSelect = document.getElementById("lopSelect");
-  const monhocSelect = document.getElementById("monhocSelect");
+  const monhocSelect =
+    document.getElementById(
+      "monhocSelect"
+    );
 
-  const lopName = dsLop[lopSelect?.value]?.name || "Lop";
-  const monHocName = dsMonHoc[monhocSelect?.value]?.name || "MonHoc";
+  const lopName =
+    dsLop[
+      lopSelect?.value
+    ]?.name || "";
 
-  XLSX.writeFile(wb, `Bang_diem_${lopName}_${monHocName}.xlsx`);
+  const monHocName =
+    dsMonHoc[
+      monhocSelect?.value
+    ]?.name || "";
+
+  // =====================
+  // TIÊU ĐỀ
+  // =====================
+
+  sheet.mergeCells("A1:O1");
+
+  sheet.getCell("A1").value =
+    "BẢNG ĐIỂM HỌC TẬP";
+
+  sheet.getCell("A1").font = {
+    size:16,
+    bold:true
+  };
+
+  sheet.getCell("A1").alignment = {
+    horizontal:"center"
+  };
+
+  sheet.mergeCells("A2:O2");
+
+  sheet.getCell("A2").value =
+    `Lớp: ${lopName}   |   Môn học: ${monHocName}`;
+
+  sheet.getCell("A2").alignment = {
+    horizontal:"center"
+  };
+
+  // =====================
+  // HEADER
+  // =====================
+
+  const headers = [
+
+    "STT",
+    "TÊN SINH VIÊN",
+    "LỚP",
+    "MÔN HỌC",
+
+    "15P HK I",
+    "1 TIẾT HK I",
+    "GIỮA KỲ I",
+    "HỌC KỲ I",
+    "TBHK I",
+
+    "15P HK II",
+    "1 TIẾT HK II",
+    "GIỮA KỲ II",
+    "HỌC KỲ II",
+    "TBHK II",
+
+    "ĐIỂM TB NĂM"
+
+  ];
+
+  sheet.addRow([]);
+
+  const headerRow =
+    sheet.addRow(headers);
+
+  headerRow.font = {
+    bold:true
+  };
+
+  headerRow.alignment = {
+    vertical:"middle",
+    horizontal:"center"
+  };
+
+  headerRow.eachCell(cell => {
+
+    cell.fill = {
+      type:"pattern",
+      pattern:"solid",
+      fgColor:{
+        argb:"D9EAD3"
+      }
+    };
+
+    cell.border = {
+      top:{style:"thin"},
+      left:{style:"thin"},
+      bottom:{style:"thin"},
+      right:{style:"thin"}
+    };
+
+  });
+
+  // =====================
+  // DATA
+  // =====================
+
+  currentRows.forEach(r => {
+
+    sheet.addRow([
+
+      r.stt,
+      r.hoTen,
+      r.lopName,
+      r.monHocName,
+
+      r.hk1_15p,
+      r.hk1_1tiet,
+      r.hk1_gk,
+      r.hk1_hk,
+      r.tbhk1,
+
+      r.hk2_15p,
+      r.hk2_1tiet,
+      r.hk2_gk,
+      r.hk2_hk,
+      r.tbhk2,
+
+      r.tbNam
+
+    ]);
+
+  });
+
+  // =====================
+  // BORDER
+  // =====================
+
+  sheet.eachRow(row => {
+
+    row.eachCell(cell => {
+
+      cell.border = {
+        top:{style:"thin"},
+        left:{style:"thin"},
+        bottom:{style:"thin"},
+        right:{style:"thin"}
+      };
+
+    });
+
+  });
+
+  // =====================
+  // AUTO WIDTH
+  // =====================
+
+  sheet.columns = [
+
+    { width:8 },
+    { width:25 },
+    { width:35 },
+    { width:35 },
+
+    { width:12 },
+    { width:12 },
+    { width:12 },
+    { width:12 },
+    { width:10 },
+
+    { width:12 },
+    { width:12 },
+    { width:12 },
+    { width:12 },
+    { width:10 },
+
+    { width:14 }
+
+  ];
+
+  // Freeze header
+
+  sheet.views = [
+    {
+      state:"frozen",
+      ySplit:4
+    }
+  ];
+
+  const buffer =
+    await workbook.xlsx.writeBuffer();
+
+  saveAs(
+
+    new Blob(
+      [buffer],
+      {
+        type:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      }
+    ),
+
+    `Bang_diem_${lopName}_${monHocName}.xlsx`
+
+  );
+
 }

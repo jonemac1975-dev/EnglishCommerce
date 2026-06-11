@@ -21,13 +21,14 @@ let currentExamSession = null;
 let draftSaveInterval = null;
 let examOpenCountdownInterval = null;
 let currentSelectedBaiId = null;
+let examBank = [];
+let currentRandomExam = null;
+let currentDrawCount = 0;
 
 // 🔥 Cho phép vào trễ tối đa 15 phút kể từ giờ mở đề
-const EXAM_LATE_WINDOW_MINUTES = 15;
+//const EXAM_LATE_WINDOW_MINUTES = 15;
 
-// 🔥 Firebase server offset
-let firebaseServerOffset = 0;
-let serverOffsetLoaded = false;
+
 
 /* ===============================
    DRAFT LOCAL
@@ -131,30 +132,11 @@ async function clearDraftFirebase(baiId) {
 /* ===============================
    FIREBASE SERVER TIME
 ================================ */
-async function loadFirebaseServerOffset() {
-  if (serverOffsetLoaded) return firebaseServerOffset;
-
-  try {
-    const offset = await readData(".info/serverTimeOffset");
-    firebaseServerOffset = Number(offset || 0);
-    serverOffsetLoaded = true;
-
-    console.log("🕒 Firebase server offset:", firebaseServerOffset);
-    return firebaseServerOffset;
-  } catch (err) {
-    console.warn("⚠️ Không lấy được Firebase server offset, fallback 0", err);
-    firebaseServerOffset = 0;
-    serverOffsetLoaded = true;
-    return 0;
-  }
+async function getServerNow() {
+  return Date.now();
 }
 
-async function getServerNow(force = false) {
-  if (!serverOffsetLoaded || force) {
-    await loadFirebaseServerOffset();
-  }
-  return Date.now() + firebaseServerOffset;
-}
+
 
 function formatTsVN(ts) {
   if (!ts) return "--";
@@ -254,53 +236,6 @@ function clearExamUI(message = "") {
 /* ===============================
    KIỂM TRA MỞ ĐỀ
 ================================ */
-function getExamOpenStatus(baiKiemTra, serverNow) {
-  const examStartAt = Number(
-    baiKiemTra?.examStartAt ||
-    baiKiemTra?.examTimeTs ||
-    0
-  );
-
-  if (!examStartAt) {
-    return {
-      allowed: true,
-      examStartAt: 0,
-      tooLate: false,
-      notYetOpen: false,
-      message: ""
-    };
-  }
-
-  const lateDeadline = examStartAt + EXAM_LATE_WINDOW_MINUTES * 60 * 1000;
-
-  if (serverNow < examStartAt) {
-    return {
-      allowed: false,
-      examStartAt,
-      tooLate: false,
-      notYetOpen: true,
-      message: `⏳ Chưa đến giờ làm bài.<br>Thời gian mở đề: <b>${baiKiemTra.examStartText || baiKiemTra.examTimeText || formatTsVN(examStartAt)}</b>`
-    };
-  }
-
-  if (serverNow > lateDeadline) {
-    return {
-      allowed: false,
-      examStartAt,
-      tooLate: true,
-      notYetOpen: false,
-      message: `⛔ Đã quá thời gian cho phép vào bài.<br>Đề mở lúc: <b>${baiKiemTra.examStartText || baiKiemTra.examTimeText || formatTsVN(examStartAt)}</b><br>Chỉ được vào trong vòng <b>${EXAM_LATE_WINDOW_MINUTES} phút</b> đầu tiên.`
-    };
-  }
-
-  return {
-    allowed: true,
-    examStartAt,
-    tooLate: false,
-    notYetOpen: false,
-    message: ""
-  };
-}
 
 /* ===============================
    INIT
@@ -338,28 +273,94 @@ export async function init() {
   await loadDanhSachBaiKiemTra();
 
   document.getElementById("selKyThi").addEventListener("change", async () => {
+document.getElementById(
+  "examStatusCode"
+).innerText = "Chưa bóc";
+
+document.getElementById(
+  "examStatusName"
+).innerText =
+  document.getElementById("selKyThi")
+  ?.selectedOptions?.[0]?.text || "--";
+
+document.getElementById(
+  "btnBocXam"
+).style.display = "";
+
+const kyThiId =
+  document.getElementById("selKyThi").value;
+
+const draw =
+  await readData(
+    `users/students/${student.id}/examDraw/${teacherId}_${kyThiId}`
+  );
+
+let daNop = false;
+
+if (draw?.baiId) {
+
+  const baiDaLam =
+    await readData(
+      `users/students/${student.id}/kiemtra/${draw.baiId}`
+    );
+
+  daNop = !!baiDaLam;
+}
+
+if (daNop) {
+
+  document.getElementById(
+    "btnBocXam"
+  ).style.display = "none";
+
+  document.getElementById(
+    "btnXemLaiBai"
+  ).style.display = "";
+
+} else {
+
+  document.getElementById(
+    "btnBocXam"
+  ).style.display = "";
+
+  document.getElementById(
+    "btnXemLaiBai"
+  ).style.display = "none";
+}
+
+document.getElementById(
+  "examStatusCode"
+).innerText =
+  draw?.maDe || "Chưa bóc";
+
+document.getElementById(
+  "examStatusName"
+).innerText =
+  document.getElementById("selKyThi")
+    ?.selectedOptions?.[0]?.text || "--";
+
+
     currentSelectedBaiId = null;
     clearExamUI();
     await loadDanhSachBaiKiemTra();
   });
 
-  document
-    .getElementById("selBaiKT")
-    .addEventListener("change", async (e) => {
-      const baiId = e.target.value;
-      currentSelectedBaiId = baiId || null;
 
-      if (!baiId) {
-        clearExamUI();
-        return;
-      }
 
-      await loadExamById(baiId);
-    });
+document
+  .getElementById("btnBocXam")
+  ?.addEventListener("click", bocXamDe);
 
   document
     .getElementById("btnSubmit")
     .addEventListener("click", () => nopBai(false));
+
+document
+  .getElementById("btnXemLaiBai")
+  ?.addEventListener(
+    "click",
+    xemLaiBaiDaNop
+  );
 }
 
 /* ===============================
@@ -442,13 +443,11 @@ async function loadMonHocDisplay() {
 }
 
 /* ===============================
-   LOAD DANH SÁCH BÀI KIỂM TRA
+   LOAD DANH SÁCH ĐỀ TRONG NGÂN HÀNG
 ================================ */
 async function loadDanhSachBaiKiemTra() {
-  const select = document.getElementById("selBaiKT");
-  if (!select) return;
 
-  select.innerHTML = `<option value="">-- chọn bài kiểm tra --</option>`;
+  examBank = [];
 
   const lopId = localStorage.getItem("selectedLop");
   const monHocId = localStorage.getItem("selectedMonHoc");
@@ -459,137 +458,242 @@ async function loadDanhSachBaiKiemTra() {
   const data = await readData(`teacher/${teacherId}/kiemtra`);
   if (!data) return;
 
-  const serverNow = await getServerNow(true);
-
   Object.entries(data).forEach(([id, kt]) => {
-    if (kt.lop !== lopId) return;
-    if (kt.kythi !== kyThiId) return;
-    if ((kt.monhoc || "") !== monHocId) return;
 
-    const status = getExamOpenStatus(kt, serverNow);
+  if (kt.lop !== lopId) return;
+  if (kt.kythi !== kyThiId) return;
+  if ((kt.monhoc || "") !== monHocId) return;
 
-    const opt = document.createElement("option");
-    opt.value = id;
+  if (kt.opened === false) return;
 
-    const examTimeText = (kt.examStartText || kt.examTimeText)
-      ? ` | Mở: ${kt.examStartText || kt.examTimeText}`
-      : "";
-
-    let statusText = " ⏳ Chưa khả dụng";
-    if (status.allowed) statusText = " ✅ Được làm";
-    else if (status.tooLate) statusText = " ⛔ Hết thời gian vào";
-
-    opt.textContent = `${kt.tieude || "Bài kiểm tra"}${examTimeText}${statusText}`;
-    select.appendChild(opt);
+  examBank.push({
+    id,
+    maDe: kt.maDe || kt.tieude || "",
+    ...kt
   });
+});
+
+  //renderExamBankButtons();
 }
 
-/* ===============================
-   TẠO / LẤY PHIÊN LÀM BÀI
-================================ */
-async function ensureExamSession(baiId, baiKiemTra, thoiGianPhut) {
-  const path = `users/students/${student.id}/kiemtra_danglam/${baiId}`;
-  const oldSession = await readData(path);
 
-  const examStartAt = Number(
-    baiKiemTra.examStartAt ||
-    baiKiemTra.examTimeTs ||
-    0
-  );
 
-  if (!examStartAt) {
-    alert("Bài kiểm tra chưa được cấu hình thời gian mở đề");
-    return null;
+
+// ==================================================
+  // Bóc Xăm
+  // ==================================================
+async function bocXamDe() {
+
+  console.log("🔥 BOC XAM CLICK");
+console.log("examBank FULL =", examBank);
+  if (!examBank.length) {
+    alert("Không có đề nào được mở");
+    return;
   }
 
-  const now = await getServerNow(true);
-  const lateDeadline = examStartAt + EXAM_LATE_WINDOW_MINUTES * 60 * 1000;
-  const durationMs = Number(thoiGianPhut || 15) * 60 * 1000;
+  const kyThiId =
+    document.getElementById("selKyThi").value;
 
-  if (oldSession?.startedAt && oldSession?.deadlineAt) {
-    if (now >= oldSession.deadlineAt) {
-      alert("⛔ Phiên làm bài của bạn đã hết thời gian.");
-      return null;
-    }
-    return oldSession;
-  }
+  const drawPath =
+    `users/students/${student.id}/examDraw/${teacherId}_${kyThiId}`;
 
-  if (now < examStartAt) {
-    return null;
-  }
+  // ==================================================
+  // ĐÃ XÁC NHẬN BÓC RỒI
+  // ==================================================
+  const oldDraw = await readData(drawPath);
 
-  if (now > lateDeadline) {
+  if (oldDraw?.confirmed) {
+
+document.getElementById(
+  "examStatusCode"
+).innerText =
+  oldDraw.maDe;
+
+document.getElementById(
+  "examStatusName"
+).innerText =
+  document.getElementById("selKyThi")
+  ?.selectedOptions?.[0]?.text || "";
+
+document.getElementById(
+  "btnBocXam"
+).style.display = "none";
+
     alert(
-      `⛔ Bạn đã vào trễ quá ${EXAM_LATE_WINDOW_MINUTES} phút kể từ giờ mở đề.\nKhông thể bắt đầu bài kiểm tra này.`
+      `Bạn đã bóc mã đề ${oldDraw.maDe}`
     );
-    return null;
+
+    currentSelectedBaiId =
+      oldDraw.baiId;
+
+    await loadExamById(
+      oldDraw.baiId
+    );
+
+    return;
   }
 
-  const session = {
-    startedAt: now,
-    deadlineAt: now + durationMs,
-    teacherId,
-    lop: localStorage.getItem("selectedLop"),
-    monhoc: localStorage.getItem("selectedMonHoc"),
-    kythi: document.getElementById("selKyThi").value,
-    examStartAt,
-    lateDeadline,
-    durationMinutes: Number(thoiGianPhut || 15),
-    createdAt: now
-  };
-
-  await writeData(path, session);
-  return session;
+showRandomExam(drawPath, oldDraw);
 }
 
-/* ===============================
-   CHỜ ĐẾN GIỜ MỞ ĐỀ
-================================ */
-function startExamOpenCountdown(baiKiemTra, baiId) {
-  clearInterval(examOpenCountdownInterval);
+  // ==================================================
+  // showRandomExam
+  // ==================================================
 
-  const timerEl = document.getElementById("ktTimer");
-  const btnSubmit = document.getElementById("btnSubmit");
-  const examStartAt = Number(
-    baiKiemTra?.examStartAt || baiKiemTra?.examTimeTs || 0
-  );
+  function showRandomExam(drawPath, oldDraw = null) {
 
-  if (!examStartAt) return;
+  currentDrawCount =
+    Number(oldDraw?.drawCount || 0);
 
-  if (btnSubmit) btnSubmit.disabled = true;
+  const randomIndex =
+    Math.floor(
+      Math.random() * examBank.length
+    );
 
-  const tick = async () => {
-    const now = await getServerNow(true);
-    const remain = Math.max(0, Math.floor((examStartAt - now) / 1000));
+  currentRandomExam =
+    examBank[randomIndex];
 
-    const phut = Math.floor(remain / 60);
-    const giay = remain % 60;
+  const maDe =
+    currentRandomExam.maDe ||
+    currentRandomExam.tieude ||
+    "???";
 
-    if (timerEl) {
-      timerEl.innerText = `⏳ Chưa đến giờ mở đề: ${phut
-        .toString()
-        .padStart(2, "0")}:${giay.toString().padStart(2, "0")}`;
-      timerEl.style.color = "#d97706";
-    }
+  const resultBox =
+    document.getElementById(
+      "randomExamResult"
+    );
 
-    if (remain <= 0) {
-      clearInterval(examOpenCountdownInterval);
+  const conDuocBoc =
+    currentDrawCount < 2;
 
-      if (timerEl) {
-        timerEl.innerText = "📢 Đã đến giờ mở đề, đang tải bài...";
-        timerEl.style.color = "#198754";
+  resultBox.innerHTML = `
+    <div class="draw-box">
+
+      <h3>🎲 Kết quả bốc xăm</h3>
+
+      <div>
+        <b>Mã đề:</b>
+        ${maDe}
+      </div>
+
+      <div style="margin-top:8px;">
+        Lần bóc:
+        ${currentDrawCount + 1}/3
+      </div>
+
+      ${
+        !conDuocBoc
+        ? `
+          <div style="
+            color:red;
+            margin-top:8px;
+          ">
+            Đã hết lượt bốc lại
+          </div>
+        `
+        : ""
       }
 
-      setTimeout(async () => {
-        if (currentSelectedBaiId === baiId) {
-          await loadExamById(baiId, true);
-        }
-      }, 1200);
-    }
-  };
+      <div style="
+        margin-top:15px;
+        display:flex;
+        gap:10px;
+        justify-content:center;
+      ">
 
-  tick();
-  examOpenCountdownInterval = setInterval(tick, 1000);
+        ${
+          conDuocBoc
+          ? `
+          <button id="btnDrawAgain">
+            🔄 Bốc lại
+          </button>
+          `
+          : ""
+        }
+
+        <button id="btnAcceptExam">
+          ✅ Nhận đề
+        </button>
+
+      </div>
+
+    </div>
+  `;
+
+  document
+    .getElementById("btnAcceptExam")
+    ?.addEventListener(
+      "click",
+      () => acceptExam(drawPath)
+    );
+
+  document
+    .getElementById("btnDrawAgain")
+    ?.addEventListener(
+      "click",
+      async () => {
+
+        await writeData(
+          drawPath,
+          {
+            drawCount:
+              currentDrawCount + 1
+          }
+        );
+
+        showRandomExam(
+          drawPath,
+          {
+            drawCount:
+              currentDrawCount + 1
+          }
+        );
+      }
+    );
+}
+
+async function acceptExam(drawPath) {
+
+  const maDe =
+    currentRandomExam.maDe ||
+    currentRandomExam.tieude;
+
+  await writeData(
+    drawPath,
+    {
+      baiId:
+        currentRandomExam.id,
+
+      maDe,
+
+      confirmed: true,
+
+      drawCount:
+        currentDrawCount + 1,
+
+      createdAt:
+        Date.now()
+    }
+  );
+
+  document.getElementById(
+    "randomExamResult"
+  ).innerHTML = "";
+
+  document.getElementById(
+    "examStatusCode"
+  ).innerText = maDe;
+
+  document.getElementById(
+    "btnBocXam"
+  ).style.display = "none";
+
+  currentSelectedBaiId =
+    currentRandomExam.id;
+
+  await loadExamById(
+    currentRandomExam.id
+  );
 }
 
 
@@ -616,8 +720,19 @@ async function loadExamById(baiId, isAutoRetryOpen = false) {
     return;
   }
 
-  const serverNow = await getServerNow(true);
-  const openStatus = getExamOpenStatus(baiKiemTra, serverNow);
+const examControl =
+  await readData(
+    `teacher/${teacherId}/exam_control`
+  );
+
+if (!examControl?.opened) {
+
+  clearExamUI(
+    "⛔ Giáo viên chưa mở đề hoặc đã khóa đề."
+  );
+
+  return;
+}
 
   // Gán state trước
   baiKiemTraDangChon = baiKiemTra;
@@ -672,19 +787,7 @@ async function loadExamById(baiId, isAutoRetryOpen = false) {
     return;
   }
 
-  // =========================================================
-  // 🔥 CHƯA NỘP → MỚI KIỂM TRA GIỜ MỞ ĐỀ
-  // =========================================================
-  if (!openStatus.allowed) {
-    clearExamUI(openStatus.message);
-
-    if (openStatus.notYetOpen && !openStatus.tooLate) {
-      startExamOpenCountdown(baiKiemTra, baiId);
-    }
-
-    return;
-  }
-
+  
   const kyThiId = document.getElementById("selKyThi").value;
   let thoiGianPhut = 15;
 
@@ -698,30 +801,14 @@ async function loadExamById(baiId, isAutoRetryOpen = false) {
   // =========================================================
   // 🔥 CHỈ TẠO SESSION KHI CHƯA NỘP BÀI
   // =========================================================
-  const session = await ensureExamSession(baiId, baiKiemTra, thoiGianPhut);
+  const now = Date.now();
 
-  if (!session) {
-    const freshNow = await getServerNow(true);
-    const freshStatus = getExamOpenStatus(baiKiemTra, freshNow);
+const session = {
+  startedAt: now,
+  deadlineAt: now + thoiGianPhut * 60 * 1000
+};
 
-    if (freshStatus.notYetOpen && !freshStatus.tooLate) {
-      clearExamUI(freshStatus.message);
-      startExamOpenCountdown(baiKiemTra, baiId);
-      return;
-    }
-
-    document.getElementById("ktNoiDung").innerHTML = `
-      <div style="padding:16px;border:1px solid #f5c2c7;background:#fff3f4;border-radius:10px;color:#842029;">
-        ⛔ Bài kiểm tra hiện chưa khả dụng hoặc đã hết giờ.
-      </div>
-    `;
-    document.getElementById("ktEssayWrap").style.display = "none";
-    document.getElementById("btnSubmit").disabled = true;
-    return;
-  }
-
-  currentExamSession = session;
-
+currentExamSession = session;
   clearInterval(timerInterval);
   clearInterval(draftSaveInterval);
 
@@ -735,12 +822,16 @@ async function loadExamById(baiId, isAutoRetryOpen = false) {
   );
 
   renderEssaySection(
-    baiKiemTra.essays || [],
-    false,
-    draft?.essays || {}
-  );
+  baiKiemTra.essays || [],
+  false,
+  draft?.essays || {}
+);
 
-  document.getElementById("btnSubmit").disabled = false;
+const btnSubmit =
+  document.getElementById("btnSubmit");
+
+btnSubmit.style.display = "inline-block";
+btnSubmit.disabled = false;
 
   const freshNow = await getServerNow(true);
   const remainSeconds = Math.max(
@@ -998,9 +1089,9 @@ function renderTracNghiem(html, isDaLam = false, traLoiCu = {}, showCorrectNow =
 
       if (isDaLam) input.disabled = true;
 
-      if (traLoiCu?.[cauSo] === dapAn) {
-        input.checked = true;
-      }
+ //     if (traLoiCu?.[cauSo] === dapAn) {
+ //       input.checked = true;
+ //     }
 
       label.appendChild(input);
       label.appendChild(document.createTextNode(textHienThi));
@@ -1092,7 +1183,7 @@ async function nopBai(isAutoSubmit = false) {
     return;
   }
 
-  const baiId = currentSelectedBaiId || document.getElementById("selBaiKT").value;
+  const baiId = currentSelectedBaiId;
   const nowServer = await getServerNow(true);
 
   if (!baiId) {
@@ -1338,3 +1429,47 @@ function disableForm() {
 window.addEventListener("beforeunload", () => {
   saveDraftToLocal();
 });
+
+
+
+async function xemLaiBaiDaNop() {
+
+  const kyThiId =
+    document.getElementById("selKyThi").value;
+
+  if (!kyThiId) {
+    alert("Chọn kỳ thi trước");
+    return;
+  }
+
+  const draw =
+    await readData(
+      `users/students/${student.id}/examDraw/${teacherId}_${kyThiId}`
+    );
+
+  if (!draw?.baiId) {
+
+    document.getElementById(
+      "examStatusCode"
+    ).innerText = "Chưa bóc";
+
+    alert("Bạn chưa bóc xăm đề");
+
+    return;
+  }
+
+  document.getElementById(
+    "examStatusCode"
+  ).innerText =
+    draw.maDe || "--";
+
+  document.getElementById(
+    "examStatusName"
+  ).innerText =
+    document.getElementById("selKyThi")
+      ?.selectedOptions?.[0]?.text || "--";
+
+  await loadExamById(
+    draw.baiId
+  );
+}

@@ -24,8 +24,12 @@
     </div>
 
     <div class="kt-row">
-      <label><b>Tiêu đề</b></label>
-      <input type="text" id="kt_tieude" />
+      <label><b>Mã đề</b></label>
+     <input
+  type="text"
+  id="kt_maDe"
+  placeholder="01"
+/>
     </div>
 
     <div class="kt-row">
@@ -34,9 +38,7 @@
     </div>
 
 <div class="form-group">
-  <label>Ngày- giờ làm bài</label>
-  <input type="datetime-local" id="kt_examTime" />
-  <small style="display:block;color:#666;margin-top:4px;">
+    <small style="display:block;color:#666;margin-top:4px;">
     Chỉ khi đến đúng thời điểm này sinh viên mới được mở đề.
   </small>
 </div>
@@ -100,6 +102,8 @@
     <div class="kt-actions">
       <button type="button" id="kt_add">➕Thêm</button>
       <button type="button" id="kt_save">💾Lưu</button>
+<button id="btnOpenExam">🚀 Mở đề</button>
+<button id="btnCloseExam">🔒 Khóa đề</button>
     </div>
   </div>
 
@@ -108,7 +112,7 @@
     <thead>
       <tr>
         <th>STT</th>
-        <th>Tiêu đề</th>
+        <th>Mã đề</th>
         <th>Ngày/giờ thi</th>
         <th>Loại</th>
         <th>Cơ cấu điểm</th>

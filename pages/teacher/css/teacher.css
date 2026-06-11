@@ -354,9 +354,10 @@ margin-top:6px;
 
 /* Header đẹp hơn */
 .kiemtra-wrap .kt-table th {
-  background: #f4f6fb;
+  background: Blue;
   font-weight: 600;
 }
+
 
 /* Hover nhìn dễ thao tác */
 .kiemtra-wrap .kt-table tr:hover {
@@ -453,7 +454,7 @@ margin-top:6px;
 }
 
 .kt-table th {
-  background: #f4f6fb;
+  background: #0d6efd;
   font-weight: 600;
 }
 
@@ -3376,4 +3377,134 @@ td:nth-child(2) {
   color: #111;!important;
   font-weight: 400;
   letter-spacing: 0.2px;
+}
+
+/* =========================
+   Lỗi bổ sung tiêu đề danh sách chấm bài
+========================= */
+/* ===== Bảng danh sách bài nộp ===== */
+
+.cb-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cb-table th {
+  background: #0d6efd; /* xanh */
+  color: #fff !important;
+  font-weight: 700;
+  padding: 12px;
+  text-align: center;
+}
+
+.cb-table td {
+  background: #fff;
+  color: #222;
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+.cb-table tr:nth-child(even) td {
+  background: #f8f9fa;
+}
+
+
+.xemdiem-table td {
+  color: #222 !important;
+}
+
+.xemdiem-table td *,
+.xemdiem-table td span,
+.xemdiem-table td div {
+  color: #222 !important;
+}
+
+
+.cb-stat-box{
+  display:flex;
+  gap:15px;
+  margin:15px 0;
+  flex-wrap:wrap;
+}
+
+.cb-stat-card{
+  background:#fff;
+  border:1px solid #ddd;
+  border-radius:12px;
+  padding:12px 20px;
+  min-width:160px;
+}
+
+.cb-stat-card span{
+  display:block;
+  color:#666;
+}
+
+.cb-stat-card b{
+  font-size:24px;
+  color:#0d6efd;
+}
+
+.cb-score-stat{
+  margin-bottom:20px;
+  overflow:auto;
+}
+
+.cb-score-table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+.cb-score-table th,
+.cb-score-table td{
+  border:1px solid #ddd;
+  padding:8px;
+  text-align:center;
+}
+
+.cb-score-table th{
+  background:#0d6efd;
+  color:white;
+}
+
+
+
+
+#btnExportExcelPro{
+  background:
+    linear-gradient(
+      135deg,
+      #11998e,
+      #38ef7d
+    );
+
+  color:white;
+
+  border:none;
+
+  padding:8px 15px;
+
+  border-radius:50px;
+
+  font-size:15px;
+  font-weight:800;
+
+  letter-spacing:.3px;
+
+  cursor:pointer;
+
+  box-shadow:
+    0 8px 20px rgba(56,239,125,.25);
+
+  transition:.3s;
+}
+
+#btnExportExcelPro:hover{
+
+  transform:
+    translateY(-3px)
+    scale(1.03);
+
+  box-shadow:
+    0 14px 30px rgba(56,239,125,.35);
 }
