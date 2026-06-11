@@ -3469,3 +3469,110 @@ tr:nth-child(even) {
   border-radius:8px;
   cursor:pointer;
 }
+
+/* =========================
+   BỐC XĂM MÃ ĐỀ
+========================= */
+
+#btnBocXam{
+
+  background:
+    linear-gradient(
+      135deg,
+      #ff9800,
+      #ff5722
+    );
+
+  color:#fff;
+
+  border:none;
+
+  padding:12px 22px;
+
+  border-radius:12px;
+
+  font-size:15px;
+  font-weight:700;
+
+  cursor:pointer;
+
+  box-shadow:
+    0 4px 12px rgba(255,87,34,.25);
+
+  transition:.25s;
+
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+}
+
+#btnBocXam:hover{
+
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 8px 20px rgba(255,87,34,.35);
+
+}
+
+#btnBocXam:active{
+
+  transform:
+    translateY(1px);
+
+}
+
+
+/* =========================
+   NÚT XEM BÀI KIỂM TRA
+========================= */
+
+#btnXemLaiBai{
+
+  background:
+    linear-gradient(
+      135deg,
+      #2196f3,
+      #1976d2
+    );
+
+  color:#fff;
+
+  border:none;
+
+  padding:4px 10px;
+
+  border-radius:12px;
+
+  font-size:15px;
+  font-weight:700;
+
+  cursor:pointer;
+
+  box-shadow:
+    0 4px 12px rgba(33,150,243,.25);
+
+  transition:.25s;
+
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+}
+
+#btnXemLaiBai:hover{
+
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 4px 10px rgba(33,150,243,.35);
+
+}
+
+#btnXemLaiBai:active{
+
+  transform:
+    translateY(1px);
+
+}
