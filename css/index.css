@@ -2294,3 +2294,34 @@ td:nth-child(2) {
 .music-popup.maximized iframe{
   height:65vh !important;
 }
+
+
+/*==============
+Thông báo của giáo viên
+=============*/
+.tb-moi{
+  display:inline-block;
+  margin-top:4px;
+  padding:6px 12px;
+  border-radius:20px;
+  background:#fee2e2;
+  color:#dc2626;
+  font-size:13px;
+  font-weight:700;
+  animation: blinkTB 1s infinite;
+  box-shadow:0 2px 6px rgba(220,38,38,.2);
+}
+
+@keyframes blinkTB{
+  0%{
+    opacity:1;
+  }
+
+  50%{
+    opacity:.3;
+  }
+
+  100%{
+    opacity:1;
+  }
+}

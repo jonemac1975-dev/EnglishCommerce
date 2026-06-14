@@ -112,12 +112,12 @@ async function initTeacherSidebar() {
   };
 
   // ===== MENU KIỂM TRA =====
-  const menuKiemtra = document.getElementById("gv-kiemtra");
-  menuKiemtra.innerHTML = `<li class="menu-title">Bài kiểm tra</li>`;
-  menuKiemtra.querySelector(".menu-title").onclick = () => {
-    MAIN_HISTORY = [];
-    loadClassList(teacherData.kiemtra || {}, "kiemtra");
-  };
+   const menuKiemtra = document.getElementById("gv-kiemtra");
+   menuKiemtra.innerHTML = `<li class="menu-title">Bài kiểm tra</li>`;
+   menuKiemtra.querySelector(".menu-title").onclick = () => {
+     MAIN_HISTORY = [];
+     loadClassList(teacherData.kiemtra || {}, "kiemtra");
+   };
 
   // ===== MENU VĂN BẢN =====
   const menuVanban = document.getElementById("gv-vanban");

@@ -629,7 +629,7 @@ async function openExam() {
       updatedAt: Date.now()
     }
   );
-
+loadDanhSach();
   showToast("🚀 Đã mở toàn bộ đề");
 }
   
@@ -657,6 +657,6 @@ async function closeExam() {
       updatedAt: Date.now()
     }
   );
-
+loadDanhSach();
   showToast("🔒 Đã khóa toàn bộ đề");
 }

@@ -121,17 +121,35 @@ window.loadList = async function () {
 
 function loadContent(item, type) {
 
-  const content = document.getElementById("content_html");
-  const mediaBox = document.getElementById("mediaBox");
+  const content =
+    document.getElementById(
+      "content_html"
+    );
+
+  const mediaBox =
+    document.getElementById(
+      "mediaBox"
+    );
 
   if (!content || !mediaBox) {
-    console.error("❌ Thiếu #content_html hoặc #mediaBox");
+    console.error(
+      "❌ Thiếu content hoặc mediaBox"
+    );
     return;
   }
 
-  // reset
+  // reset media
+  mediaBox.innerHTML = `
+    <div id="mediaButtons"></div>
+    <div id="mediaViewer"></div>
+  `;
+
+  const mediaButtons =
+    document.getElementById(
+      "mediaButtons"
+    );
+
   content.innerHTML = "";
-  mediaBox.innerHTML = "";
 
   /* ================= BÀI GIẢNG ================= */
   if (type === "baigiang") {
@@ -141,7 +159,7 @@ function loadContent(item, type) {
 
       // MP3
       if (item.media.mp3) {
-        mediaBox.appendChild(createMediaButton("🎧 MP3-1", () => {
+        mediaButtons.appendChild(createMediaButton("🎧 MP3-1", () => {
           renderMedia(`
             <iframe 
               src="${convertDriveToPreview(item.media.mp3)}"
@@ -155,7 +173,7 @@ function loadContent(item, type) {
 
       // MP32
       if (item.media.mp32) {
-        mediaBox.appendChild(createMediaButton("🎧 MP3-2", () => {
+        mediaButtons.appendChild(createMediaButton("🎧 MP3-2", () => {
           renderMedia(`
             <iframe 
               src="${convertDriveToPreview(item.media.mp32)}"
@@ -169,7 +187,7 @@ function loadContent(item, type) {
 
       // MP4
       if (item.media.mp4) {
-        mediaBox.appendChild(createMediaButton("🎬 Video", () => {
+        mediaButtons.appendChild(createMediaButton("🎬 Video", () => {
           renderMedia(`
             <iframe 
               src="${convertDriveToPreview(item.media.mp4)}"
@@ -183,7 +201,7 @@ function loadContent(item, type) {
 
       // YOUTUBE
       if (item.media.youtube) {
-        mediaBox.appendChild(createMediaButton("▶ YouTube", () => {
+        mediaButtons.appendChild(createMediaButton("▶ YouTube", () => {
           renderMedia(`
             <iframe 
               src="${convertYoutube(item.media.youtube)}"
@@ -241,22 +259,40 @@ function createMediaButton(label, onClick) {
 
 function renderMedia(html) {
 
-  const mediaBox = document.getElementById("mediaBox");
+  const mediaViewer =
+    document.getElementById(
+      "mediaViewer"
+    );
 
-  mediaBox.innerHTML = `
+  if (!mediaViewer) return;
+
+  mediaViewer.innerHTML = `
+
     <div class="media-viewer active">
-      <button class="close-media">✖</button>
+
+      <button
+        class="close-media">
+        ✖
+      </button>
 
       <div class="media-inner">
         ${html}
       </div>
+
     </div>
+
   `;
 
-  // close
-  mediaBox.querySelector(".close-media").onclick = () => {
-    mediaBox.innerHTML = "";
-  };
+  mediaViewer
+    .querySelector(
+      ".close-media"
+    )
+    .onclick = () => {
+
+      mediaViewer.innerHTML = "";
+
+    };
+
 }
 
 function convertDriveToPreview(url) {

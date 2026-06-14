@@ -728,7 +728,7 @@ const examControl =
 if (!examControl?.opened) {
 
   clearExamUI(
-    "⛔ Giáo viên chưa mở đề hoặc đã khóa đề."
+    "⛔ Giáo viên chưa mở đề thi."
   );
 
   return;

@@ -3469,3 +3469,298 @@ tr:nth-child(even) {
   border-radius:8px;
   cursor:pointer;
 }
+
+
+/* =========================
+   BỐC XĂM MÃ ĐỀ
+========================= */
+
+#btnBocXam{
+
+  background:
+    linear-gradient(
+      135deg,
+      #ff9800,
+      #ff5722
+    );
+
+  color:#fff;
+
+  border:none;
+
+  padding:12px 22px;
+
+  border-radius:12px;
+
+  font-size:15px;
+  font-weight:700;
+
+  cursor:pointer;
+
+  box-shadow:
+    0 4px 12px rgba(255,87,34,.25);
+
+  transition:.25s;
+
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+}
+
+#btnBocXam:hover{
+
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 8px 20px rgba(255,87,34,.35);
+
+}
+
+#btnBocXam:active{
+
+  transform:
+    translateY(1px);
+
+}
+
+
+/* =========================
+   NÚT XEM BÀI KIỂM TRA
+========================= */
+
+#btnXemLaiBai{
+
+  background:
+    linear-gradient(
+      135deg,
+      #2196f3,
+      #1976d2
+    );
+
+  color:#fff;
+
+  border:none;
+
+  padding:4px 10px;
+
+  border-radius:12px;
+
+  font-size:15px;
+  font-weight:700;
+
+  cursor:pointer;
+
+  box-shadow:
+    0 4px 12px rgba(33,150,243,.25);
+
+  transition:.25s;
+
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+}
+
+#btnXemLaiBai:hover{
+
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 4px 10px rgba(33,150,243,.35);
+
+}
+
+#btnXemLaiBai:active{
+
+  transform:
+    translateY(1px);
+
+}
+
+
+
+
+
+/* =========================
+   THÔNG BÁO GIÁO VIÊN
+========================= */
+
+.tb-wrap{
+  padding:20px;
+}
+
+/* ===== TITLE ===== */
+
+.tb-wrap h2{
+  margin-bottom:20px;
+  color:#1e293b;
+  font-size:24px;
+  font-weight:700;
+}
+
+/* ===== TABLE ===== */
+
+.tb-table{
+  width:100%;
+  border-collapse:collapse;
+  background:#fff;
+  border-radius:3px;
+  overflow:hidden;
+  box-shadow:0 3px 12px rgba(0,0,0,.08);
+}
+
+.tb-table thead{
+  background:#2563eb;
+}
+
+.tb-table th{
+  color:#fff;
+  padding:6px 12px;
+  text-align:left;
+  font-size:14px;
+  font-weight:600;
+}
+
+.tb-table td{
+  padding:6px;
+  border-bottom:1px solid #e5e7eb;
+  font-size:14px;
+  color:#374151;
+
+}
+
+.tb-table tbody tr{
+  transition:.2s;
+  cursor:pointer;
+}
+
+.tb-table tbody tr:hover{
+  background:#f8fafc;
+  transform:scale(1.002);
+}
+
+/* ===== FIX WIDTH ===== */
+
+.tb-table{
+  table-layout:fixed;
+}
+
+.tb-table th:nth-child(1),
+.tb-table td:nth-child(1){
+  width:60px;
+  text-align:center;
+}
+
+.tb-table th:nth-child(2),
+.tb-table td:nth-child(2){
+  width:220px;
+}
+
+.tb-table th:nth-child(3),
+.tb-table td:nth-child(3){
+  width:110px;
+}
+
+.tb-table th:nth-child(4),
+.tb-table td:nth-child(4){
+  width:200px;
+overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.tb-table th:nth-child(5),
+.tb-table td:nth-child(5){
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.tb-table th:nth-child(6),
+.tb-table td:nth-child(6){
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+/* ===== STATUS ===== */
+
+.seen{
+  display:inline-block;
+  padding:5px 10px;
+  border-radius:20px;
+  background:#dcfce7;
+  color:#15803d;
+  font-weight:700;
+  font-size:13px;
+}
+
+.unseen{
+  display:inline-block;
+  padding:5px 10px;
+  border-radius:20px;
+  background:#fee2e2;
+  color:#dc2626;
+  font-weight:700;
+  font-size:13px;
+}
+
+/* ===== DETAIL BOX ===== */
+
+.tb-detail{
+  margin-top:25px;
+  background:#fff;
+  border-radius:14px;
+  padding:25px;
+  box-shadow:0 3px 12px rgba(0,0,0,.08);
+  border-left:5px solid #2563eb;
+}
+
+#detailTitle{
+  color:Red;
+  font-size:24px;
+  margin-bottom:12px;
+}
+
+#detailInfo{
+  padding:12px;
+  background:#f8fafc;
+  border-radius:10px;
+  margin-bottom:15px;
+  color:#64748b;
+  line-height:1.8;
+}
+
+#detailContent{
+  font-size:25px;
+  line-height:1.8;
+  color:Blue;
+  white-space:pre-wrap;
+}
+
+/* ===== EMPTY ===== */
+
+.tb-empty{
+  text-align:center;
+  color:#94a3b8;
+  padding:25px;
+}
+
+/* ===== MOBILE ===== */
+
+@media (max-width:768px){
+
+  .tb-table{
+    display:block;
+    overflow-x:auto;
+  }
+
+  .tb-detail{
+    padding:15px;
+  }
+
+  #detailTitle{
+    font-size:20px;
+  }
+}

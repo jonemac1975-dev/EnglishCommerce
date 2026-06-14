@@ -3,7 +3,10 @@
 import { readData } from "../scripts/services/firebaseService.js";
 
 const teacherNameMap = {};
-
+const studentId =
+  JSON.parse(
+    localStorage.getItem("studentLogin")
+  )?.id;
 /* ==============================
    DOM READY
 ============================== */
@@ -82,6 +85,9 @@ try {
   if (nameBox) {
     nameBox.textContent = hoTen;
   }
+
+// 🔔 kiểm tra thông báo mới
+await checkThongBaoMoi();
 
   // 👉 update lại localStorage cho đồng bộ (optional nhưng nên có)
   const updatedLogin = {
@@ -795,3 +801,66 @@ document.addEventListener("click", function(e) {
 });
 
 
+async function checkThongBaoMoi() {
+
+  const tbMoi =
+    document.getElementById("tbMoi");
+
+  if (!tbMoi) return;
+
+  try {
+
+    const viewedMap =
+      await readData(
+        `users/students/${studentId}/thongbao_da_xem`
+      ) || {};
+
+    const teachers =
+      await readData("teacher");
+
+    let soMoi = 0;
+
+    for (const [, teacherData]
+      of Object.entries(teachers || {})) {
+
+      const thongbao =
+        teacherData.thongbao || {};
+
+      for (const [tbId, tb]
+        of Object.entries(thongbao)) {
+
+        const lastViewed =
+          viewedMap[tbId] || 0;
+
+        if (
+          !lastViewed ||
+          (tb.updatedAt || 0) > lastViewed
+        ) {
+          soMoi++;
+        }
+
+      }
+    }
+
+    if (soMoi > 0) {
+
+      tbMoi.style.display = "inline-block";
+
+      tbMoi.innerHTML =
+        `🔔 ${soMoi} thông báo mới`;
+
+    } else {
+
+      tbMoi.style.display = "none";
+
+    }
+
+  } catch (err) {
+
+    console.error(
+      "checkThongBaoMoi error:",
+      err
+    );
+
+  }
+}

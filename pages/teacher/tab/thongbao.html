@@ -1,0 +1,56 @@
+<h2>📘 CẬP NHẬT THÔNG BÁO</h2>
+
+<div class="kt-form">
+  <label>Chọn lớp</label>
+  <select id="tbLop">
+    <option value="">Chọn lớp</option>
+  </select>
+
+  <div class="row">
+  <label>Tiêu đề</label>
+  <input id="tieude" type="text">
+</div>
+
+<div class="form-group full">
+
+  <label>Nội dung thông báo</label>
+  <div id="tbNoiDung" contenteditable="true"></div>
+</div>
+
+  <div class="actions">
+    <button id="btnAdd">➕ Thêm</button>
+    <button id="btnSave">💾 Lưu</button>
+  </div>
+</div>
+
+<hr>
+
+<h3>📋 Danh sách thông báo</h3>
+<table class="kt-table">
+  <thead>
+    <tr>
+      <th>STT</th>
+      <th>Ngày</th>
+      <th>Lớp</th>
+      <th>Tiêu Đề</th>
+      <th>Nội dung</th>
+      <th>Hành động</th>
+    </tr>
+  </thead>
+  <tbody id="test_list"></tbody>
+</table>
+
+<!-- Toast popup -->
+<div id="toast" style="
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #333;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 8px;
+    display: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    font-family: sans-serif;
+    z-index: 9999;
+"></div>
