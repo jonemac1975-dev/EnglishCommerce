@@ -123,13 +123,13 @@ function renderTongHopTable(data) {
         monhoc: monId,
         lop: lopId,
 
-        hk1_15p: [],
-        hk1_1tiet: [],
+        hk1_tx: [],
+   //     hk1_1tiet: [],
         hk1_giuaKy: null,
         hk1_cuoiKy: null,
 
-        hk2_15p: [],
-        hk2_1tiet: [],
+        hk2_tx: [],
+   //     hk2_1tiet: [],
         hk2_giuaKy: null,
         hk2_cuoiKy: null
       };
@@ -147,14 +147,24 @@ function renderTongHopTable(data) {
     if (diem === null) return;
 
     // ===== Phân loại điểm =====
-    if (kyThiName.includes("15 phút")) {
-      if (isHK2(item, examInfo)) row.hk2_15p.push(diem);
-      else row.hk1_15p.push(diem);
-    }
-    else if (kyThiName.includes("1 tiết")) {
-      if (isHK2(item, examInfo)) row.hk2_1tiet.push(diem);
-      else row.hk1_1tiet.push(diem);
-    }
+    // ===== Điểm thường xuyên =====
+if (
+  item.loaikt === "TX" ||
+  item.kythi === "tx_hk1" ||
+  item.kythi === "tx_hk2"
+) {
+
+  if (item.kythi === "tx_hk2") {
+    row.hk2_tx.push(diem);
+  } else {
+    row.hk1_tx.push(diem);
+  }
+
+}
+ //   else if (kyThiName.includes("1 tiết")) {
+ //     if (isHK2(item, examInfo)) row.hk2_1tiet.push(diem);
+//      else row.hk1_1tiet.push(diem);
+ //   }
     else if (kyThiName.includes("giữa kỳ i")) {
       row.hk1_giuaKy = diem;
     }
@@ -199,15 +209,15 @@ function renderTongHopTable(data) {
       "";
 
     const tbhk1 = tinhTBHocKy(
-      row.hk1_15p,
-      row.hk1_1tiet,
+      row.hk1_tx,
+ //     row.hk1_1tiet,
       row.hk1_giuaKy,
       row.hk1_cuoiKy
     );
 
     const tbhk2 = tinhTBHocKy(
-      row.hk2_15p,
-      row.hk2_1tiet,
+      row.hk2_tx,
+ //     row.hk2_1tiet,
       row.hk2_giuaKy,
       row.hk2_cuoiKy
     );
@@ -216,25 +226,23 @@ function renderTongHopTable(data) {
 
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${index + 1}</td>
-      <td>${tenGV}</td>
-      <td>${tenMon}</td>
-      <td>${tenLop}</td>
+  <td>${index + 1}</td>
+  <td>${tenGV}</td>
+  <td>${tenMon}</td>
+  <td>${tenLop}</td>
 
-      <td class="score-list-cell">${formatScoreList(row.hk1_15p)}</td>
-      <td class="score-list-cell">${formatScoreList(row.hk1_1tiet)}</td>
-      <td>${formatScoreOrDash(row.hk1_giuaKy)}</td>
-      <td>${formatScoreOrDash(row.hk1_cuoiKy)}</td>
-      <td class="score-avg">${formatScoreOrDash(tbhk1)}</td>
+  <td class="score-list-cell">${formatScoreList(row.hk1_tx)}</td>
+  <td>${formatScoreOrDash(row.hk1_giuaKy)}</td>
+  <td>${formatScoreOrDash(row.hk1_cuoiKy)}</td>
+  <td class="score-avg">${formatScoreOrDash(tbhk1)}</td>
 
-      <td class="score-list-cell">${formatScoreList(row.hk2_15p)}</td>
-      <td class="score-list-cell">${formatScoreList(row.hk2_1tiet)}</td>
-      <td>${formatScoreOrDash(row.hk2_giuaKy)}</td>
-      <td>${formatScoreOrDash(row.hk2_cuoiKy)}</td>
-      <td class="score-avg">${formatScoreOrDash(tbhk2)}</td>
+  <td class="score-list-cell">${formatScoreList(row.hk2_tx)}</td>
+  <td>${formatScoreOrDash(row.hk2_giuaKy)}</td>
+  <td>${formatScoreOrDash(row.hk2_cuoiKy)}</td>
+  <td class="score-avg">${formatScoreOrDash(tbhk2)}</td>
 
-      <td class="score-year">${formatScoreOrDash(tbNam)}</td>
-    `;
+  <td class="score-year">${formatScoreOrDash(tbNam)}</td>
+`;
 
     tbody.appendChild(tr);
   });
@@ -253,12 +261,12 @@ function tinhTBHocKy(arr15p = [], arr1Tiet = [], giuaKy = null, cuoiKy = null) {
     }
   });
 
-  arr1Tiet.forEach(d => {
-    if (isValidNumber(d)) {
-      tong += Number(d) * 2;
-      heSo += 2;
-    }
-  });
+//  arr1Tiet.forEach(d => {
+//    if (isValidNumber(d)) {
+//      tong += Number(d) * 2;
+//      heSo += 2;
+//    }
+//  });
 
   if (isValidNumber(giuaKy)) {
     tong += Number(giuaKy) * 3;

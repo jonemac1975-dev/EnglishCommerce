@@ -139,14 +139,12 @@ function renderBangDiem(lopId, monhocId) {
       lopName,
       monHocName,
 
-      hk1_15p: formatScoreList(scoreMap.hk1["15phut"]),
-      hk1_1tiet: formatScoreList(scoreMap.hk1["1tiet"]),
+      hk1_tx: formatScoreList(scoreMap.hk1.tx),
       hk1_gk: formatScoreSingle(scoreMap.hk1["giuaky"]),
       hk1_hk: formatScoreSingle(scoreMap.hk1["hocky"]),
       tbhk1: formatDecimal(tbhk1),
 
-      hk2_15p: formatScoreList(scoreMap.hk2["15phut"]),
-      hk2_1tiet: formatScoreList(scoreMap.hk2["1tiet"]),
+      hk2_tx: formatScoreList(scoreMap.hk2.tx),
       hk2_gk: formatScoreSingle(scoreMap.hk2["giuaky"]),
       hk2_hk: formatScoreSingle(scoreMap.hk2["hocky"]),
       tbhk2: formatDecimal(tbhk2),
@@ -159,44 +157,69 @@ function renderBangDiem(lopId, monhocId) {
   renderRows(rows);
 }
 
-/* =========================
-   EXTRACT SCORE
-========================= */
 function extractStudentScores(student, lopId, monhocId) {
+
   const result = {
     hk1: {
-      "15phut": [],
-      "1tiet": [],
-      "giuaky": [],
-      "hocky": []
+      tx: [],
+      giuaky: [],
+      hocky: []
     },
     hk2: {
-      "15phut": [],
-      "1tiet": [],
-      "giuaky": [],
-      "hocky": []
+      tx: [],
+      giuaky: [],
+      hocky: []
     }
   };
 
   const studentTests = student.kiemtra || {};
 
   Object.entries(studentTests).forEach(([baiId, baiLam]) => {
+
     if ((baiLam.lop || "") !== lopId) return;
     if ((baiLam.monhoc || "") !== monhocId) return;
 
+    // ===== TX =====
+    if (
+      baiLam.loaikt === "TX" ||
+      baiLam.kythi === "tx_hk1" ||
+      baiLam.kythi === "tx_hk2"
+    ) {
+
+      const score = getFinalScore(baiLam);
+
+      if (score !== null) {
+
+        if (baiLam.kythi === "tx_hk2") {
+          result.hk2.tx.push(score);
+        } else {
+          result.hk1.tx.push(score);
+        }
+
+      }
+
+      return;
+    }
+
+    // ===== Đề kiểm tra =====
     const deThi = teacherKiemTra[baiId];
+
     if (!deThi) return;
 
     const kyThiId = deThi.kythi;
-    const kyThiName = (dsKyThi[kyThiId]?.name || "").trim();
+    const kyThiName =
+      (dsKyThi[kyThiId]?.name || "").trim();
 
     const score = getFinalScore(baiLam);
+
     if (score === null || isNaN(score)) return;
 
     const mapped = mapKyThiToColumn(kyThiName);
+
     if (!mapped) return;
 
     result[mapped.hk][mapped.type].push(score);
+
   });
 
   return result;
@@ -245,23 +268,17 @@ function mapKyThiToColumn(name) {
    TÍNH ĐIỂM
 ========================= */
 function calcTBHK(hkData) {
-  const diem15 = hkData["15phut"] || [];
-  const diem1Tiet = hkData["1tiet"] || [];
+  const diemTX = hkData["tx"] || [];
   const giuaKy = hkData["giuaky"] || [];
   const hocKy = hkData["hocky"] || [];
 
   let tong = 0;
   let heSo = 0;
 
-  diem15.forEach(d => {
-    tong += Number(d);
-    heSo += 1;
-  });
-
-  diem1Tiet.forEach(d => {
-    tong += Number(d) * 2;
-    heSo += 2;
-  });
+  diemTX.forEach(d => {
+  tong += Number(d);
+  heSo += 1;
+});
 
   if (giuaKy.length) {
     tong += Number(giuaKy[giuaKy.length - 1]) * 3;
@@ -307,13 +324,11 @@ function renderRows(rows) {
       <td class="student-name">${r.hoTen}</td>
       <td>${r.lopName}</td>
       <td>${r.monHocName}</td>
-      <td class="score-cell">${r.hk1_15p}</td>
-      <td class="score-cell">${r.hk1_1tiet}</td>
+      <td class="score-cell">${r.hk1_tx}</td>
       <td>${r.hk1_gk}</td>
       <td>${r.hk1_hk}</td>
       <td class="tb-cell">${r.tbhk1}</td>
-      <td class="score-cell">${r.hk2_15p}</td>
-      <td class="score-cell">${r.hk2_1tiet}</td>
+      <td class="score-cell">${r.hk2_tx}</td>
       <td>${r.hk2_gk}</td>
       <td>${r.hk2_hk}</td>
       <td class="tb-cell">${r.tbhk2}</td>
@@ -328,7 +343,7 @@ function renderEmpty(message) {
 
   bangDiemBody.innerHTML = `
     <tr>
-      <td colspan="15" style="text-align:center; padding:20px;">${message}</td>
+      <td colspan="13" style="text-align:center; padding:20px;">${message}</td>
     </tr>
   `;
 }
@@ -440,14 +455,12 @@ async function exportExcelPro() {
     "LỚP",
     "MÔN HỌC",
 
-    "15P HK I",
-    "1 TIẾT HK I",
+    "TX HK I",
     "GIỮA KỲ I",
     "HỌC KỲ I",
     "TBHK I",
 
-    "15P HK II",
-    "1 TIẾT HK II",
+    "TX HK II",
     "GIỮA KỲ II",
     "HỌC KỲ II",
     "TBHK II",
@@ -502,14 +515,12 @@ async function exportExcelPro() {
       r.lopName,
       r.monHocName,
 
-      r.hk1_15p,
-      r.hk1_1tiet,
+      r.hk1_tx,
       r.hk1_gk,
       r.hk1_hk,
       r.tbhk1,
 
-      r.hk2_15p,
-      r.hk2_1tiet,
+      r.hk2_tx,
       r.hk2_gk,
       r.hk2_hk,
       r.tbhk2,
@@ -545,7 +556,7 @@ async function exportExcelPro() {
 
   sheet.columns = [
 
-    { width:8 },
+    { width:4 },
     { width:25 },
     { width:35 },
     { width:35 },
@@ -554,15 +565,15 @@ async function exportExcelPro() {
     { width:12 },
     { width:12 },
     { width:12 },
-    { width:10 },
+    { width:12 },
 
     { width:12 },
     { width:12 },
     { width:12 },
+    { width:16 },
     { width:12 },
-    { width:10 },
 
-    { width:14 }
+    { width:12 }
 
   ];
 

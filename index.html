@@ -93,6 +93,10 @@
       <div class="menu-title" onclick="toggleMenu('gv-vanban')">Văn bản - Hội Thảo</div>
       <ul id="gv-vanban" class="submenu"></ul>
     </div>
+<div class="menu-title" onclick="loadTab('dobai','teacher')">
+  🎲 Dò bài
+</div>
+
 
     <!-- MEDIA LINK HIỆN KHI CHỌN BÀI -->
     <div class="media" id="teacherMedia" style="display:none;">
@@ -400,7 +404,7 @@ function googleTranslateElementInit() {
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="../scripts/libs/qrcode.min.js"></script>
 <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 <script>
 const fmSelect   = document.getElementById("fmSelect");
 const fmAudio    = document.getElementById("fmAudio");

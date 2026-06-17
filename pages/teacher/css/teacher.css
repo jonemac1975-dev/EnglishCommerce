@@ -3511,7 +3511,7 @@ td:nth-child(2) {
 
 
 
-/*===== Mục Thông Báo=====/
+/*===== Mục Thông Báo=====*/
 
 /* ===== TITLE ===== */
 h2 {
@@ -3649,12 +3649,29 @@ h2 {
   text-overflow: ellipsis;
 }
 
-.kt-table td:nth-child(3) {
+.kt-table td:nth-child(2) {
   max-width: 180px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.kt-table td:nth-child(3) {
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+color : black;
+  text-overflow: ellipsis;
+}
+
+.kt-table td:nth-child(8) {
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
 
 /* ===== ACTION BUTTON ===== */
 .edit-btn,
@@ -3713,3 +3730,7 @@ h2 {
   color: Black !important;
   background: #fff;
 }
+
+
+
+/*===== Thường xuyên =====*/

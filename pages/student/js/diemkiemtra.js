@@ -102,7 +102,19 @@ function renderTable(data) {
     const tenGV =
   teachersGlobal?.[item.giao_vien]?.profile?.ho_ten || item.giao_vien || "";
 
-const examInfo = teacherExamMap?.[item.bai] || teacherExamMap?.[item.baiId] || {};
+const isTX =
+  item.loaikt === "TX" ||
+  item.baiId?.startsWith("tx_") ||
+  item.bai?.startsWith("tx_");
+
+const examInfo =
+  isTX
+    ? {}
+    : (
+        teacherExamMap?.[item.bai] ||
+        teacherExamMap?.[item.baiId] ||
+        {}
+      );
 
 const monHocId = item.monhoc || examInfo.monhoc || "";
 const monGV =
@@ -114,7 +126,22 @@ const monGV =
 
    
     const tenDe = examInfo.maDe || item.bai || item.baiId || "";
-    const loaiBai = kyThiDanhMucGlobal?.[examInfo.kythi]?.name || item.kythi || "";
+    let loaiBai = "";
+
+if (isTX) {
+
+  loaiBai =
+    item.kythi === "tx_hk2"
+      ? "Điểm thường xuyên HK2"
+      : "Điểm thường xuyên HK1";
+
+} else {
+
+  loaiBai =
+    kyThiDanhMucGlobal?.[examInfo.kythi]?.name ||
+    item.kythi ||
+    "";
+}
 
     const nhanXet = extractNhanXet(item);
     const hasEssay = hasEssayContent(item, examInfo);
@@ -179,6 +206,11 @@ function bindModalEvents() {
 }
 
 function openEssayModal(item, examInfo) {
+ const isTX =
+    item.loaikt === "TX" ||
+    item.baiId?.startsWith("tx_") ||
+    item.bai?.startsWith("tx_");
+
   const modal = document.getElementById("essayModal");
   const body = document.getElementById("essayModalBody");
   if (!modal || !body) return;
@@ -186,10 +218,32 @@ function openEssayModal(item, examInfo) {
   const tenGV =
     teachersGlobal?.[item.giao_vien]?.profile?.ho_ten || item.giao_vien || "";
 
-  const loaiBai =
-    kyThiDanhMucGlobal?.[examInfo.kythi]?.name || item.kythi || "";
+  let loaiBai = "";
 
-  const tenDe = examInfo.maDe || item.bai || item.baiId || "";
+if (isTX) {
+
+  loaiBai =
+    item.kythi === "tx_hk2"
+      ? "Điểm thường xuyên HK2"
+      : "Điểm thường xuyên HK1";
+
+} else {
+
+  loaiBai =
+    kyThiDanhMucGlobal?.[examInfo.kythi]?.name ||
+    item.kythi ||
+    "";
+}
+
+  const tenDe =
+  isTX
+    ? ""
+    : (
+        examInfo.maDe ||
+        item.bai ||
+        item.baiId ||
+        ""
+      );
   const tenLop = lopDanhMucGlobal?.[item.lop]?.name || item.lop || "";
   const monHocId = item.monhoc || examInfo.monhoc || "";
   const tenMonHoc = monHocDanhMucGlobal?.[monHocId]?.name || monHocId || "";
@@ -301,10 +355,26 @@ function hasEssayContent(item, examInfo) {
 }
 
 function getTracNghiemScore(item) {
-  if (isValidNumber(item.diem)) return Number(item.diem);
-  if (isValidNumber(item.finalScore) && !isValidNumber(item.diem_tuluan)) {
+
+  const isTX =
+    item.loaikt === "TX" ||
+    item.baiId?.startsWith("tx_");
+
+  if (isTX) {
+    return null;
+  }
+
+  if (isValidNumber(item.diem)) {
+    return Number(item.diem);
+  }
+
+  if (
+    isValidNumber(item.finalScore) &&
+    !isValidNumber(item.diem_tuluan)
+  ) {
     return Number(item.finalScore);
   }
+
   return null;
 }
 
@@ -329,9 +399,20 @@ function getEssayScore(item) {
 }
 
 function getFinalScore(item) {
-  if (isValidNumber(item.tong_diem)) return Number(item.tong_diem);
-  if (isValidNumber(item.finalScore)) return Number(item.finalScore);
-  if (isValidNumber(item.diem)) return Number(item.diem);
+
+  if (item.loaikt === "TX") {
+    return Number(item.diem || 0);
+  }
+
+  if (isValidNumber(item.tong_diem))
+    return Number(item.tong_diem);
+
+  if (isValidNumber(item.finalScore))
+    return Number(item.finalScore);
+
+  if (isValidNumber(item.diem))
+    return Number(item.diem);
+
   return null;
 }
 

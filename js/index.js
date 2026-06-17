@@ -415,7 +415,8 @@ localStorage.removeItem("view_teacher_id");
 // ✅ FIX GLOBAL
 window.openRatingGV = openRatingGV;
 window.goHome = goHome;
-
+window.loadTab = loadTab;
+window.loadTeachersToSelect = loadTeachersToSelect;
 
 
 
