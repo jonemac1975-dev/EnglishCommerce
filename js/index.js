@@ -119,6 +119,31 @@ window.resetLandingMode = function () {
 };
 
 
+window.openRatingList = async function () {
+
+  const mainContent =
+    document.getElementById("mainContent");
+
+  const mainBg =
+    document.getElementById("mainBg");
+
+  if (mainBg)
+    mainBg.style.display = "none";
+
+  const html = await fetch(
+    "/pages/teacher/tab/ratinglist.html"
+  ).then(r => r.text());
+
+  mainContent.innerHTML = html;
+
+  const mod = await import(
+    "/pages/teacher/js/ratinglist.js"
+  );
+
+  mod.init();
+};
+
+
 
 /* =========================
    ĐIỀU HƯỚNG

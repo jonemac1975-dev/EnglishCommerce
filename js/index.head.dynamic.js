@@ -31,29 +31,91 @@ export function applyHeaderTheme(data = {}) {
 }
 
 async function renderUserRating(teacherId) {
-  const box = document.getElementById("userRating");
+
+  const box =
+    document.getElementById("userRating");
+
   if (!box) return;
 
   try {
-    const data = await readData(`ratings/${teacherId}`);
 
-    if (!data || !data.avg) {
+    const data =
+      await readData(
+        `ratingDetails/${teacherId}`
+      );
+
+    if (!data) {
       box.innerHTML = "";
       return;
     }
 
-    const avg = data.avg;
-    const full = Math.floor(avg);
+    const now = new Date();
 
-    let stars = "";
-    for (let i = 1; i <= 5; i++) {
-      stars += i <= full ? "⭐" : "☆";
+    const month =
+      now.getMonth() + 1;
+
+    const week =
+      Math.ceil(
+        now.getDate() / 7
+      );
+
+    const stars = [];
+
+    Object.values(data).forEach(r => {
+
+      if (
+        r.year === now.getFullYear() &&
+        r.month === month &&
+        r.week === week
+      ) {
+        stars.push(
+          Number(r.star || 0)
+        );
+      }
+
+    });
+
+    if (!stars.length) {
+
+      box.innerHTML =
+        `<div class="stars">☆☆☆☆☆</div>`;
+
+      return;
     }
-box.innerHTML = `<div class="stars">${stars}</div>`;
 
-  } catch (err) {
-    console.log("Rating error:", err);
+    const avg =
+      stars.reduce(
+        (a,b)=>a+b,
+        0
+      ) / stars.length;
+
+    const full =
+      Math.round(avg);
+
+    let html = "";
+
+    for(let i=1;i<=5;i++){
+
+      html +=
+        i <= full
+        ? "⭐"
+        : "☆";
+
+    }
+
+    box.innerHTML = `
+      <div class="stars">
+        ${html}
+      </div>
+       
+    `;
+
+  } catch(err) {
+
+    console.log(err);
+
   }
+
 }
 
 

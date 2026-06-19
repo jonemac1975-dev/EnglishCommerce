@@ -10,12 +10,12 @@ function getTeacherId() {
 let chartInstance = null;
 let studentMap = {};
 
-init();
+// init();
 
 /* =========================
    INIT
 ========================= */
-async function init() {
+export async function init() {
   const teacherId = getTeacherId();
 
   if (!teacherId) {
@@ -75,7 +75,7 @@ async function loadList() {
   if (!data) {
     list.innerHTML =
       "<tr><td colspan='4'>Chưa có bình chọn</td></tr>";
-    avgEl.innerText = "Chưa có dữ liệu";
+    avgEl.innerText = "Chưa có bình chọn";
     return;
   }
 
@@ -113,13 +113,16 @@ async function loadList() {
   if (stars.length === 0) {
     list.innerHTML =
       "<tr><td colspan='4'>Chưa có dữ liệu hợp lệ</td></tr>";
-    avgEl.innerText = "Chưa có dữ liệu";
+    avgEl.innerText = "Chưa có bình chọn tuần này";
     return;
   }
 
   // 👉 tính điểm trung bình
+console.log("stars =", stars);
+
   const avg =
     stars.reduce((a, b) => a + b, 0) / stars.length;
+console.log("avg =", avg);
 
   avgEl.innerText =
     `⭐ ${avg.toFixed(1)} / 5 (${stars.length} lượt)`;

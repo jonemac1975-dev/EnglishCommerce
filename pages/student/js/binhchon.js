@@ -143,7 +143,7 @@ async function submitVote() {
     old.month === month &&
     old.week === week
   ) {
-    alert("Tuần này bạn đã bình chọn!");
+    alert("Tuần này bạn đã bình chọn, Tuần sau nhớ bình chọn cho giáo viên đang yêu nha !");
     return;
   }
 
@@ -179,7 +179,7 @@ async function submitVote() {
     time: Date.now()
   });
 
-  alert("Bình chọn thành công!");
+  alert("Cám ơn bạn đã bình chọn thành công!");
 
   loadList(teacherId);
 }
