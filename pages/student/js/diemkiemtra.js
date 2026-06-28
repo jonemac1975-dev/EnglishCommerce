@@ -119,30 +119,23 @@ const examInfo =
 const monHocId = item.monhoc || examInfo.monhoc || "";
 const monGV =
   monHocDanhMucGlobal?.[monHocId]?.name || monHocId || "";
-
-
     const tenLop =
       lopDanhMucGlobal?.[item.lop]?.name || item.lop || "";
-
-   
     const tenDe = examInfo.maDe || item.bai || item.baiId || "";
     let loaiBai = "";
 
 if (isTX) {
-
   loaiBai =
     item.kythi === "tx_hk2"
       ? "Điểm thường xuyên HK2"
       : "Điểm thường xuyên HK1";
 
 } else {
-
   loaiBai =
     kyThiDanhMucGlobal?.[examInfo.kythi]?.name ||
     item.kythi ||
     "";
 }
-
     const nhanXet = extractNhanXet(item);
     const hasEssay = hasEssayContent(item, examInfo);
 
@@ -177,13 +170,11 @@ if (isTX) {
 
 function bindViewEssayButtons(list) {
   const buttons = document.querySelectorAll(".btn-view-essay");
-
   buttons.forEach(btn => {
     btn.addEventListener("click", () => {
       const baiId = btn.dataset.baiid;
       const item = list.find(x => x.baiId === baiId);
       if (!item) return;
-
       const examInfo = teacherExamMap?.[item.bai] || teacherExamMap?.[item.baiId] || {};
       openEssayModal(item, examInfo);
     });
@@ -271,30 +262,22 @@ if (isTX) {
   `;
 
   let hasAnyEssay = false;
-
   const maxLen = Math.max(essayQuestions.length, essayAnswers.length, essayMarks.length);
-
   for (let i = 1; i < maxLen; i++) {
     const cauHoi = essayQuestions[i] || "";
     const baiLam = essayAnswers[i] || {};
     const cham = essayMarks[i] || {};
-
     if (!cauHoi && !baiLam?.text && !baiLam?.image && !cham?.nhanXet && !isValidNumber(cham?.diem)) {
       continue;
     }
-
     hasAnyEssay = true;
-
     html += `
       <div class="essay-question-box">
         <div class="essay-question-title">Câu hỏi ${i}</div>
-
         <div class="essay-block">
-          
-         <div>${cauHoi || "<i>Không có nội dung</i>"}</div>
-        </div>
-
-        <div class="essay-block">
+        <div>${cauHoi || "<i>Không có nội dung</i>"}</div>
+      </div>
+      <div class="essay-block">
           <strong>Bài làm:</strong>
           <div class="essay-answer-text">${escapeHtml(baiLam?.text || "Không có nội dung trả lời")}</div>
           ${

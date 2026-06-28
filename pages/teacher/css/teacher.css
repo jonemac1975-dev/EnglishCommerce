@@ -3733,3 +3733,330 @@ color : black;
 
 
 
+
+/*==== Hội thảo - Tọa đàm======*/
+
+.tab-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.tab-btn {
+  padding: 7px 10px;
+  border: none;
+  background: #eee;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.tab-btn.active {
+  background: #4a90e2;
+  color: white;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* ===== PAGE ===== */
+
+.page-wrap{
+  max-width:1200px;
+  margin:auto;
+}
+
+.page-wrap h2{
+  margin-bottom:20px;
+  color:#1f2937;
+}
+
+/* ===== TAB ===== */
+
+.tab-bar{
+  display:flex;
+  gap:10px;
+  margin-bottom:20px;
+}
+
+.tab-btn{
+  padding:7px 14px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:600;
+  background:#eef2f7;
+  transition:.25s;
+}
+
+.tab-btn:hover{
+  transform:translateY(-2px);
+}
+
+.tab-btn.active{
+  background:#2563eb;
+  color:#fff;
+  box-shadow:0 4px 12px rgba(37,99,235,.25);
+}
+
+/* ===== CONTENT ===== */
+
+.tab-content{
+  display:none;
+}
+
+.tab-content.active{
+  display:block;
+}
+
+/* ===== TABLE ===== */
+
+.table{
+  width:100%;
+  border-collapse:collapse;
+  background:#fff;
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 8px 25px rgba(0,0,0,.08);
+  table-layout:fixed;
+}
+
+.table thead{
+  background:#f8fafc;
+}
+
+.table th{
+  padding:6px;
+  font-size:13px;
+  color:White;
+  white-space:nowrap;
+  border-bottom:1px solid #e5e7eb;
+}
+
+.table td{
+  padding:6px;
+  font-size:14px;
+  border-bottom:1px solid #f1f5f9;
+
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.table tbody tr:hover{
+  background:#f8fbff;
+}
+
+/* ===== WIDTH ===== */
+
+/* STT */
+.table th:nth-child(1),
+.table td:nth-child(1){
+  width:20px;
+  text-align:center;
+}
+
+/* NGÀY */
+.table th:nth-child(2),
+.table td:nth-child(2){
+  width:80px;
+}
+
+/* CHỦ ĐỀ */
+.table th:nth-child(3),
+.table td:nth-child(3){
+  width:240px;
+}
+
+/* THÀNH PHẦN */
+.table th:nth-child(4),
+.table td:nth-child(4){
+  width:120px;
+}
+
+/* NỘI DUNG */
+.table th:nth-child(5),
+.table td:nth-child(5){
+  width:200px;
+}
+
+/* LINK */
+.table th:nth-child(6),
+.table td:nth-child(6){
+  width:140px;
+  text-align:center;
+}
+
+/* ACTION */
+.table th:last-child,
+.table td:last-child{
+  width:130px;
+  text-align:center;
+}
+
+/* ===== BUTTON ===== */
+
+.table button{
+  border:none;
+  padding:4px 14px;
+  border-radius:8px;
+  cursor:pointer;
+  background:#2563eb;
+  color:#fff;
+  font-size:13px;
+  font-weight:600;
+}
+
+.table button:hover{
+  opacity:.9;
+}
+
+.table a{
+  color:#2563eb;
+  text-decoration:none;
+  font-weight:600;
+}
+
+.table td{
+  color:#111827;
+}
+
+/* ===== MOBILE ===== */
+
+@media(max-width:900px){
+
+  .table{
+    display:block;
+    overflow-x:auto;
+  }
+
+}
+
+
+/*===== Thông báo tọa đàm mới=====*/
+
+.td-moi {
+  background: #ff3b30;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin: 8px 0;
+  cursor: pointer;
+  display: inline-block;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+
+.row-unseen {
+  background: #fff3f3;
+  border-left: 4px solid #ff4757;
+  font-weight: bold;
+}
+
+.row-seen {
+  background: #f6f6f6;
+  color: #777;
+}
+
+
+.row-new {
+  background: #d1fae5;
+  animation: flash 1s ease;
+}
+
+.row-updated {
+  background: #fef3c7;
+  animation: flash 1s ease;
+}
+
+@keyframes flash {
+  0% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+
+
+
+/* ==========================
+   BIÊN BẢN CHƯA XEM
+========================== */
+
+#listBienBan tr.row-new {
+  background: #fff1f1;
+  border-left: 6px solid #ff3b30;
+  animation: pulseNew 1.5s infinite;
+}
+
+#listBienBan tr.row-new td:first-child::before {
+  content: "🔴 ";
+  font-size: 16px;
+}
+
+/* ==========================
+   BIÊN BẢN ĐÃ CẬP NHẬT
+========================== */
+
+#listBienBan tr.row-updated {
+  background: #fff8e1;
+  border-left: 6px solid #ff9800;
+}
+
+#listBienBan tr.row-updated td:first-child::before {
+  content: "🟡 ";
+  font-size: 16px;
+}
+
+/* ==========================
+   BIÊN BẢN ĐÃ XEM
+========================== */
+
+#listBienBan tr.row-seen {
+  background: #f5fff5;
+  border-left: 6px solid #4caf50;
+}
+
+#listBienBan tr.row-seen td:first-child::before {
+  content: "🟢 ";
+  font-size: 16px;
+}
+
+/* ==========================
+   HOVER
+========================== */
+
+#listBienBan tr:hover {
+  transform: scale(1.003);
+  transition: 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,.12);
+}
+
+/* ==========================
+   NHẤP NHÁY RECORD MỚI
+========================== */
+
+@keyframes pulseNew {
+
+  0% {
+    background: #fff1f1;
+  }
+
+  50% {
+    background: #ffe0e0;
+  }
+
+  100% {
+    background: #fff1f1;
+  }
+}

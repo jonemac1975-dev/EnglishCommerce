@@ -22,7 +22,8 @@ document.addEventListener("DOMContentLoaded", () => {
       content.innerHTML = await res.text();
 
       try {
-        const module = await import(`./${tab}.js`);
+       const module = await import(`./${tab}.js`);
+         
         module.init?.();
       } catch (e) {
         console.warn("Không có JS cho tab:", tab);

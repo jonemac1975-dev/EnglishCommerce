@@ -1,0 +1,56 @@
+<div class="page-wrap">
+
+  <h2>📢 THÔNG BÁO : HỘI THẢO – TỌA ĐÀM - SHHT</h2>
+
+  <!-- TAB BUTTON -->
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="tab1">📅 Lịch hội thảo</button>
+    <button class="tab-btn" data-tab="tab2">📝 Biên bản</button>
+  </div>
+
+  <!-- TAB 1 -->
+  <div id="tab1" class="tab-content active">
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>STT</th>
+          <th>NGÀY</th>
+          <th>CHỦ ĐỀ</th>
+          <th>T.P THAM DỰ</th>
+          <th>NỘI DUNG</th>
+          <th>LINK</th>
+          <th>HÀNH ĐỘNG</th>
+        </tr>
+      </thead>
+      <tbody id="listLich"></tbody>
+    </table>
+
+  </div>
+
+  <!-- TAB 2 -->
+  <div id="tab2" class="tab-content">
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>STT</th>
+          <th>NGÀY</th>
+          <th>CHỦ ĐỀ</th>
+          <th>CLIP</th>
+          <th>NỘI DUNG</th>
+          <th>HÀNH ĐỘNG</th>
+          <th>Xuất file</th>
+        </tr>
+      </thead>
+      <tbody id="listBienBan"></tbody>
+    </table>
+
+  </div>
+
+</div>
+
+<script type="module">
+  import { initToaDam } from "../js/toadam.js";
+  initToaDam();
+</script>

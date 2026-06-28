@@ -1,11 +1,7 @@
 import { readData, updateData }
 from "../../scripts/services/firebaseService.js";
-
 import { compressImage }
 from "../../scripts/utils/imageCompress.js";
-
-
-
 
 /* ===== SESSION ===== */
 const adminViewId = localStorage.getItem("admin_view_teacher");
@@ -35,8 +31,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-
-
 /* ===== DOM ===== */
 const username = document.getElementById("username");
 const avatarFile = document.getElementById("avatarFile");
@@ -57,7 +51,6 @@ const chuyen_mon = document.getElementById("chuyen_mon");
 const hinh_thuc = document.getElementById("hinh_thuc");
 
 username.value = teacherId;
-
 let avatarBase64 = null;
 
 
@@ -69,13 +62,9 @@ async function loadDanhMuc() {
   fillSelect(chuyen_mon, cm);
 }
 
-
-
 function fillSelect(select, data) {
   if (!data) return;
-
   select.innerHTML = `<option value="">-- Chọn --</option>`;
-
   Object.entries(data).forEach(([key, value]) => {
     const o = document.createElement("option");
     o.value = key;               // ✅ lưu ID
@@ -87,7 +76,6 @@ function fillSelect(select, data) {
 /* ===== LOAD PROFILE ===== */
 (async function init() {
   await loadDanhMuc();
-
   const profile =
     await readData(`users/teachers/${teacherId}/profile`);
   if (!profile) return;
@@ -123,15 +111,12 @@ function fillSelect(select, data) {
 avatarFile.onchange = async e => {
   const file = e.target.files[0];
   if (!file) return;
-
   const compressed = await compressImage(file);
-
   const reader = new FileReader();
   reader.onload = () => {
     avatarBase64 = reader.result;     // Lưu base64
     avatarPreview.src = avatarBase64; // Preview đúng dữ liệu sẽ lưu
   };
-
   reader.readAsDataURL(compressed);
 };
 
@@ -146,7 +131,6 @@ window.removeAvatar = () => {
 function collectData() {
   const mon = [...document.querySelectorAll("input[type=checkbox]:checked")]
     .map(i => i.value);
-
   return {
     ho_ten: ho_ten.value.trim(),
     gioi_tinh: gioi_tinh.value,
@@ -171,13 +155,11 @@ function showMsg(text, ok = true) {
   msg.style.top = "20px";
   msg.style.right = "20px";
   msg.style.zIndex = 9999;
-
   msg.style.background = ok ? "#e8f5e9" : "#ffebee";
   msg.style.color = ok ? "#2e7d32" : "#c62828";
   msg.style.padding = "10px 16px";
   msg.style.borderRadius = "6px";
   msg.style.boxShadow = "0 4px 12px rgba(0,0,0,.15)";
-
   setTimeout(() => msg.style.display = "none", 3000);
 }
 
@@ -186,12 +168,9 @@ function showMsg(text, ok = true) {
 window.register = async function () {
   try {
     const data = collectData();
-
     if (avatarBase64) {
   data.avatar = avatarBase64;
 }
-
-
     data.created_at ??= Date.now();
     data.updated_at = Date.now();
 
@@ -209,14 +188,10 @@ showMsg("Đăng ký hồ sơ thành công");
 window.updateProfile = async function () {
   try {
     const data = collectData();
-
     if (avatarBase64) {
   data.avatar = avatarBase64;
 }
-
-
     data.updated_at = Date.now();
-
     await updateData(`users/teachers/${teacherId}/profile`, data);
 showMsg("Cập nhật hồ sơ thành công");
 

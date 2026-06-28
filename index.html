@@ -60,6 +60,9 @@
   <!-- ===== CỘT GIÁO VIÊN ===== -->
   <aside class="sidebar teacher">
     <h3>Giáo viên</h3>
+<div id="tdMoi" class="td-moi" style="display:none; cursor:pointer;">
+  🔔 0 thông báo tọa đàm
+</div>
     <button onclick="goGVRegister()">Đăng ký</button>
     <button onclick="goGVLogin()">Đăng nhập</button>
     <!-- Tên GV -->   
@@ -409,6 +412,7 @@ function googleTranslateElementInit() {
 <script src="../scripts/libs/qrcode.min.js"></script>
 <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
 <script>
 const fmSelect   = document.getElementById("fmSelect");
 const fmAudio    = document.getElementById("fmAudio");

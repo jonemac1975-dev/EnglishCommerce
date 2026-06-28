@@ -1,0 +1,139 @@
+<div class="page-wrap">
+
+<h2>
+📝 CẬP NHẬT BIÊN BẢN HỘI THẢO – TỌA ĐÀM SHHT
+</h2>
+
+<div class="form-box">
+
+  <div class="row">
+    <label>Ngày</label>
+    <input id="bbNgay" type="date">
+  </div>
+
+  <div class="row">
+    <label>Chủ đề</label>
+    <input id="bbChuDe" type="text">
+  </div>
+
+  <div class="row">
+    <label>Link video / Drive</label>
+    <input id="bbLink" type="text">
+  </div>
+
+ 
+<!-- ================= TRANSCRIPT ================= -->
+
+<div class="row">
+  <label>
+    Nội dung ghi âm / Transcript
+  </label>
+
+  <textarea
+    id="bbTranscript"
+    rows="12"
+    style="
+      width:100%;
+      min-height:250px;
+      resize:vertical;
+    "
+    placeholder="Dán transcript từ Google AI Studio vào đây...">
+  </textarea>
+</div>
+
+<div class="row">
+
+  <button
+    type="button"
+    id="btnAiBienBan">
+
+    🤖 AI tạo biên bản
+
+  </button>
+
+</div>
+
+<!-- ================= KẾT QUẢ AI ================= -->
+
+<div class="row">
+
+  <label>
+    Kết quả AI
+  </label>
+
+  <div
+    id="bbAiResult"
+    class="editor-word"
+    contenteditable="true">
+  </div>
+
+</div>
+
+<div class="row">
+
+  <button
+    type="button"
+    id="btnChuyenBienBan">
+
+    📋 Chuyển vào Biên bản
+
+  </button>
+
+</div>
+
+<!-- ================= BIÊN BẢN CHÍNH ================= -->
+
+<div class="row">
+
+  <label>Nội dung biên bản</label>
+
+  <div
+    id="bbNoiDung"
+    class="editor-word"
+    contenteditable="true">
+  </div>
+
+  <div style="margin-top:10px">
+
+    <button
+      type="button"
+      id="btnPreviewBB">
+      👁️ Xem trước
+    </button>
+<button
+  type="button"
+  id="btnExportWord">
+  📄 Xuất Word
+</button>
+
+  </div>
+
+</div>
+
+  <button id="btnLuuBB">
+    💾 Lưu biên bản
+  </button>
+
+</div>
+
+<h3>📚 DANH SÁCH BIÊN BẢN</h3>
+
+<table class="table">
+
+<thead>
+<tr>
+<th>STT</th>
+<th>NGÀY</th>
+<th>CHỦ ĐỀ</th>
+<th>LINK</th>
+<th>NỘI DUNG</th>
+<th>HÀNH ĐỘNG</th>
+</tr>
+</thead>
+
+<tbody id="bienbanList"></tbody>
+
+</table>
+
+</div>
+<script src="https://unpkg.com/html-docx-js/dist/html-docx.js"></script>

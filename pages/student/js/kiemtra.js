@@ -476,12 +476,10 @@ async function loadDanhSachBaiKiemTra() {
   //renderExamBankButtons();
 }
 
-
-
-
-// ==================================================
+  // ==================================================
   // Bóc Xăm
   // ==================================================
+
 async function bocXamDe() {
 
   console.log("🔥 BOC XAM CLICK");
@@ -490,7 +488,6 @@ console.log("examBank FULL =", examBank);
     alert("Không có đề nào được mở");
     return;
   }
-
   const kyThiId =
     document.getElementById("selKyThi").value;
 
@@ -724,13 +721,10 @@ const examControl =
   await readData(
     `teacher/${teacherId}/exam_control`
   );
-
 if (!examControl?.opened) {
-
   clearExamUI(
     "⛔ Giáo viên chưa mở đề thi."
   );
-
   return;
 }
 
@@ -782,11 +776,9 @@ if (!examControl?.opened) {
     );
 
     document.getElementById("btnSubmit").disabled = true;
-
     hienKetQua(daLam, dapAnDungMap);
     return;
   }
-
   
   const kyThiId = document.getElementById("selKyThi").value;
   let thoiGianPhut = 15;
@@ -1089,11 +1081,7 @@ function renderTracNghiem(html, isDaLam = false, traLoiCu = {}, showCorrectNow =
 
       if (isDaLam) input.disabled = true;
 
- //     if (traLoiCu?.[cauSo] === dapAn) {
- //       input.checked = true;
- //     }
-
-      label.appendChild(input);
+       label.appendChild(input);
       label.appendChild(document.createTextNode(textHienThi));
       cauDiv.appendChild(label);
       return;
@@ -1238,27 +1226,20 @@ async function nopBai(isAutoSubmit = false) {
     lop: localStorage.getItem("selectedLop"),
     monhoc: localStorage.getItem("selectedMonHoc"),
     kythi: document.getElementById("selKyThi").value,
-
     examType,
-
     dung,
     tong,
-
     diem: diemTNThucTe,
     diem_tn: diemTNThucTe,
     diem_tl: null,
     diemTNMax,
     diemTLMax,
-
     traLoi,
     tuLuan,
-
     essayPending: laDeTongHop,
     essayScore: null,
-
     finalScore,
     tong_diem: finalScore,
-
     ngay: new Date(nowServer).toISOString(),
     submittedAt: nowServer
   });
@@ -1284,7 +1265,6 @@ async function nopBai(isAutoSubmit = false) {
         : `Hoàn thành!\nĐiểm: ${diemTNThucTe}/${diemTNMax}`
     );
   }
-
   document.getElementById("btnSubmit").disabled = true;
   disableForm();
 }
@@ -1294,12 +1274,9 @@ async function nopBai(isAutoSubmit = false) {
 ================================ */
 function hienKetQua(duLieuNop, dapAnDung) {
   removeResultSummary();
-
   document.getElementById("ktDung").innerText =
     `${duLieuNop.dung}/${duLieuNop.tong || Object.keys(dapAnDung).length}`;
-
   document.getElementById("ktDiem").innerText = duLieuNop.diem;
-
   const traLoi = duLieuNop.traLoi || {};
   let cauSaiList = [];
   let firstSaiElement = null;
@@ -1430,8 +1407,9 @@ window.addEventListener("beforeunload", () => {
   saveDraftToLocal();
 });
 
-
-
+/* ===============================
+   XEM LẠI BÀI ĐÃ NỘP
+================================ */
 async function xemLaiBaiDaNop() {
 
   const kyThiId =
@@ -1446,15 +1424,11 @@ async function xemLaiBaiDaNop() {
     await readData(
       `users/students/${student.id}/examDraw/${teacherId}_${kyThiId}`
     );
-
   if (!draw?.baiId) {
-
     document.getElementById(
       "examStatusCode"
     ).innerText = "Chưa bóc";
-
     alert("Bạn chưa bóc xăm đề");
-
     return;
   }
 

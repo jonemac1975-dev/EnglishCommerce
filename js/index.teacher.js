@@ -87,7 +87,28 @@ async function initTeacherSidebar() {
   const teacherId = localStorage.getItem("teacher_id");
   if (!teacherId) return;
 
+const openToaDamId =
+  localStorage.getItem(
+    "open_tab_toadam"
+  );
+
+if (openToaDamId) {
+
+  setTimeout(() => {
+
+    const tab2 =
+      document.querySelector(
+        '[data-tab="tab2"]'
+      );
+
+    tab2?.click();
+
+  },300);
+}
+
+
   await loadTeacherHeaderTheme(); // 🔥 đổi head theo giáo viên
+  await checkToaDamMoi();	// 🔥 Thông báo tọa đàm
 
   const teacherData = await readData("teacher/" + teacherId);
   if (!teacherData) return;
@@ -145,6 +166,7 @@ teacherModeRadios.forEach(radio => {
     }
   });
 });
+
 
 /* ================= LOAD DROPDOWN LỚP ================= */
 async function loadTeacherLopDropdown() {
@@ -518,3 +540,133 @@ function loadItemList(list, className, type) {
 
   render();
 }
+
+
+/* ================= THÔNG BÁO TỌA ĐÀM ================= */
+
+async function checkToaDamMoi() {
+  try {
+
+    const box = document.getElementById("tdMoi");
+    if (!box) return;
+
+    const teacherId = localStorage.getItem("teacher_id");
+    const data = await readData("config/danh_muc/linktoadam") || {};
+
+    let count = 0;
+    let latestId = null;
+
+    Object.entries(data).forEach(([id, item]) => {
+
+      const seen = item.seenBy || {};
+
+      if (!seen[teacherId]) {
+        count++;
+        if (!latestId) latestId = id;
+      }
+    });
+
+    if (count > 0) {
+      box.style.display = "block";
+      box.innerHTML = `🔔 ${count} thông báo tọa đàm`;
+
+      if (latestId) {
+        box.dataset.latestId = latestId;
+      }
+
+    } else {
+      box.style.display = "none";
+    }
+
+  } catch (err) {
+    console.error("checkToaDamMoi error:", err);
+  }
+}
+
+/* ================= MỞ TAB TỌA ĐÀM ================= */
+window.goToToaDam = function () {
+
+  localStorage.setItem(
+    "open_tab_toadam",
+    "1"
+  );
+
+  localStorage.setItem(
+  "open_tab_toadam",
+  latestId
+);
+
+window.location.href =
+  "/pages/teacher/giaovien.html";
+};
+
+
+/* ================= THÔNG BÁO TỌA ĐÀM ================= */
+async function loadToaDamNotification() {
+
+  const box = document.getElementById("tdMoi");
+  if (!box) return;
+
+  const teacherId = localStorage.getItem("teacher_id");
+  if (!teacherId) return;
+
+  const data = await readData("config/danh_muc/linktoadam") || {};
+
+  let count = 0;
+  let latestId = null;
+
+  Object.entries(data).forEach(([id, item]) => {
+
+    const seen = item.seenBy || {};
+
+    if (!seen[teacherId]) {
+      count++;
+      if (!latestId) latestId = id;
+    }
+  });
+
+  if (count > 0) {
+    box.style.display = "block";
+    box.innerHTML = `🔔 ${count} thông báo tọa đàm`;
+    box.classList.add("blink");
+
+    // click vào mở cái mới nhất chưa xem
+    box.onclick = () => {
+
+  localStorage.setItem(
+    "open_tab_toadam",
+    latestId
+  );
+
+  location.href =
+    "/pages/teacher/index.html";
+
+};
+
+  } else {
+    box.style.display = "none";
+  }
+}
+
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const box = document.getElementById("tdMoi");
+  if (!box) return;
+
+  box.addEventListener("click", () => {
+
+  const latestId =
+    box.dataset.latestId;
+
+  if (!latestId) return;
+
+  localStorage.setItem(
+    "open_tab_toadam",
+    latestId
+  );
+
+  window.location.href =
+    "/pages/teacher/giaovien.html";
+});
+});

@@ -1,7 +1,10 @@
 import {
   readData,
-  writeData
+  writeData,
+onDataChange
 } from "../../../scripts/services/firebaseService.js";
+
+let teacherNameMap = {};
 
 const studentId =
   localStorage.getItem("student_id");
@@ -36,11 +39,13 @@ export async function init() {
   await loadLopMap();
 
   viewedMap =
-  await readData(
-    `users/students/${studentId}/thongbao_da_xem`
-  ) || {};
+    await readData(`users/students/${studentId}/thongbao_da_xem`) || {};
 
-  await loadList();
+  await loadTeacherMap(); // 👈 PHẢI đứng trước
+
+  const teachers = await readData("teacher");
+  updateThongBaoUI(teachers || {});
+  listenThongBaoRealtime();
 }
 
 
@@ -67,117 +72,71 @@ async function loadLopMap() {
 
 // ================= LOAD LIST =================
 
-async function loadList() {
+function updateThongBaoUI(teachers) {
 
-  tb_list.innerHTML = "";
+  const tbody = document.getElementById("tb_list");
+  if (!tbody) return;
 
-    const teachers =
-  await readData("teacher");
+  let dsThongBao = [];
 
-let dsThongBao = [];
+  for (const [teacherId, teacherData] of Object.entries(teachers || {})) {
 
-for (const [teacherId, teacherData]
-  of Object.entries(teachers || {})) {
+    const teacherName = teacherNameMap[teacherId] || teacherId;
 
-  const profile =
-    await readData(
-      `users/teachers/${teacherId}/profile`
-    );
+    const thongbao = teacherData.thongbao || {};
 
-  const teacherName =
-    profile?.ho_ten ||
-    teacherId;
-
-  const thongbao =
-    teacherData.thongbao || {};
-
-  Object.entries(thongbao)
-    .forEach(([tbId, tb]) => {
-
+    Object.entries(thongbao).forEach(([tbId, tb]) => {
       dsThongBao.push({
         id: tbId,
         teacherId,
         teacherName,
         ...tb
       });
-
     });
-
-}
-
-  dsThongBao.sort(
-  (a, b) =>
-    (b.updatedAt || 0) -
-    (a.updatedAt || 0)
-);
-
-  if (!dsThongBao.length) {
-
-    tb_list.innerHTML = `
-      <tr>
-        <td colspan="6"
-            style="text-align:center">
-            Chưa có thông báo
-        </td>
-      </tr>
-    `;
-
-    return;
   }
+
+  dsThongBao.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+
+  tbody.innerHTML = "";
 
   let stt = 1;
 
   dsThongBao.forEach(tb => {
 
-    const tr =
-      document.createElement("tr");
+    const tr = document.createElement("tr");
 
-const noidungTomTat =
-  (tb.noidung || "")
-    .replace(/<[^>]*>/g, "")
-    .substring(0, 60);
+    const noidungTomTat =
+      (tb.noidung || "")
+        .replace(/<[^>]*>/g, "")
+        .substring(0, 60);
 
-    const daXem =
-  viewedMap[tb.id];
+    const lastSeen = viewedMap[tb.id] || 0;
+    const lastUpdate = tb.updatedAt || 0;
 
-tr.innerHTML = `
-<td>${stt++}</td>
+    const daXem = lastSeen >= lastUpdate;
 
-<td>${tb.teacherName}</td>
-
-<td>${formatDate(tb.updatedAt)}</td>
-
-<td>${lopNameMap[tb.lop] || ""}</td>
-
-<td>${tb.tieude}</td>
-
-<td title="${tb.noidung || ""}">
-  ${noidungTomTat}...
-</td>
-
-<td>
-  <span class="${
-    daXem ? "seen" : "unseen"
-  }">
-    ${
-      daXem ? "Đã xem" : "Chưa xem"
-    }
-  </span>
-</td>
-`;
+    tr.innerHTML = `
+      <td>${stt++}</td>
+      <td>${tb.teacherName}</td>
+      <td>${formatDate(tb.updatedAt)}</td>
+      <td>${lopNameMap[tb.lop] || ""}</td>
+      <td>${tb.tieude}</td>
+      <td title="${tb.noidung || ""}">
+        ${noidungTomTat}...
+      </td>
+      <td>
+        <span class="${daXem ? "seen" : "unseen"}">
+          ${daXem ? "✅Đã xem" : "🔴Chưa xem"}
+        </span>
+      </td>
+    `;
 
     tr.style.cursor = "pointer";
+    tr.onclick = () => openThongBao(tb);
 
-    tr.addEventListener(
-      "click",
-      () => openThongBao(tb)
-    );
-
-    tb_list.appendChild(tr);
-
+    tbody.appendChild(tr);
   });
 }
-
 
 // ================= OPEN =================
 
@@ -192,25 +151,20 @@ async function openThongBao(tb) {
   `;
 
   detailContent.innerHTML = tb.noidung;
-
   tbDetail.style.display = "block";
 
   const now = Date.now();
 
-  // ✅ lưu timestamp (QUAN TRỌNG)
   await writeData(
     `users/students/${studentId}/thongbao_da_xem/${tb.id}`,
     now
   );
 
-  // ✅ update local luôn
   viewedMap[tb.id] = now;
 
-  // 🔥 update badge ngay lập tức
-  await checkThongBaoMoi(studentId);
-
-  // 🔥 reload list để đổi màu đã xem
-  await loadList();
+  // 🔥 IMPORTANT: render lại UI ngay
+  const teachers = await readData("teacher");
+  updateThongBaoUI(teachers || {});
 }
 
 
@@ -221,4 +175,20 @@ function formatDate(timestamp) {
   return new Date(timestamp)
     .toLocaleDateString("vi-VN");
 
+}
+
+function listenThongBaoRealtime() {
+  onDataChange("teacher", (snapshot) => {
+    updateThongBaoUI(snapshot || {});
+  });
+}
+
+
+async function loadTeacherMap() {
+  const teachers = await readData("teacher");
+
+  for (const teacherId of Object.keys(teachers || {})) {
+    const profile = await readData(`users/teachers/${teacherId}/profile`);
+    teacherNameMap[teacherId] = profile?.ho_ten || teacherId;
+  }
 }

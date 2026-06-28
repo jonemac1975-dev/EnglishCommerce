@@ -2420,3 +2420,74 @@ Thông báo của giáo viên
   content:"📋";
   font-size:18px;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+.td-moi{
+  display:inline-block;
+  margin:10px 0;
+  padding:3px 10px;
+
+  background:#ff4d4f;
+  color:#fff;
+
+  border-radius:8px;
+  font-weight:700;
+  font-size:14px;
+
+  box-shadow:0 4px 10px rgba(255,77,79,.35);
+
+  animation:
+    tdBlink 1.2s infinite,
+    tdShake 3s infinite;
+}
+
+/* nhấp nháy */
+@keyframes tdBlink{
+  0%{
+    opacity:1;
+    transform:scale(1);
+  }
+
+  50%{
+    opacity:.75;
+    transform:scale(1.05);
+  }
+
+  100%{
+    opacity:1;
+    transform:scale(1);
+  }
+}
+
+/* rung nhẹ */
+@keyframes tdShake{
+  0%,90%,100%{
+    transform:translateX(0);
+  }
+
+  92%{
+    transform:translateX(-2px);
+  }
+
+  94%{
+    transform:translateX(2px);
+  }
+
+  96%{
+    transform:translateX(-2px);
+  }
+
+  98%{
+    transform:translateX(2px);
+  }
+}

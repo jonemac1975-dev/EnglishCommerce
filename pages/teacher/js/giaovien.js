@@ -128,6 +128,30 @@ document.addEventListener("DOMContentLoaded", () => {
   // bind menu items
   bindMenu();
 
+// =========================
+  // TỌA ĐÀM TỪ THÔNG BÁO
+  // =========================
+
+  const openToaDam =
+    localStorage.getItem(
+      "open_tab_toadam"
+    );
+
+  if (openToaDam) {
+
+    localStorage.removeItem(
+      "open_tab_toadam"
+    );
+
+    loadTab("toadam");
+
+  } else {
+
+    loadTab("loadtabgv");
+
+  }
+
+
   // mở group đầu tiên
 //  document.querySelector(".menu-children")?.classList.add("open");
 

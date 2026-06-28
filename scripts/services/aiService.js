@@ -101,6 +101,7 @@ function sanitizePayload(payload = {}) {
 ========================= */
 function normalizeMode(type = "") {
   const t = String(type).toLowerCase();
+  if (t.includes("meeting"))return "meeting_minutes";
   if (t.includes("lesson")) return "lesson";
   if (t.includes("exercise")) return "exercise";
   if (t.includes("exam")) return "exam";

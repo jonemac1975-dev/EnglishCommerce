@@ -4,7 +4,8 @@ import {
   get,
   set,
   update,
-  remove
+  remove,
+onValue
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 export async function readData(path) {
@@ -31,4 +32,36 @@ export async function readRoot() {
 
 export async function writeRoot(data) {
   return set(ref(db), data);
+}
+
+
+export function listenData(path, callback) {
+  const r = ref(db, path);
+
+  const unsubscribe = onValue(r, (snapshot) => {
+    const data = snapshot.exists() ? snapshot.val() : null;
+    callback(data);
+  });
+
+  return unsubscribe; // có thể stop listener nếu cần
+}
+
+
+export function listenChildAdded(path, callback) {
+  const r = ref(db, path);
+
+  return onValue(r, (snapshot) => {
+    callback(snapshot.val());
+  });
+}
+
+export function onDataChange(path, callback) {
+  const r = ref(db, path);
+
+  const unsubscribe = onValue(r, (snapshot) => {
+    const data = snapshot.exists() ? snapshot.val() : null;
+    callback(data);
+  });
+
+  return unsubscribe;
 }

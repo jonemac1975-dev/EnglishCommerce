@@ -945,3 +945,261 @@ body {
     flex-direction: column;
   }
 }
+
+/*====TỌA ĐÀM======*/
+
+* {
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  background: #f4f6fb;
+  margin: 0;
+  padding: 20px;
+  color: #222;
+}
+
+/* ===== PAGE WRAP ===== */
+.page-wrap {
+  max-width: 1100px;
+  margin: auto;
+}
+
+/* ===== TITLE ===== */
+h2 {
+  margin-bottom: 20px;
+  font-size: 22px;
+  color: #1f2d3d;
+}
+
+h3 {
+  margin: 30px 0 10px;
+  color: #34495e;
+}
+
+/* ===== FORM BOX ===== */
+.form-box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  margin-bottom: 20px;
+}
+
+/* ===== ROW INPUT ===== */
+.row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.row label {
+  font-size: 14px;
+  margin-bottom: 6px;
+  color: #555;
+}
+
+/* INPUT + TEXTAREA */
+.row input,
+.row textarea {
+  padding: 10px 12px;
+  border: 1px solid #dcdfe6;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: 0.2s;
+  background: #fff;
+}
+
+.row input:focus,
+.row textarea:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74,144,226,0.15);
+}
+
+/* ===== BUTTON GROUP ===== */
+.btns {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* ===== BUTTON ===== */
+button {
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+/* PRIMARY BUTTON */
+#btnLuuBB,
+#btnLuuTD {
+  background: #4a90e2;
+  color: white;
+}
+
+#btnLuuBB:hover,
+#btnLuuTD:hover {
+  background: #357bd8;
+}
+
+/* ADD BUTTON */
+#btnThemTD {
+  background: #2ecc71;
+  color: white;
+}
+
+#btnThemTD:hover {
+  background: #27ae60;
+}
+
+/* ACTION BUTTONS TABLE */
+table button {
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+table button:hover {
+  opacity: 0.8;
+}
+
+/* ===== TABLE ===== */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+.table thead {
+  background: #f0f3f8;
+}
+
+.table th,
+.table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+  font-size: 14px;
+}
+
+.table tr:hover {
+  background: #f9fbff;
+}
+
+/* LINK */
+.table a {
+  color: #4a90e2;
+  text-decoration: none;
+}
+
+.table a:hover {
+  text-decoration: underline;
+}
+
+/* ===== TABLE PRO ===== */
+
+.table {
+  table-layout: fixed;
+}
+
+.table th {
+  white-space: nowrap;
+}
+
+.table td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* STT */
+.table th:nth-child(1),
+.table td:nth-child(1){
+  width:60px;
+  text-align:center;
+}
+
+/* NGÀY */
+.table th:nth-child(2),
+.table td:nth-child(2){
+  width:120px;
+}
+
+/* CHỦ ĐỀ */
+.table th:nth-child(3),
+.table td:nth-child(3){
+  width:200px;
+}
+
+/* THÀNH PHẦN */
+.table th:nth-child(4),
+.table td:nth-child(4){
+  width:180px;
+}
+
+/* NỘI DUNG */
+.table th:nth-child(5),
+.table td:nth-child(5){
+  width:200px;
+}
+
+/* LINK */
+.table th:nth-child(6),
+.table td:nth-child(6){
+  width:120px;
+  text-align:center;
+}
+
+/* HÀNH ĐỘNG */
+.table th:last-child,
+.table td:last-child{
+  width:120px;
+  text-align:center;
+}
+
+.table tbody tr {
+  transition: all .2s ease;
+}
+
+.table tbody tr:hover {
+  background: #eef6ff;
+  transform: scale(1.002);
+}
+
+.table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #f0f3f8;
+}
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .btns {
+    flex-direction: column;
+  }
+
+  .table {
+    font-size: 13px;
+  }
+}
+
+.editor-word{
+  min-height:250px;
+  border:1px solid #ccc;
+  border-radius:8px;
+  padding:12px;
+  background:#fff;
+  overflow:auto;
+}
+
+.editor-word:focus{
+  outline:none;
+  border-color:#4f46e5;
+}
