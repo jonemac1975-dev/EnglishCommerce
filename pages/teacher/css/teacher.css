@@ -4060,3 +4060,54 @@ color : black;
     background: #fff1f1;
   }
 }
+
+
+/*==============
+   CHỮ KÝ
+================*/
+.signature-box{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.signature-preview{
+  width:220px;
+  height:90px;
+  object-fit:contain;
+
+  border:1px solid #ddd;
+  border-radius:8px;
+
+  background:#fff;
+  padding:5px;
+}
+
+#gvChuKyFile{
+  max-width:300px;
+}
+
+#btnXoaChuKy{
+  width:120px;
+}
+
+.cb-signature-wrap{
+  margin-top:20px;
+  padding-top:15px;
+  border-top:1px dashed #ccc;
+  text-align:right;
+}
+
+.cb-signature-img{
+  max-height:80px;
+  max-width:220px;
+  object-fit:contain;
+  display:block;
+  margin-left:auto;
+}
+
+.cb-signature-name{
+  margin-top:6px;
+  font-weight:700;
+  color:#2c3e50;
+}

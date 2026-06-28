@@ -71,7 +71,6 @@ async function buildTeacherExamMap(teachers) {
     })
   );
 
- 
   return examMap;
 }
 
@@ -208,6 +207,9 @@ function openEssayModal(item, examInfo) {
 
   const tenGV =
     teachersGlobal?.[item.giao_vien]?.profile?.ho_ten || item.giao_vien || "";
+  const teacherSignature =
+  teachersGlobal?.[item.giao_vien]
+    ?.profile?.chu_ky || "";
 
   let loaiBai = "";
 
@@ -309,6 +311,49 @@ if (isTX) {
       </div>
     `;
   }
+
+if (teacherSignature) {
+
+  html += `
+    <div
+      style="
+        margin-top:30px;
+        text-align:right;
+        padding-top:20px;
+        border-top:1px dashed #ccc;
+      "
+    >
+
+      <div
+        style="
+          font-weight:bold;
+          margin-bottom:10px;
+        "
+      >
+        Giáo viên chấm bài
+      </div>
+
+      <img
+        src="${teacherSignature}"
+        style="
+          max-width:220px;
+          max-height:100px;
+          object-fit:contain;
+        "
+      >
+
+      <div
+        style="
+          margin-top:8px;
+          font-weight:700;
+        "
+      >
+        ${tenGV}
+      </div>
+
+    </div>
+  `;
+}
 
   body.innerHTML = html;
   modal.classList.remove("hidden");

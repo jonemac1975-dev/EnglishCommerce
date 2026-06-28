@@ -36,7 +36,8 @@ const username = document.getElementById("username");
 const avatarFile = document.getElementById("avatarFile");
 const avatarPreview = document.getElementById("avatarPreview");
 const msg = document.getElementById("msg");
-
+const gvChuKyFile =  document.getElementById("gvChuKyFile");
+const gvChuKyPreview =  document.getElementById("gvChuKyPreview");
 
 const ho_ten = document.getElementById("ho_ten");
 const gioi_tinh = document.getElementById("gioi_tinh");
@@ -52,7 +53,7 @@ const hinh_thuc = document.getElementById("hinh_thuc");
 
 username.value = teacherId;
 let avatarBase64 = null;
-
+let chuKyBase64 = "";
 
 /* ===== LOAD DANH MỤC ===== */
 async function loadDanhMuc() {
@@ -103,8 +104,20 @@ function fillSelect(select, data) {
   }
 
   if (profile.avatar) {
-    avatarPreview.src = profile.avatar;
-  }
+  avatarPreview.src = profile.avatar;
+}
+
+if (profile.chu_ky) {
+
+  chuKyBase64 =
+    profile.chu_ky;
+
+  gvChuKyPreview.src =
+    profile.chu_ky;
+
+  gvChuKyPreview.style.display =
+    "block";
+}
 })();
 
 /* ===== AVATAR ===== */
@@ -120,6 +133,25 @@ avatarFile.onchange = async e => {
   reader.readAsDataURL(compressed);
 };
 
+gvChuKyFile.onchange = async e => {
+
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const compressed =
+    await compressImage(file, "signature"); // 👈 QUAN TRỌNG
+
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    chuKyBase64 = reader.result;
+
+    gvChuKyPreview.src = chuKyBase64;
+    gvChuKyPreview.style.display = "block";
+  };
+
+  reader.readAsDataURL(compressed);
+};
 
 window.removeAvatar = () => {
   avatarBase64 = null;
@@ -132,6 +164,7 @@ function collectData() {
   const mon = [...document.querySelectorAll("input[type=checkbox]:checked")]
     .map(i => i.value);
   return {
+    chu_ky: chuKyBase64,
     ho_ten: ho_ten.value.trim(),
     gioi_tinh: gioi_tinh.value,
     ngay_sinh: ngay_sinh.value,

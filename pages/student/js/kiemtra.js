@@ -233,9 +233,6 @@ function clearExamUI(message = "") {
   if (btnSubmit) btnSubmit.disabled = true;
 }
 
-/* ===============================
-   KIỂM TRA MỞ ĐỀ
-================================ */
 
 /* ===============================
    INIT
@@ -344,8 +341,6 @@ document.getElementById(
     clearExamUI();
     await loadDanhSachBaiKiemTra();
   });
-
-
 
 document
   .getElementById("btnBocXam")
@@ -473,8 +468,7 @@ async function loadDanhSachBaiKiemTra() {
   });
 });
 
-  //renderExamBankButtons();
-}
+  }
 
   // ==================================================
   // Bóc Xăm

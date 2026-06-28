@@ -443,8 +443,6 @@ window.chamBaiHocVien = async function(
   baiId
 ) {
 
-  
-
   currentStudentId = studentId;
   currentBaiId = baiId;
 
@@ -464,6 +462,43 @@ window.chamBaiHocVien = async function(
     await readData(
       `teacher/${teacherId}/kiemtra/${baiId}`
     );
+
+// ===== LOAD CHỮ KÝ GIÁO VIÊN =====
+
+const profile =
+  await readData(
+    `users/teachers/${teacherId}/profile`
+  );
+
+const signImg =
+  document.getElementById(
+    "cbTeacherSignature"
+  );
+
+const signName =
+  document.getElementById(
+    "cbTeacherName"
+  );
+
+if (
+  profile?.chu_ky &&
+  signImg
+) {
+  signImg.src =
+    profile.chu_ky;
+
+  signImg.style.display =
+    "block";
+}
+else if (signImg) {
+  signImg.style.display =
+    "none";
+}
+
+if (signName) {
+  signName.innerText =
+    profile?.ho_ten || "";
+}
 
   const draw =
     await readData(
@@ -752,6 +787,16 @@ const chamCount =
     currentBaiNop?.chamCount || 0
   ) + 1;
 
+// ===== LẤY CHỮ KÝ GIÁO VIÊN =====
+const teacherProfile =
+  await readData(
+    `users/teachers/${teacherId}/profile`
+  );
+const teacherSignature =
+  teacherProfile?.chu_ky || "";
+
+const teacherName =
+  teacherProfile?.ho_ten || "";
   const payload = {
   tuLuanCham,
   diem_tl: diemTL,
@@ -759,7 +804,9 @@ const chamCount =
   essayPending: false,
   finalScore: tongDiem,
   chamAt: Date.now(),
-  chamBy: teacherId
+  chamBy: teacherId,
+  teacherSignature,
+  teacherName
 };
 
 await writeData(
@@ -800,6 +847,16 @@ await writeData(
 await writeData(
   `users/students/${currentStudentId}/kiemtra/${currentBaiId}/chamCount`,
   chamCount
+);
+
+await writeData(
+  `users/students/${currentStudentId}/kiemtra/${currentBaiId}/teacherSignature`,
+  teacherSignature
+);
+
+await writeData(
+  `users/students/${currentStudentId}/kiemtra/${currentBaiId}/teacherName`,
+  teacherName
 );
 
   showToast?.("Đã lưu điểm tự luận");
