@@ -191,14 +191,14 @@ margin-top:16px;
 
 .bg-table th,
 .table-list th{
-background:#f1f5f9;
+background:grey;
 padding:8px;
 border:1px solid var(--border);
 }
 
 .bg-table td,
 .table-list td{
-padding:8px;
+padding:4px;
 border:1px solid var(--border);
 }
 
