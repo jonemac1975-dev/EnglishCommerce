@@ -144,7 +144,7 @@ async function loadList() {
       <td>${i++}</td>
       <td>${item.title}</td>
       <td>${new Date(item.created_at).toLocaleDateString()}</td>
-      <td><button class="btnDelete" data-id="${id}">❌Xóa</button></td>
+      <td><button class="btnDelete" data-id="${id}">🗑️ Xóa</button></td>
     `;
 
     tr.onclick = () => chonBaiTap(id);

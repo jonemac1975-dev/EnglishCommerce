@@ -112,6 +112,59 @@ if (openToaDamId) {
 
   const teacherData = await readData("teacher/" + teacherId);
   if (!teacherData) return;
+// ======================================================
+// MOBILE TEACHER MENU
+// Dùng chính teacherData hiện tại
+// ======================================================
+
+window.mobileTeacherBaigiang = function () {
+    MAIN_HISTORY = [];
+  loadClassList(
+    teacherData.baigiang || {},
+    "baigiang"
+  );
+
+  const panel = document.getElementById("mobileTeacherPanel");
+  if (panel) {
+    panel.classList.remove("active");
+  }
+};
+
+window.mobileTeacherBaiTap = function () {
+  MAIN_HISTORY = [];
+  loadClassList(
+    teacherData.baitap || {},
+    "baitap"
+  );
+
+  const panel = document.getElementById("mobileTeacherPanel");
+  if (panel) {
+    panel.classList.remove("active");
+  }
+};
+
+window.mobileTeacherKiemTra = function () {
+  MAIN_HISTORY = [];
+  loadClassList(
+    teacherData.kiemtra || {},
+    "kiemtra"
+  );
+
+  const panel = document.getElementById("mobileTeacherPanel");
+  if (panel) {
+    panel.classList.remove("active");
+  }
+};
+
+window.mobileTeacherVanban = function () {
+  MAIN_HISTORY = [];
+  loadVanbanList(teacherData.vanban || {});
+  const panel = document.getElementById("mobileTeacherPanel");
+  if (panel) {
+    panel.classList.remove("active");
+  }
+};
+
 
   const config = await readData("config");
   GLOBAL_CLASS_MAP = config?.danh_muc?.lop || {};
@@ -120,9 +173,13 @@ if (openToaDamId) {
   const menuBaigiang = document.getElementById("gv-baigiang");
   menuBaigiang.innerHTML = `<li class="menu-title">Bài giảng</li>`;
   menuBaigiang.querySelector(".menu-title").onclick = () => {
-    MAIN_HISTORY = [];
-    loadClassList(teacherData.baigiang || {}, "baigiang");
-  };
+  MAIN_HISTORY = [];
+  loadClassList(teacherData.baigiang || {}, "baigiang");
+  const mobilePanel = document.getElementById("mobileTeacherPanel");
+  if (mobilePanel) {
+    mobilePanel.classList.remove("active");
+  }
+};
 
   // ===== MENU BÀI TẬP =====
   const menuBaitap = document.getElementById("gv-baitap");
@@ -291,12 +348,32 @@ function loadLesson(item) {
     content = "<p>Không có nội dung</p>";
   }
 
-  renderMainWithBack(`
-    <div class="lesson-content">
-      <h3>${item.title || item.tieude || "Nội dung"}</h3>
-      ${content}
-    </div>
-  `);
+  const isMobile = window.innerWidth <= 768;
+
+renderMainWithBack(`
+  <div class="lesson-content">
+    <h3>${item.title || item.tieude || "Nội dung"}</h3>
+    ${content}
+
+    ${
+      isMobile && item.media
+        ? `
+          <div id="mobileLessonMedia" class="mobile-lesson-media">
+            <b>[Mp3 - Mp4 - Youtube]</b>
+
+            <div id="mobileMp3"></div>
+            <div id="mobileMp32"></div>
+            <div id="mobileMp4"></div>
+            <div id="mobileYoutube"></div>
+
+            <div id="mobileLessonPlayer"></div>
+          </div>
+        `
+        : ""
+    }
+
+  </div>
+`);
 
   // ===== LOAD MEDIA =====
   if (item.media && mediaBox) {
@@ -324,6 +401,55 @@ function loadLesson(item) {
     renderMedia(mp32, "🎧", "MP32", item.media.mp32);
     renderMedia(mp4,  "🎬", "MP4", item.media.mp4);
     renderMedia(yt,   "▶️", "YouTube", item.media.youtube);
+
+if (window.innerWidth <= 768) {
+
+  function renderMobileMedia(id, icon, label, url) {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    el.innerHTML = `
+      <div
+        class="media-item mobile-media-item"
+        data-url="${url || ""}"
+      >
+        <span class="media-icon">${icon}</span>
+        <span class="media-title">
+          ${label} - ${item.title || ""}
+        </span>
+      </div>
+    `;
+  }
+
+  renderMobileMedia(
+    "mobileMp3",
+    "🎧",
+    "MP3",
+    item.media.mp3
+  );
+
+  renderMobileMedia(
+    "mobileMp32",
+    "🎧",
+    "MP32",
+    item.media.mp32
+  );
+
+  renderMobileMedia(
+    "mobileMp4",
+    "🎬",
+    "MP4",
+    item.media.mp4
+  );
+
+  renderMobileMedia(
+    "mobileYoutube",
+    "▶️",
+    "YouTube",
+    item.media.youtube
+  );
+}
+
   } else {
     if (mediaBox) mediaBox.style.display = "none";
     if (playerBox) playerBox.innerHTML = "";
@@ -346,41 +472,103 @@ window.loadTeacherHeaderTheme = loadTeacherHeaderTheme;
 
 /* ================= MEDIA CLICK ================= */
 document.addEventListener("click", function(e) {
-  const parent = e.target.closest("#gvMp3, #gvMp32, #gvMp4, #gvYoutube");
+
+  //======================================================
+  // DESKTOP + MOBILE MEDIA
+  //======================================================
+
+  const parent = e.target.closest(
+    "#gvMp3, #gvMp32, #gvMp4, #gvYoutube, " +
+    "#mobileMp3, #mobileMp32, #mobileMp4, #mobileYoutube"
+  );
+
   if (!parent) return;
 
-  const id = parent.id;
-  const rawUrl = parent.dataset.url;
+  const rawUrl = parent.dataset.url ||
+    parent.querySelector(".media-item")?.dataset.url;
+
   if (!rawUrl) return;
 
-  const box = document.getElementById("teacherPlayer");
+  // Mobile dùng player riêng trong bài học
+  const isMobileMedia = parent.id.startsWith("mobile");
 
+  const box = isMobileMedia
+    ? document.getElementById("mobileLessonPlayer")
+    : document.getElementById("teacherPlayer");
+
+  if (!box) return;
+
+  // Xóa trạng thái active cũ
   document.querySelectorAll(".media-item")
     .forEach(el => el.classList.remove("active"));
 
   parent.querySelector(".media-item")?.classList.add("active");
 
-  if (id === "gvYoutube") {
+  //======================================================
+  // XÁC ĐỊNH LOẠI MEDIA
+  //======================================================
+
+  const id = parent.id;
+
+  // YouTube
+  if (id === "gvYoutube" || id === "mobileYoutube") {
+
     const videoId = rawUrl.split("v=")[1]?.split("&")[0];
 
+    if (!videoId) return;
+
     box.innerHTML = `
-      <iframe width="100%" height="150"
+      <iframe
+        width="100%"
+        height="150"
         src="https://www.youtube.com/embed/${videoId}"
         frameborder="0"
         allowfullscreen>
       </iframe>
     `;
-  } else if (id === "gvMp4") {
-    const previewUrl = convertDriveToPreview(rawUrl);
-    box.innerHTML = `
-      <iframe src="${previewUrl}" width="100%" height="150" allow="autoplay"></iframe>
-    `;
-  } else if (id === "gvMp3" || id === "gvMp32") {
-    const previewUrl = convertDriveToPreview(rawUrl);
-    box.innerHTML = `
-      <iframe src="${previewUrl}" width="100%" height="80" allow="autoplay"></iframe>
-    `;
+
+    return;
   }
+
+  // MP4
+  if (id === "gvMp4" || id === "mobileMp4") {
+
+    const previewUrl = convertDriveToPreview(rawUrl);
+
+    box.innerHTML = `
+      <iframe
+        src="${previewUrl}"
+        width="100%"
+        height="150"
+        allow="autoplay">
+      </iframe>
+    `;
+
+    return;
+  }
+
+  // MP3 / MP32
+  if (
+    id === "gvMp3" ||
+    id === "gvMp32" ||
+    id === "mobileMp3" ||
+    id === "mobileMp32"
+  ) {
+
+    const previewUrl = convertDriveToPreview(rawUrl);
+
+    box.innerHTML = `
+      <iframe
+        src="${previewUrl}"
+        width="100%"
+        height="80"
+        allow="autoplay">
+      </iframe>
+    `;
+
+    return;
+  }
+
 });
 
 /* ================= VĂN BẢN ================= */
@@ -399,12 +587,19 @@ function loadVanbanList(data) {
     `;
 
     list.forEach((item, index) => {
-      html += `
-        <li class="vanban-item" data-index="${index}">
-          📄 ${item.title || item.tieude || "Không tên"}
-        </li>
-      `;
-    });
+
+  const itemName =
+    item.title ||
+    item.tieude ||
+    item.name ||
+    "Không tên";
+
+  html += `
+    <li class="vanban-item" data-index="${index}">
+      ▶ ${itemName}
+    </li>
+  `;
+});
 
     html += "</ul>";
     renderMainWithBack(html);
@@ -507,7 +702,11 @@ function loadItemList(list, className, type) {
     list.forEach((item, index) => {
       html += `
         <li class="item" data-index="${index}">
-          ▶ ${item.title || item.tieude || "Không tên"}
+          ▶ ${
+  type === "kiemtra"
+    ? `Mã đề ${item.maDe || "Không rõ"}`
+    : (item.title || item.tieude || "Không tên")
+}
         </li>
       `;
     });

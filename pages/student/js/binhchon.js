@@ -1,7 +1,4 @@
-import {
-  readData,
-  writeData
-} from "../../../scripts/services/firebaseService.js";
+import {readData,writeData} from "../../../scripts/services/firebaseService.js";
 
 // ===== GLOBAL =====
 let selectedStar = 0;

@@ -1,7 +1,4 @@
-import {
-  readData
-} from "../../../scripts/services/firebaseService.js";
-
+import {readData} from "../../../scripts/services/firebaseService.js";
 let allRows = [];
 
 export async function init() {
@@ -11,42 +8,25 @@ export async function init() {
   document
     .querySelectorAll("[data-star]")
     .forEach(btn => {
-
       btn.onclick = () => {
-
         renderList(
           btn.dataset.star
         );
-
       };
-
     });
 }
 
 async function loadData() {
 
-  const teachers =
-    await readData("users/teachers") || {};
-
-  const ratings =
-    await readData("ratingDetails") || {};
-
+  const teachers = await readData("users/teachers") || {};
+  const ratings = await readData("ratingDetails") || {};
   const now = new Date();
-
-  const week =
-    Math.ceil(now.getDate() / 7);
-
-  const month =
-    now.getMonth() + 1;
-
-  const year =
-    now.getFullYear();
-
+  const week = Math.ceil(now.getDate() / 7);
+  const month = now.getMonth() + 1;
+  const year = now.getFullYear();
   allRows = [];
-
   Object.entries(ratings)
     .forEach(([teacherId, data]) => {
-
       const teacherName =
         teachers[teacherId]
         ?.profile

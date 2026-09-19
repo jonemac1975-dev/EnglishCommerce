@@ -113,9 +113,9 @@ async function loadList() {
       <td>${item.made}</td>
       <td>${tenLop}</td>
       <td>
-        <button class="edit-btn" data-id="${id}">Sửa</button>
-        <button class="delete-btn" data-id="${id}">Xóa</button>
-        <button class="preview-btn" data-id="${id}">Preview</button>
+        <button class="edit-btn" data-id="${id}">✏️ Sửa</button>
+        <button class="delete-btn" data-id="${id}">🗑️ Xóa</button>
+        <button class="preview-btn" data-id="${id}">👁 Preview</button>
       </td>
     `;
     test_list.appendChild(tr);

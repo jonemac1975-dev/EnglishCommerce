@@ -431,9 +431,6 @@ if (type === "duan") {
 }
 
 // ===== GẮN SỰ KIỆN CHO GIÁO VIÊN + LỚP =====
-teacherSelect.addEventListener("change", async () => {
-  await loadTeacherContent(teacherSelect.value);
-});
 
 lopSelect.addEventListener("change", async () => {
   await loadTeacherContent(teacherSelect.value);
@@ -461,6 +458,108 @@ if (teacherSelect) {
   }
 
   await loadTeachers();
+
+// ======================================================
+// MOBILE STUDENT SELECT - ĐỒNG BỘ DROPDOWN
+// ======================================================
+
+const mobileTeacherSelect =
+  document.getElementById("mobileTeacherSelect");
+
+const mobileLopSelect =
+  document.getElementById("mobileLopSelect");
+
+const mobileMonhocSelect =
+  document.getElementById("mobileMonhocSelect");
+
+
+// Giáo viên
+if (mobileTeacherSelect && teacherSelect) {
+
+  mobileTeacherSelect.innerHTML =
+    teacherSelect.innerHTML;
+
+  mobileTeacherSelect.value =
+    teacherSelect.value;
+
+  mobileTeacherSelect.onchange = async () => {
+
+  teacherSelect.value =
+    mobileTeacherSelect.value;
+
+  teacherSelect.dispatchEvent(
+    new Event("change", { bubbles: true })
+  );
+
+  // Đồng bộ lại Lớp + Môn sau khi đổi giáo viên
+  if (mobileLopSelect) {
+    mobileLopSelect.innerHTML =
+      lopSelect.innerHTML;
+
+    mobileLopSelect.value =
+      lopSelect.value;
+  }
+
+  if (mobileMonhocSelect) {
+    mobileMonhocSelect.innerHTML =
+      monhocSelect.innerHTML;
+
+    mobileMonhocSelect.value =
+      monhocSelect.value;
+  }
+};
+}
+
+
+// Lớp
+if (mobileLopSelect && lopSelect) {
+
+  mobileLopSelect.innerHTML =
+    lopSelect.innerHTML;
+
+  mobileLopSelect.value =
+    lopSelect.value;
+mobileLopSelect.onchange = () => {
+
+  lopSelect.value =
+    mobileLopSelect.value;
+
+  localStorage.setItem(
+    "selectedLop",
+    mobileLopSelect.value
+  );
+
+  lopSelect.dispatchEvent(
+    new Event("change", { bubbles: true })
+  );
+};
+}
+
+
+// Môn
+if (mobileMonhocSelect && monhocSelect) {
+
+  mobileMonhocSelect.innerHTML =
+    monhocSelect.innerHTML;
+
+  mobileMonhocSelect.value =
+    monhocSelect.value;
+
+  mobileMonhocSelect.onchange = () => {
+
+  monhocSelect.value =
+    mobileMonhocSelect.value;
+
+  localStorage.setItem(
+    "selectedMonHoc",
+    mobileMonhocSelect.value
+  );
+
+  monhocSelect.dispatchEvent(
+    new Event("change", { bubbles: true })
+  );
+};
+}
 });
 
 /* ==============================
@@ -727,17 +826,13 @@ document.addEventListener("click", async function (e) {
   const classMap = await readData("config/danh_muc/lop");
 const className = classMap?.[id]?.name || "Lớp";
 
-//  console.log("🔥 CLICK CLASS:", id, className);
-
   // 🔥 CHỐNG GỌI LẠI NHIỀU LẦN
   if (window._startingSession) return;
   window._startingSession = true;
 
   if (typeof window.startSession === "function") {
     await window.startSession(id, className);
-//    console.log("✅ SESSION ĐÃ TẠO");
   } else {
-//    console.log("❌ KHÔNG TÌM THẤY startSession");
   }
 
   // reset flag sau 1s
@@ -864,3 +959,728 @@ async function checkThongBaoMoi() {
 
   }
 }
+
+
+// ======================================================
+// MOBILE STUDENT - BÀI GIẢNG
+// ======================================================
+
+window.mobileStudentBaigiang = async function () {
+
+  const teacherSelect = document.getElementById("teacherSelect");
+
+const teacherId =
+  teacherSelect?.value ||
+  localStorage.getItem("selectedTeacher") ||
+  "";
+
+const selectedLop =
+  document.getElementById("lopSelect")?.value ||
+  localStorage.getItem("selectedLop") ||
+  "";
+
+const selectedMonHoc =
+  document.getElementById("monhocSelect")?.value ||
+  localStorage.getItem("selectedMonHoc") ||
+  "";
+
+  if (!teacherId) {
+    alert("❌ Vui lòng chọn giáo viên trước");
+    return;
+  }
+
+  if (!selectedLop) {
+    alert("❌ Vui lòng chọn lớp trước");
+    return;
+  }
+
+  const data =
+    await readData(`teacher/${teacherId}/baigiang`);
+
+  const mainContent =
+    document.getElementById("mainContent");
+
+  if (!mainContent) return;
+
+  if (!data) {
+    mainContent.innerHTML =
+      "<p>Chưa có bài giảng</p>";
+    return;
+  }
+
+  const filtered = Object.entries(data)
+    .filter(([id, item]) => {
+
+      const itemLop =
+        item.classId ||
+        item.lop ||
+        "";
+
+      const itemMon =
+        item.subjectId ||
+        item.monhoc ||
+        "";
+
+      return (
+        itemLop === selectedLop &&
+        (!selectedMonHoc || itemMon === selectedMonHoc)
+      );
+    })
+    .sort(
+      (a, b) =>
+        (b[1].created_at || 0) -
+        (a[1].created_at || 0)
+    );
+
+  if (!filtered.length) {
+
+    mainContent.innerHTML = `
+      <div class="lesson-content">
+        <button
+          onclick="location.reload()"
+          style="
+            margin-bottom:12px;
+            padding:6px 10px;
+            border:none;
+            border-radius:8px;
+            background:#ffd700;
+            cursor:pointer;
+          "
+        >
+          ⬅ Quay lại
+        </button>
+
+        <h3>📖 Bài giảng</h3>
+
+        <p>Không có bài giảng cho lớp/môn đã chọn.</p>
+      </div>
+    `;
+
+    return;
+  }
+
+  mainContent.innerHTML = `
+    <div class="lesson-content">
+
+      <button
+        id="mobileStudentBackBtn"
+        style="
+          margin-bottom:12px;
+          padding:6px 10px;
+          border:none;
+          border-radius:8px;
+          background:#ffd700;
+          cursor:pointer;
+        "
+      >
+        ⬅ Quay lại
+      </button>
+
+      <h3>📖 Bài giảng</h3>
+
+      <ul id="mobileStudentBaigiangList"></ul>
+
+    </div>
+  `;
+
+  const list =
+    document.getElementById(
+      "mobileStudentBaigiangList"
+    );
+
+  filtered.forEach(([id, item]) => {
+
+    const li =
+      document.createElement("li");
+
+    const a =
+      document.createElement("a");
+
+    a.href = "#";
+
+    a.textContent =
+      item.title ||
+      item.tieude ||
+      "Không tên";
+
+    a.onclick = async (e) => {
+
+  e.preventDefault();
+
+  const d = await readData(
+    `teacher/${teacherId}/baigiang/${id}`
+  );
+
+  if (!d) {
+    alert("❌ Không tìm thấy bài giảng");
+    return;
+  }
+
+  // ==================================================
+  // FLIPHTML5 → MỞ NGOÀI NHƯ CƠ CHẾ CŨ
+  // ==================================================
+
+  const flipUrl =
+    d.content_html ||
+    d.noidung ||
+    d.content ||
+    "";
+
+  if (
+    typeof flipUrl === "string" &&
+    flipUrl.trim().includes("fliphtml5.com")
+  ) {
+    window.open(flipUrl.trim(), "_blank");
+    return;
+  }
+
+  // ==================================================
+  // NỘI DUNG THƯỜNG → LOAD TRONG MAIN
+  // ==================================================
+
+  const mainContent =
+    document.getElementById("mainContent");
+
+  if (!mainContent) return;
+
+  mainContent.innerHTML = `
+    <div class="lesson-content">
+
+      <button
+        id="mobileStudentLessonBackBtn"
+        style="
+          margin-bottom:12px;
+          padding:6px 10px;
+          border:none;
+          border-radius:8px;
+          background:#ffd700;
+          cursor:pointer;
+        "
+      >
+        ⬅ Quay lại
+      </button>
+
+      <h2>
+        ${d.title || d.tieude || "Bài giảng"}
+      </h2>
+
+      <div style="
+        margin-bottom:15px;
+        color:#666;
+        font-size:14px;
+      ">
+        Giáo viên:
+        ${teacherNameMap[teacherId] || teacherId}
+
+        ${d.monhoc ? " | Môn: " + d.monhoc : ""}
+
+        ${d.lop ? " | Lớp: " + d.lop : ""}
+      </div>
+
+      <div class="lesson-body">
+        ${
+          d.content_html ||
+          d.noidung ||
+          d.content ||
+          "<p>Chưa có nội dung.</p>"
+        }
+      </div>
+
+    </div>
+  `;
+
+  document
+    .getElementById("mobileStudentLessonBackBtn")
+    ?.addEventListener("click", () => {
+
+      window.mobileStudentBaigiang();
+
+    });
+
+};
+
+    li.appendChild(a);
+    list.appendChild(li);
+  });
+
+  document
+    .getElementById("mobileStudentBackBtn")
+    ?.addEventListener("click", () => {
+      location.reload();
+    });
+};
+
+// ======================================================
+// MOBILE STUDENT - BÀI TẬP
+// ======================================================
+
+window.mobileStudentBaiTap = async function () {
+
+  const teacherSelect =
+    document.getElementById("teacherSelect");
+
+  const teacherId =
+    teacherSelect?.value ||
+    localStorage.getItem("selectedTeacher") ||
+    "";
+
+  const selectedLop =
+    document.getElementById("lopSelect")?.value ||
+    localStorage.getItem("selectedLop") ||
+    "";
+
+  const selectedMonHoc =
+    document.getElementById("monhocSelect")?.value ||
+    localStorage.getItem("selectedMonHoc") ||
+    "";
+
+  if (!teacherId) {
+    alert("❌ Vui lòng chọn giáo viên trước");
+    return;
+  }
+
+  if (!selectedLop) {
+    alert("❌ Vui lòng chọn lớp trước");
+    return;
+  }
+
+  const data =
+    await readData(`teacher/${teacherId}/baitap`);
+
+  const mainContent =
+    document.getElementById("mainContent");
+
+  if (!mainContent) return;
+
+  if (!data) {
+    mainContent.innerHTML =
+      "<p>Chưa có bài tập</p>";
+    return;
+  }
+
+  const filtered =
+    Object.entries(data)
+      .filter(([id, item]) => {
+
+        const itemLop =
+          item.classId ||
+          item.lop ||
+          "";
+
+        const itemMon =
+          item.subjectId ||
+          item.monhoc ||
+          "";
+
+        return (
+          itemLop === selectedLop &&
+          (!selectedMonHoc ||
+            itemMon === selectedMonHoc)
+        );
+      })
+      .sort(
+        (a, b) =>
+          (b[1].created_at || 0) -
+          (a[1].created_at || 0)
+      );
+
+  if (!filtered.length) {
+
+    mainContent.innerHTML = `
+      <div class="lesson-content">
+
+        <button
+          onclick="window.mobileStudentBaiTap()"
+          style="
+            margin-bottom:12px;
+            padding:6px 10px;
+            border:none;
+            border-radius:8px;
+            background:#ffd700;
+            cursor:pointer;
+          "
+        >
+          ⬅ Quay lại
+        </button>
+
+        <h3>📝 Bài tập</h3>
+
+        <p>
+          Không có bài tập cho lớp/môn đã chọn.
+        </p>
+
+      </div>
+    `;
+
+    return;
+  }
+
+  mainContent.innerHTML = `
+    <div class="lesson-content">
+
+      <button
+        id="mobileStudentBaiTapBackBtn"
+        style="
+          margin-bottom:12px;
+          padding:6px 10px;
+          border:none;
+          border-radius:8px;
+          background:#ffd700;
+          cursor:pointer;
+        "
+      >
+        ⬅ Quay lại
+      </button>
+
+      <h3>📝 Bài tập</h3>
+
+      <ul id="mobileStudentBaiTapList"></ul>
+
+    </div>
+  `;
+
+  const list =
+    document.getElementById(
+      "mobileStudentBaiTapList"
+    );
+
+  filtered.forEach(([id, item]) => {
+
+    const li =
+      document.createElement("li");
+
+    const a =
+      document.createElement("a");
+
+    a.href = "#";
+
+    a.textContent =
+      item.title ||
+      item.tieude ||
+      "Không tên";
+
+    a.onclick = async (e) => {
+
+      e.preventDefault();
+
+      const d =
+        await readData(
+          `teacher/${teacherId}/baitap/${id}`
+        );
+
+      if (!d) {
+        alert("❌ Không tìm thấy bài tập");
+        return;
+      }
+
+      const content =
+        d.content_html ||
+        d.noidung ||
+        d.content ||
+        "";
+
+      // ============================================
+      // FLIPHTML5 → MỞ TAB NGOÀI
+      // ============================================
+
+      if (
+        typeof content === "string" &&
+        content.trim().includes("fliphtml5.com")
+      ) {
+
+        window.open(
+          content.trim(),
+          "_blank"
+        );
+
+        return;
+      }
+
+      // ============================================
+      // NỘI DUNG THƯỜNG → LOAD TRONG MAIN
+      // ============================================
+
+      const main =
+        document.getElementById("mainContent");
+
+      if (!main) return;
+
+      main.innerHTML = `
+        <div class="lesson-content">
+
+          <button
+            id="mobileStudentBaiTapBackBtn"
+            style="
+              margin-bottom:12px;
+              padding:6px 10px;
+              border:none;
+              border-radius:8px;
+              background:#ffd700;
+              cursor:pointer;
+            "
+          >
+            ⬅ Quay lại
+          </button>
+
+          <h2>
+            ${d.title || d.tieude || "Bài tập"}
+          </h2>
+
+          <div style="
+            margin-bottom:15px;
+            color:#666;
+            font-size:14px;
+          ">
+            Giáo viên:
+            ${teacherNameMap[teacherId] || teacherId}
+
+            ${d.monhoc
+              ? " | Môn: " + d.monhoc
+              : ""}
+
+            ${d.lop
+              ? " | Lớp: " + d.lop
+              : ""}
+          </div>
+
+          <div class="lesson-body">
+            ${
+              content ||
+              "<p>Chưa có nội dung.</p>"
+            }
+          </div>
+
+        </div>
+      `;
+
+      document
+        .getElementById(
+          "mobileStudentBaiTapBackBtn"
+        )
+        ?.addEventListener(
+          "click",
+          () => {
+            window.mobileStudentBaiTap();
+          }
+        );
+
+    };
+
+    li.appendChild(a);
+    list.appendChild(li);
+
+  });
+
+  document
+    .getElementById(
+      "mobileStudentBaiTapBackBtn"
+    )
+    ?.addEventListener(
+      "click",
+      () => {
+        window.mobileStudentBaiTap();
+      }
+    );
+
+};
+
+// ======================================================
+// MOBILE STUDENT - PROJECT
+// ======================================================
+
+window.mobileStudentDuAn = async function () {
+
+  const studentData =
+    JSON.parse(
+      localStorage.getItem("studentLogin")
+    );
+
+  const studentId =
+    studentData?.id;
+
+  if (!studentId) {
+    alert("❌ Vui lòng đăng nhập sinh viên trước");
+    return;
+  }
+
+  const selectedLop =
+    document.getElementById("lopSelect")?.value ||
+    localStorage.getItem("selectedLop") ||
+    "";
+
+  const selectedMonHoc =
+    document.getElementById("monhocSelect")?.value ||
+    localStorage.getItem("selectedMonHoc") ||
+    "";
+
+  if (!selectedLop) {
+    alert("❌ Vui lòng chọn lớp trước");
+    return;
+  }
+
+  const data =
+    await readData(
+      `users/students/${studentId}/duan`
+    );
+
+  const mainContent =
+    document.getElementById("mainContent");
+
+  if (!mainContent) return;
+
+  if (!data) {
+    mainContent.innerHTML = `
+      <div class="lesson-content">
+        <h3>📁 Project</h3>
+        <p>Chưa có Project.</p>
+      </div>
+    `;
+    return;
+  }
+
+  const filtered =
+    Object.entries(data)
+      .filter(([id, item]) => {
+
+        const itemLop =
+          item.classId ||
+          item.lop ||
+          "";
+
+        const itemMon =
+          item.subjectId ||
+          item.monhoc ||
+          "";
+
+        return (
+          itemLop === selectedLop &&
+          (!selectedMonHoc ||
+            itemMon === selectedMonHoc)
+        );
+      })
+      .sort(
+        (a, b) =>
+          (b[1].created_at || 0) -
+          (a[1].created_at || 0)
+      );
+
+  if (!filtered.length) {
+
+    mainContent.innerHTML = `
+      <div class="lesson-content">
+
+        <button
+          onclick="window.mobileStudentDuAn()"
+          style="
+            margin-bottom:12px;
+            padding:6px 10px;
+            border:none;
+            border-radius:8px;
+            background:#ffd700;
+            cursor:pointer;
+          "
+        >
+          ⬅ Quay lại
+        </button>
+
+        <h3>📁 Project</h3>
+
+        <p>
+          Không có Project cho lớp/môn đã chọn.
+        </p>
+
+      </div>
+    `;
+
+    return;
+  }
+
+  mainContent.innerHTML = `
+    <div class="lesson-content">
+
+      <button
+        id="mobileStudentDuAnBackBtn"
+        style="
+          margin-bottom:12px;
+          padding:6px 10px;
+          border:none;
+          border-radius:8px;
+          background:#ffd700;
+          cursor:pointer;
+        "
+      >
+        ⬅ Quay lại
+      </button>
+
+      <h3>📁 Project</h3>
+
+      <ul id="mobileStudentDuAnList"></ul>
+
+    </div>
+  `;
+
+  const list =
+    document.getElementById(
+      "mobileStudentDuAnList"
+    );
+
+  filtered.forEach(([id, item]) => {
+
+    const li =
+      document.createElement("li");
+
+    const a =
+      document.createElement("a");
+
+    a.href = "#";
+
+    a.textContent =
+      item.title ||
+      item.tieude ||
+      item.name ||
+      "Không tên";
+
+    a.onclick = async (e) => {
+
+      e.preventDefault();
+
+      const d =
+        await readData(
+          `users/students/${studentId}/duan/${id}`
+        );
+
+      if (!d) {
+        alert("❌ Không tìm thấy Project");
+        return;
+      }
+
+      // ============================================
+      // DÙNG HÀM PROJECT CŨ
+      // ============================================
+
+      if (
+        typeof window.loadStudentProject ===
+        "function"
+      ) {
+        window.loadStudentProject(d);
+      }
+
+    };
+
+    li.appendChild(a);
+    list.appendChild(li);
+
+  });
+
+  document
+    .getElementById(
+      "mobileStudentDuAnBackBtn"
+    )
+    ?.addEventListener(
+      "click",
+      () => {
+        window.mobileStudentDuAn();
+      }
+    );
+
+};

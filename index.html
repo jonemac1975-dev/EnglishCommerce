@@ -194,6 +194,220 @@
 
 
 </div>
+
+<!-- ======================================================
+     MOBILE NAVIGATION
+     Chỉ dùng cho màn hình mobile
+====================================================== -->
+
+<div id="mobileApp">
+
+  <!-- MOBILE HEADER -->
+  <div id="mobileHeader">
+
+    <button id="mobileMenuBtn" type="button">
+      ☰
+    </button>
+
+    <div id="mobileTitle">
+      <span>TIẾNG ANH NGÀNH CHẾ BIẾN MÓN ĂN</span>
+    </div>
+    <button id="mobileLangBtn" type="button">
+      🌐
+    </button>
+
+  </div>
+
+
+  <!-- MOBILE MAIN AREA -->
+  <div id="mobileMain">
+  <div id="mobileContent"></div>
+  </div>
+
+<!-- MOBILE TEACHER PANEL -->
+<div id="mobileTeacherPanel" class="mobile-panel">
+
+  <div class="mobile-panel-header">
+    <strong>👨‍🏫 GIÁO VIÊN</strong>
+    <button id="mobileTeacherClose" type="button">✕</button>
+  </div>
+
+  <div class="mobile-panel-content">
+
+    <button type="button" onclick="goGVLogin()">
+      🔐 Đăng nhập
+    </button>
+
+    <button type="button" onclick="goGVRegister()">
+      📝 Đăng ký
+    </button>
+
+    <button type="button" id="mobileGvBaiGiangBtn">
+  📖 Bài giảng
+  <span>›</span>
+</button>
+<div id="mobileGvBaiGiangList" class="mobile-submenu"></div>
+
+    <button type="button" id="mobileGvBaiTapBtn">
+  📝 Bài tập
+  <span>›</span>
+</button>
+
+    <button type="button" id="mobileGvKiemTraBtn">
+  🧪 Bài kiểm tra
+  <span>›</span>
+</button>
+
+    <button type="button" onclick="mobileTeacherVanban()">
+  📄 Văn bản - Hội thảo
+</button>
+
+    <button type="button" onclick="closeMobileTeacher(); loadTab('dobai','teacher')">
+  🎲 Dò bài
+</button>
+
+    <button type="button" onclick="goTeacherPage()">
+      👨‍🏫 Teacher page
+    </button>
+
+  </div>
+</div>
+<!-- ======================================================
+     MOBILE STUDENT PANEL
+====================================================== -->
+
+<div id="mobileStudentPanel" class="mobile-panel">
+
+  <div class="mobile-panel-header">
+    <strong>🎓 SINH VIÊN</strong>
+    <button id="mobileStudentClose" type="button">✕</button>
+  </div>
+
+  <div class="mobile-panel-content">
+<!-- MOBILE STUDENT SELECT -->
+<div class="mobile-student-selects">
+
+  <select id="mobileTeacherSelect">
+    <option value="">Chọn giáo viên</option>
+  </select>
+
+  <select id="mobileLopSelect">
+    <option value="">Chọn lớp</option>
+  </select>
+
+  <select id="mobileMonhocSelect">
+    <option value="">Chọn môn</option>
+  </select>
+
+</div>
+    <button type="button" onclick="goHVLogin(); closeMobileStudent();">
+      🔐 Đăng nhập
+    </button>
+
+    <button type="button" onclick="goHVRegister(); closeMobileStudent();">
+      📝 Đăng ký
+    </button>
+
+    <button type="button" id="mobileHvBaiGiangBtn">
+      📖 Bài giảng
+      <span>›</span>
+    </button>
+
+    <button type="button" id="mobileHvBaiTapBtn">
+      📝 Bài tập
+      <span>›</span>
+    </button>
+
+    <button type="button" id="mobileHvDuAnBtn">
+      📁 Project
+      <span>›</span>
+    </button>
+
+    <button type="button" id="mobileHvKiemTraBtn">
+      🧪 Bài kiểm tra
+    </button>
+
+    <button type="button" onclick="openStudentTest(); closeMobileStudent();">
+      🧪 Test Toeic
+    </button>
+
+    <button type="button" onclick="goStudentPage(); closeMobileStudent();">
+      🎓 Student page
+    </button>
+
+  </div>
+</div>
+</div>
+
+<!-- MOBILE KHÁC PANEL -->
+<div id="mobileOtherPanel" class="mobile-panel">
+
+  <div class="mobile-panel-header">
+    <strong>📂 KHÁC</strong>
+    <button id="mobileOtherClose" type="button">✕</button>
+  </div>
+
+    <div class="mobile-panel-content">
+    <button type="button" id="mobileNewsBtn">
+      📰 News <span>›</span>
+    </button>
+
+    <button type="button" id="mobileEventBtn">
+      📅 Sự kiện <span>›</span>
+    </button>
+
+    <button type="button" id="mobileBookBtn">
+      📖 Sách <span>›</span>
+    </button>
+
+    <button type="button" id="mobileDocumentBtn">
+      📄 Tài liệu <span>›</span>
+    </button>
+
+    <button type="button" id="mobileMusicBtn">
+      🎵 Nhạc – Phim <span>›</span>
+    </button>
+  </div>
+</div>
+
+
+<!-- MOBILE BOTTOM NAV -->
+<nav id="mobileBottomNav">
+
+  <button type="button" data-mobile-action="home">
+    🏠
+    <span>Trang chủ</span>
+  </button>
+
+  <button type="button" data-mobile-action="teacher">
+    👨‍🏫
+    <span>Giáo viên</span>
+  </button>
+
+  <button type="button" data-mobile-action="student">
+    🎓
+    <span>Sinh viên</span>
+  </button>
+
+  <button type="button" data-mobile-action="other">
+    📚
+    <span>Khác</span>
+  </button>
+
+  <button type="button" data-mobile-action="rating">
+    ⭐
+    <span>Bình chọn</span>
+  </button>
+
+    <button type="button" data-mobile-action="admin">
+  🔒
+  <span>admin</span>
+</button>
+
+  </nav>
+</div>
+
+
 <select class="teacherSelect select-teacher">
   <option value="">-- Chọn giáo viên --</option>
 </select>
@@ -751,6 +965,4 @@ fmSelect.addEventListener("change", () => {
 
   </div>
 </div>
-
-
 </html>

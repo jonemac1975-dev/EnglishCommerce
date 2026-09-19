@@ -21,16 +21,12 @@ const musicPlayer   = document.getElementById("musicPlayer");
 function renderList(container, data, textField) {
 
   if (!container) return;
-
   if (!data) {
     container.innerHTML = "<li>Chưa có dữ liệu</li>";
     return;
   }
-
   container.innerHTML = "";
-
   Object.values(data).forEach(item => {
-
     const itemLink = item.link || item.Link || item.url || "";
 
     // =========================
@@ -100,9 +96,7 @@ function renderList(container, data, textField) {
 
       w.document.write(`
         <title>${item[textField] || "Hình ảnh"}</title>
-
         <style>
-
           body{
             margin:0;
             background:#111;
@@ -152,19 +146,12 @@ function renderList(container, data, textField) {
             padding:6px 12px;
             border-radius:20px;
           }
-
         </style>
-
         <div class="nav prev">◀</div>
-
         <img id="viewer">
-
         <div class="nav next">▶</div>
-
         <div class="counter" id="counter"></div>
-
         <script>
-
           const images = ${JSON.stringify(images)};
 
           let index = ${startIndex};
@@ -341,45 +328,75 @@ async function loadMusicFooter() {
 
 }
 
+export async function loadMobileMusic(container) {
+
+  if (!container) return;
+
+  try {
+
+    const categories =
+      await readData("config/danh_muc/theloainhac");
+
+    const musicData =
+      await readData("nhactailieu/nhac");
+
+    if (!categories || !musicData) {
+      container.innerHTML =
+        "<p>Chưa có dữ liệu Nhạc.</p>";
+      return;
+    }
+    container.innerHTML = "";
+    Object.entries(categories).forEach(([catId, cat]) => {
+      const item = document.createElement("button");
+      item.type = "button";
+      item.textContent = `🎵 ${cat.name}`;
+      item.onclick = () => {
+  try {
+    openMusicPopup(cat.name, catId, musicData);
+    } catch (error) {
+    console.error("❌ OPEN MUSIC POPUP ERROR:", error);
+  }
+      };
+      container.appendChild(item);
+    });
+  } catch (error) {
+    console.error(
+      "Lỗi load Nhạc mobile:",
+      error
+    );
+
+    container.innerHTML =
+      "<p>Không thể tải danh mục Nhạc.</p>";
+
+  }
+
+}
+
 /* =========================
    POPUP
 ========================= */
 
 function openMusicPopup(title, catId, musicData) {
-
-  const popup =
-    document.getElementById("musicPopup");
-
-  const popupTitle =
-    document.getElementById("musicPopupTitle");
-
-  const popupList =
-    document.getElementById("musicPopupList");
-
-  const player =
-    document.getElementById("musicPlayer");
-
+  const popup = document.getElementById("musicPopup");
+if (popup && popup.parentElement !== document.body) {
+  document.body.appendChild(popup);
+  }
+  const popupTitle = document.getElementById("musicPopupTitle");
+  const popupList = document.getElementById("musicPopupList");
+  const player = document.getElementById("musicPlayer");
   popupTitle.innerText = title;
-
   popupList.innerHTML = "";
-
   player.innerHTML = "";
-
   Object.entries(musicData).forEach(([id, item]) => {
-
     if (item.theloai !== catId) return;
-
     const row = document.createElement("div");
-
     row.className = "music-popup-item";
-
     row.innerHTML = `
       <div style="
         display:flex;
         align-items:center;
         gap:10px;
       ">
-
         ${
           item.img
           ? `
@@ -398,28 +415,27 @@ function openMusicPopup(title, catId, musicData) {
         <div style="flex:1">
           ▶ ${item.ten}
         </div>
-
       </div>
     `;
 
     row.onclick = () => {
-
       player.innerHTML = `
         <iframe
-          width="100%"
-          height="320"
-          src="${convertYoutube(item.link)}"
-          frameborder="0"
-          allowfullscreen>
-        </iframe>
+  width="100%"
+  height="320"
+  src="${convertYoutube(item.link)}?autoplay=1"
+  frameborder="0"
+  allow="autoplay; encrypted-media; picture-in-picture"
+  allowfullscreen>
+</iframe>
       `;
     };
-
     popupList.appendChild(row);
-
   });
-
   popup.style.display = "flex";
+const rect = popup.getBoundingClientRect();
+const content = popup.querySelector(".music-popup-content");
+const contentRect = content?.getBoundingClientRect();
 }
 
 /* =========================
@@ -427,18 +443,13 @@ function openMusicPopup(title, catId, musicData) {
 ========================= */
 
 document.addEventListener("click", e => {
-
-  const popup =
-    document.getElementById("musicPopup");
-
+  const popup = document.getElementById("musicPopup");
   if (!popup) return;
 
   // ===== CLOSE =====
 
   if (e.target.id === "closeMusicPopup") {
-
     popup.style.display = "none";
-
     popup.classList.remove(
       "minimized",
       "maximized"
@@ -452,21 +463,16 @@ document.addEventListener("click", e => {
   // ===== MIN =====
 
   if (e.target.id === "btnMinMusic") {
-
     popup.classList.remove("maximized");
-
     popup.classList.toggle("minimized");
   }
 
   // ===== MAX =====
 
   if (e.target.id === "btnMaxMusic") {
-
     popup.classList.remove("minimized");
-
     popup.classList.toggle("maximized");
   }
-
 });
 
 /* =========================
@@ -474,11 +480,8 @@ document.addEventListener("click", e => {
 ========================= */
 
 function convertYoutube(link) {
-
   if (!link) return "";
-
   if (link.includes("watch?v=")) {
-
     return link.replace(
       "watch?v=",
       "embed/"
@@ -486,15 +489,62 @@ function convertYoutube(link) {
   }
 
   if (link.includes("youtu.be/")) {
-
     const id = link.split("youtu.be/")[1];
-
     return `
       https://www.youtube.com/embed/${id}
     `;
   }
-
   return link;
+}
+
+
+export async function loadMobileNews(container) {
+  if (!container) return;
+  try {
+    const newsData = await readData("thoisuhoatdong/thoisu");
+    renderList(container, newsData, "tieuDe");
+  } catch (error) {
+
+    console.error("Lỗi load News mobile:", error);
+
+    container.innerHTML =
+      "<p>Không thể tải dữ liệu News.</p>";
+
+  }
+}
+
+export async function loadMobileBook(container) {
+  if (!container) return;
+  try {
+    const bookData = await readData("sachtailieu/sach");
+    renderList(container, bookData, "ten");
+  } catch (error) {
+    console.error("Lỗi load Sách mobile:", error);
+    container.innerHTML = "<p>Không thể tải dữ liệu Sách.</p>";
+  }
+}
+
+export async function loadMobileDocument(container) {
+  if (!container) return;
+  try {
+    const data = await readData("sachtailieu/tailieu");
+    renderList(container, data, "ten");
+  } catch (error) {
+    console.error("Lỗi load Tài liệu mobile:",error);
+    container.innerHTML = "<p>Không thể tải dữ liệu Tài liệu.</p>";
+  }
+}
+
+
+export async function loadMobileEvent(container) {
+  if (!container) return;
+  try {
+    const hdData = await readData("thoisuhoatdong/hoatdong");
+    renderList(container, hdData, "tieuDe");
+  } catch (error) {
+    console.error("Lỗi load Sự kiện mobile:", error);
+    container.innerHTML = "<p>Không thể tải dữ liệu Sự kiện.</p>";
+  }
 }
 
 document.addEventListener("DOMContentLoaded", loadFooter);

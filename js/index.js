@@ -2,6 +2,7 @@
 import "./index.head.js";
 import "./index.main.js";
 import "./index.footer.js";
+import {loadMobileEvent,loadMobileNews,loadMobileBook,loadMobileDocument,loadMobileMusic} from "./index.footer.js";
 import "./avatar-gv.js";
 import "./index.student.js";
 import "./index.teacher.js";
@@ -16,8 +17,6 @@ import { readData } from "../scripts/services/firebaseService.js";
 ========================= */
 let mainMode = "landing"; // landing | working
 
-
-
 /* =========================
    MENU TOGGLE
 ========================= */
@@ -28,29 +27,21 @@ window.toggleMenu = function (id) {
   el.style.display = el.style.display === "block" ? "none" : "block";
 };
 
-
-
 /* =========================
    LOAD PREVIEW (KHÓA HỌC)
 ========================= */
 window.loadPreview = function (link) {
   if (!link) return;
-
   window.location.href = link;
 };
-
-
 
 /* =========================
    LOAD YOUTUBE (BÀI GIẢNG MẪU)
 ========================= */
 window.loadYoutube = function (link) {
   if (!link) return;
-
   window.open(link, "_blank");
 };
-
-
 
 /* =========================
    KHI GIÁO VIÊN CHỌN BÀI
@@ -90,13 +81,10 @@ window.loadTeacherMedia = function (data) {
   mainMode = "working";
 };
 
-
-
 /* =========================
    RESET VỀ LANDING MODE
 ========================= */
 window.resetLandingMode = function () {
-
   const grid = document.getElementById("mainGrid");
   if (grid) grid.style.display = "grid";
 
@@ -142,8 +130,6 @@ window.openRatingList = async function () {
 
   mod.init();
 };
-
-
 
 /* =========================
    ĐIỀU HƯỚNG
@@ -244,8 +230,6 @@ function initLangSwitch() {
 window.addEventListener("load", () => {
   setTimeout(initLangSwitch, 1000); // đợi Google load xong
 });
-
-
 
 /* =========================
    VIDEO MODAL CONTROL
@@ -381,18 +365,12 @@ async function loadTab(tabName, role = "teacher") {
   const mainBg = document.getElementById("mainBg");
   try {
     if (mainBg) mainBg.style.display = "none";
-
     const html = await fetch(`/pages/${role}/tab/${tabName}.html`)
       .then(res => res.text());
-
     mainContent.innerHTML = html;
-
     await new Promise(r => setTimeout(r, 0));
-
     const module = await import(`/pages/${role}/js/${tabName}.js`);
-
     module?.init?.();
-
     // 🔥 TEST FOR SURE
         setTimeout(() => {
         if (typeof loadTeachersToSelect === "function") {
@@ -443,9 +421,6 @@ window.goHome = goHome;
 window.loadTab = loadTab;
 window.loadTeachersToSelect = loadTeachersToSelect;
 
-
-
-
 async function loadTeachersToSelect() {
   
   const select = document.querySelector(".teacherSelect");
@@ -475,3 +450,478 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // expose nếu cần dùng nút
 window.loadTeachersToSelect = loadTeachersToSelect;
+
+// ======================================================
+// MOBILE - ĐƯA MAIN CONTENT VÀO KHUNG MOBILE
+// ======================================================
+
+function syncMobileContent() {
+
+  const main = document.getElementById("main");
+  const mobileMain = document.getElementById("mobileMain");
+
+  if (!main || !mobileMain) return;
+
+  if (window.innerWidth <= 768) {
+    mobileMain.appendChild(main);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  syncMobileContent();
+});
+
+// ======================================================
+// MOBILE - TEACHER PANEL
+// ======================================================
+
+function openMobileTeacher() {
+  const panel = document.getElementById("mobileTeacherPanel");
+  if (!panel) return;
+  panel.classList.add("active");
+}
+
+
+function closeMobileTeacher() {
+  const panel = document.getElementById("mobileTeacherPanel");
+  if (!panel) return;
+  panel.classList.remove("active");
+}
+window.closeMobileTeacher = closeMobileTeacher;
+
+
+
+function openMobileStudent() {
+  const panel = document.getElementById("mobileStudentPanel");
+    if (!panel) return;
+  panel.classList.add("active");
+  }
+
+function closeMobileStudent() {
+  const panel = document.getElementById("mobileStudentPanel");
+  if (!panel) return;
+  panel.classList.remove("active");
+}
+window.closeMobileStudent = closeMobileStudent;
+
+
+function openMobileOther() {
+  const panel = document.getElementById("mobileOtherPanel");
+  if (!panel) {
+    console.error("❌ KHÔNG TÌM THẤY #mobileOtherPanel");
+    return;
+  }
+  panel.classList.add("active");
+}
+
+
+function closeMobileOther() {
+  const panel =
+    document.getElementById("mobileOtherPanel");
+  if (!panel) return;
+  panel.classList.remove("active");
+}
+
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  // =========================
+  // TEACHER
+  // =========================
+
+  const teacherBtn = document.querySelector('[data-mobile-action="teacher"]');
+  const closeBtn = document.getElementById("mobileTeacherClose");
+  if (teacherBtn) {
+    teacherBtn.addEventListener("click", openMobileTeacher);
+  }
+  if (closeBtn) {
+    closeBtn.addEventListener("click", closeMobileTeacher);
+  }
+
+
+  // =========================
+  // STUDENT
+  // =========================
+
+  const studentBtn = document.querySelector('[data-mobile-action="student"]');
+  const studentCloseBtn = document.getElementById("mobileStudentClose");
+    if (studentBtn) {
+    studentBtn.addEventListener("click", openMobileStudent);
+  }
+
+  if (studentCloseBtn) {
+    studentCloseBtn.addEventListener("click", closeMobileStudent);
+ }
+
+const adminBtn = document.querySelector('[data-mobile-action="admin"]');
+if (adminBtn) {
+  adminBtn.addEventListener("click", () => {
+    location.href = "./pages/admin/adminlogin.html";
+  });
+}
+
+const homeBtn = document.querySelector('[data-mobile-action="home"]');
+if (homeBtn) {
+  homeBtn.addEventListener("click", () => {
+    location.href = "./index.html";
+  });
+}
+
+const ratingBtn = document.querySelector('[data-mobile-action="rating"]');
+if (ratingBtn) {
+  ratingBtn.addEventListener("click", () => {
+    const select = document.querySelector(".teacherSelect");
+    if (!select) {
+      alert("Không tìm thấy danh sách giáo viên");
+      return;
+    }
+
+    const options = [...select.options]
+      .filter(option => option.value)
+      .map(option => `
+        <button
+          type="button"
+          class="mobile-rating-teacher"
+          data-teacher-id="${option.value}">
+          👨‍🏫 ${option.textContent}
+        </button>
+      `)
+      .join("");
+
+    const oldBox =
+      document.getElementById("mobileRatingBox");
+
+    if (oldBox) oldBox.remove();
+
+    const box = document.createElement("div");
+    box.id = "mobileRatingBox";
+
+    box.innerHTML = `
+      <div class="mobile-rating-overlay">
+        <div class="mobile-rating-dialog">
+          <div class="mobile-rating-header">
+            <strong>⭐ Mục xem bình chọn GV</strong>
+            <button type="button" id="mobileRatingClose">✕</button>
+          </div>
+<div class="mobile-rating-menu">
+
+  <button
+    type="button"
+    id="mobileChooseTeacherBtn"
+    class="mobile-rating-list-all">
+    ⭐ Chọn giáo viên
+  </button>
+
+  <button
+    type="button"
+    id="mobileRatingListBtn"
+    class="mobile-rating-list-all">
+    📋 Danh sách bình chọn
+  </button>
+
+</div>
+
+<div
+  id="mobileTeacherList"
+  class="mobile-teacher-list"
+  style="display:none;">
+  ${options || "<p>Chưa có giáo viên.</p>"}
+</div>
+
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(box);
+// ⭐ CHỌN GIÁO VIÊN
+document
+  .getElementById("mobileChooseTeacherBtn")
+  ?.addEventListener("click", () => {
+    const list = document.getElementById("mobileTeacherList");
+    if (list) {
+      list.style.display = "block";
+    }
+  });
+
+
+// 📋 DANH SÁCH BÌNH CHỌN
+document
+  .getElementById("mobileRatingListBtn")
+  ?.addEventListener("click", () => {
+    box.remove();
+    loadTab("ratinglist", "teacher");
+  });
+document
+      .getElementById("mobileRatingClose")
+      ?.addEventListener("click", () => {
+        box.remove();
+      });
+
+    box.querySelectorAll(".mobile-rating-teacher")
+      .forEach(btn => {
+        btn.addEventListener("click", () => {
+          select.value = btn.dataset.teacherId;
+          box.remove();
+          openRatingGV();
+        });
+      });
+  });
+}
+});
+
+
+
+// ======================================================
+// MOBILE - TEACHER BÀI GIẢNG
+// ======================================================
+
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("mobileGvBaiGiangBtn");
+  if (!btn) return;
+  btn.addEventListener("click", () => {
+  if (typeof window.mobileTeacherBaigiang === "function") {
+    window.mobileTeacherBaigiang();
+  }
+});
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("mobileGvBaiTapBtn");
+  if (!btn) return;
+  btn.addEventListener("click", () => {
+    if (typeof window.mobileTeacherBaiTap === "function") {
+      window.mobileTeacherBaiTap();
+    }
+  });
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("mobileGvKiemTraBtn");
+  if (!btn) return;
+  btn.addEventListener("click", () => {
+    if (typeof window.mobileTeacherKiemTra === "function") {
+      window.mobileTeacherKiemTra();
+    }
+  });
+});
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("mobileHvBaiGiangBtn");
+  if (!btn) return;
+  btn.addEventListener("click", async () => {
+  if (
+    typeof window.mobileStudentBaigiang ===
+    "function"
+  ) {
+    await window.mobileStudentBaigiang();
+    closeMobileStudent();
+  }
+});
+});
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("mobileHvBaiTapBtn");
+  if (!btn) return;
+  btn.addEventListener("click", async () => {
+    if (
+      typeof window.mobileStudentBaiTap ===
+      "function"
+    ) {
+      await window.mobileStudentBaiTap();
+      closeMobileStudent();
+    }
+  });
+});
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("mobileHvDuAnBtn");
+  if (!btn) return;
+  btn.addEventListener("click", async () => {
+    if (
+      typeof window.mobileStudentDuAn ===
+      "function"
+    ) {
+      await window.mobileStudentDuAn();
+      closeMobileStudent();
+    }
+  });
+});
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("mobileHvKiemTraBtn");
+  if (!btn) return;
+  btn.addEventListener("click", () => {
+    const desktopBtn = document.getElementById("btnKiemTra");
+    if (desktopBtn) {
+      desktopBtn.click();
+      closeMobileStudent();
+    }
+  });
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  // =========================
+  // STUDENT TEST
+  // =========================
+
+  const btn = document.querySelector('#mobileStudentPanel button[onclick*="openStudentTest"]');
+  if (btn) {
+    btn.addEventListener("click", () => {
+      closeMobileStudent();
+      if (typeof window.openStudentTest === "function") {
+        window.openStudentTest();
+      }
+    });
+  }
+
+
+  // =========================
+  // OTHER
+  // =========================
+
+  const otherBtn = document.querySelector('[data-mobile-action="other"]');
+  const otherCloseBtn = document.getElementById("mobileOtherClose");
+  if (otherBtn) {
+    otherBtn.addEventListener("click", openMobileOther);
+  }
+  if (otherCloseBtn) {
+    otherCloseBtn.addEventListener("click", closeMobileOther);
+  }
+
+// =========================
+// NEWS
+// =========================
+
+const newsBtn = document.getElementById("mobileNewsBtn");
+if (newsBtn) {
+  newsBtn.addEventListener("click", async () => {
+    closeMobileOther();
+    const main = document.getElementById("main");
+    const mobileMain = document.getElementById("mobileMain");
+    if (main && mobileMain && window.innerWidth <= 768) {
+      mobileMain.appendChild(main);
+    }
+    const content = document.getElementById("mainContent");
+    if (!content) {
+      console.warn("⚠️ Không tìm thấy #main-content");
+      return;
+    }
+    content.innerHTML = `
+      <h2>📰 News</h2>
+      <div id="mobileNewsList">
+        ⏳ Đang tải...
+      </div>
+    `;
+
+    const list = document.getElementById("mobileNewsList");
+    await loadMobileNews(list);
+      });
+}
+
+
+const bookBtn = document.getElementById("mobileBookBtn");
+if (bookBtn) {
+  bookBtn.addEventListener("click", async () => {
+    closeMobileOther();
+    const main = document.getElementById("main");
+    const mobileMain = document.getElementById("mobileMain");
+    if (main && mobileMain && window.innerWidth <= 768) {
+      mobileMain.appendChild(main);
+    }
+    const content = document.getElementById("mainContent");
+    if (!content) {
+      console.warn("⚠️ Không tìm thấy #mainContent");
+      return;
+    }
+
+    content.innerHTML = `
+      <h2>📖 Sách</h2>
+      <div id="mobileBookList">
+        ⏳ Đang tải...
+      </div>
+    `;
+
+    const list = document.getElementById("mobileBookList");
+    await loadMobileBook(list);
+  });
+}
+
+
+const documentBtn = document.getElementById("mobileDocumentBtn");
+if (documentBtn) {
+  documentBtn.addEventListener("click", async () => {
+    closeMobileOther();
+    const main = document.getElementById("main");
+    const mobileMain = document.getElementById("mobileMain");
+    if (main && mobileMain && window.innerWidth <= 768) {
+      mobileMain.appendChild(main);
+    }
+    const content = document.getElementById("mainContent");
+    if (!content) {
+      console.warn("⚠️ Không tìm thấy #mainContent");
+      return;
+    }
+
+    content.innerHTML = `
+      <h2>📄 Tài liệu</h2>
+      <div id="mobileDocumentList">
+        ⏳ Đang tải...
+      </div>
+    `;
+
+    const list = document.getElementById("mobileDocumentList");
+    await loadMobileDocument(list);
+  });
+}
+
+const musicBtn = document.getElementById("mobileMusicBtn");
+if (musicBtn) {
+  musicBtn.addEventListener("click", async () => {
+    closeMobileOther();
+    const content = document.getElementById("mainContent");
+    if (!content) {
+      console.warn("⚠️ Không tìm thấy #mainContent");
+      return;
+    }
+
+    content.innerHTML = `
+      <h2>🎵 Nhạc – Phim</h2>
+      <div id="mobileMusicList">
+        ⏳ Đang tải...
+      </div>
+    `;
+
+    const list = document.getElementById("mobileMusicList");
+    await loadMobileMusic(list);
+  });
+}
+
+const eventBtn = document.getElementById("mobileEventBtn");
+if (eventBtn) {
+  eventBtn.addEventListener("click", async () => {
+    closeMobileOther();
+    const main = document.getElementById("main");
+    const mobileMain = document.getElementById("mobileMain");
+    if (main && mobileMain && window.innerWidth <= 768) {
+      mobileMain.appendChild(main);
+    }
+
+    const content = document.getElementById("mainContent");
+    if (!content) return;
+
+    content.innerHTML = `
+      <h2>📅 Sự kiện</h2>
+      <div id="mobileEventList">
+        ⏳ Đang tải...
+      </div>
+    `;
+
+    const list = document.getElementById("mobileEventList");
+    await loadMobileEvent(list);
+  });
+}
+});

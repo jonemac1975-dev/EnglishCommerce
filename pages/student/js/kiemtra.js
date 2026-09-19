@@ -1,5 +1,3 @@
-console.log("🔥 kiemtra.js LOADED");
-
 import { readData, writeData } from "../../../scripts/services/firebaseService.js";
 
 /* ===============================
@@ -238,8 +236,6 @@ function clearExamUI(message = "") {
    INIT
 ================================ */
 export async function init() {
-  console.log("🔥🔥 INIT KIEMTRA CHẠY");
-
   student = JSON.parse(localStorage.getItem("studentLogin") || "null");
   teacherId = localStorage.getItem("selectedTeacher");
   teacherName = localStorage.getItem("selectedTeacherName") || "Giáo viên";
@@ -475,9 +471,6 @@ async function loadDanhSachBaiKiemTra() {
   // ==================================================
 
 async function bocXamDe() {
-
-  console.log("🔥 BOC XAM CLICK");
-console.log("examBank FULL =", examBank);
   if (!examBank.length) {
     alert("Không có đề nào được mở");
     return;

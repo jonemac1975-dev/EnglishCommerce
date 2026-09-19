@@ -6,7 +6,6 @@
  *************************************************/
 
 import { readData } from "../scripts/services/firebaseService.js";
-
 const logoGV = document.querySelector(".logo.small");
 
 async function loadTeacherAvatar() {
@@ -28,7 +27,6 @@ async function loadTeacherAvatar() {
   img.style.height = "48px";
   img.style.borderRadius = "50%";
   img.style.objectFit = "cover";
-
   logoGV.appendChild(img);
 }
 

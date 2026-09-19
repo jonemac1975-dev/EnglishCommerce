@@ -76,10 +76,8 @@ async function renderUserRating(teacherId) {
     });
 
     if (!stars.length) {
-
       box.innerHTML =
         `<div class="stars">☆☆☆☆☆</div>`;
-
       return;
     }
 
@@ -91,16 +89,12 @@ async function renderUserRating(teacherId) {
 
     const full =
       Math.round(avg);
-
     let html = "";
-
     for(let i=1;i<=5;i++){
-
       html +=
         i <= full
         ? "⭐"
         : "☆";
-
     }
 
     box.innerHTML = `
@@ -139,7 +133,6 @@ export async function loadTeacherHeaderTheme() {
 
   try {
     const data = await readData(`teacher/${teacherId}/doihead`);
-
     if (data) {
       applyHeaderTheme(data);
     } else {

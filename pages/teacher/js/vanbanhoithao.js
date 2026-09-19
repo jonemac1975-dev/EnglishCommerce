@@ -165,7 +165,7 @@ async function loadList() {
         <td>${item.ngay || ""}</td>
         <td>
           <button onclick="deleteVanBan('${id}');event.stopPropagation();">
-            Xóa
+            🗑️ Xóa
           </button>
         </td>
       </tr>

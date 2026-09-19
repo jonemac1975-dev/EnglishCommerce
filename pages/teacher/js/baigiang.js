@@ -203,7 +203,7 @@ async function loadList() {
         <td>${item.ngay || ""}</td>
         <td>
           <button onclick="deleteBaiGiang('${id}');event.stopPropagation();">
-            Xóa
+            🗑️ Xóa
           </button>
         </td>
       </tr>

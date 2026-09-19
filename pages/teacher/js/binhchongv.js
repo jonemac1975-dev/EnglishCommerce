@@ -118,14 +118,9 @@ async function loadList() {
   }
 
   // 👉 tính điểm trung bình
-console.log("stars =", stars);
 
-  const avg =
-    stars.reduce((a, b) => a + b, 0) / stars.length;
-console.log("avg =", avg);
-
-  avgEl.innerText =
-    `⭐ ${avg.toFixed(1)} / 5 (${stars.length} lượt)`;
+  const avg = stars.reduce((a, b) => a + b, 0) / stars.length;
+  avgEl.innerText = `⭐ ${avg.toFixed(1)} / 5 (${stars.length} lượt)`;
 
   // 👉 vẽ chart + summary
   drawChart(stars);
